@@ -1,0 +1,23 @@
+name: Weekly Meow Report
+
+on:
+  schedule:
+    # 每周日 12:00 UTC (北京时间 20:00)
+    - cron: '0 12 * * 0'
+  workflow_dispatch:
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    - name: Generate Report
+      env:
+        BARK_KEY: ${{ secrets.BARK_KEY }}
+        CHATANYWHERE_API_KEY: ${{ secrets.CHATANYWHERE_API_KEY }}
+      run: |
+        npm install
+        node .github/scripts/weekly_report.js
