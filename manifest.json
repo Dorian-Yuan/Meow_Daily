@@ -1,21 +1,17 @@
 {
-  "name": "Meow_Daily 喵喵日记",
-  "short_name": "喵喵日记",
+  "name": "MeowDaily 岁岁日记",
+  "short_name": "岁岁日记",
   "description": "多猫家庭健康与生活记录工具 (AI 赋能)",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#F9FAFB",
+  "background_color": "#4066E0",
   "theme_color": "#4066E0",
   "icons": [
     {
-      "src": "assets/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "assets/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "assets/icons/meow-ip.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
