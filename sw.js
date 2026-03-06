@@ -1,42 +1,34 @@
-const CACHE_NAME = 'meow-daily-v1';
+const CACHE_NAME = 'meow-daily-v3'; // 升级到 V3 以强制清除旧缓存
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
   './css/variables.css',
   './css/main.css',
-  './css/components.css',
   './js/app.js',
+  './js/store.js',
+  './js/modules/ui.js',
+  './js/api/ai.js',
+  './js/api/github.js',
   './assets/icons/meow-ip.png'
 ];
 
-// 安装 Service Worker 并缓存静态资源
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(ASSETS_TO_CACHE))
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
   );
 });
 
-// 激活并清理旧缓存
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    caches.keys().then((keys) => Promise.all(
+      keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+    ))
   );
 });
 
-// 拦截请求并优先使用缓存
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => response || fetch(event.request))
+    caches.match(event.request).then((res) => res || fetch(event.request))
   );
 });

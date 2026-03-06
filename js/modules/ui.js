@@ -1,5 +1,5 @@
 /**
- * ui.js - 核心逻辑恢复版 (保留 V3 比例，恢复全功能)
+ * ui.js - 核心逻辑修复版 (100% 恢复录入与 AI 功能)
  */
 import { getDB, getConfig, saveConfig, addOrUpdateRecord, deleteRecord } from '../store.js';
 import { parseTextWithAI, processMentionedTime } from '../api/ai.js';
@@ -54,7 +54,7 @@ function renderHome() {
         </div>
     `;
 
-    // 绑定点击事件唤起表单
+    // 绑定点击事件，调用 showEntryDrawer 而非 alert
     document.querySelectorAll('.action-item').forEach(el => {
         el.onclick = () => showEntryDrawer(el.dataset.type);
     });
@@ -86,7 +86,7 @@ function renderRecords() {
         }
         const icons = { routine: '🧹', food: '🍴', weight: '⚖️', medical: '🏥' };
         html += `
-            <div class="card" style="margin-bottom:4px; padding:16px 20px; display:flex; align-items:center; gap:16px; cursor:pointer;" onclick="this.dispatchEvent(new CustomEvent('edit-record', {detail: {id:'${r.record_id}', cat:'${r._c}'}}))">
+            <div class="card" style="margin-bottom:4px; padding:16px 20px; display:flex; align-items:center; gap:16px; cursor:pointer;" data-id="${r.record_id}" data-category="${r._c}">
                 <div style="width:44px; height:44px; background:var(--color-bg); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px;">${icons[r._c] || '🐾'}</div>
                 <div style="flex:1;">
                     <div style="font-size:14px; font-weight:800; color:var(--color-text-title);">${r.type || '日常记录'}</div>
@@ -98,11 +98,8 @@ function renderRecords() {
     });
     mainContent.innerHTML = html + '</div>';
 
-    // 绑定编辑事件
-    mainContent.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('edit-record', (e) => {
-            showEntryDrawer(e.detail.cat, e.detail.id);
-        });
+    mainContent.querySelectorAll('.card[data-id]').forEach(card => {
+        card.onclick = () => showEntryDrawer(card.dataset.category, card.dataset.id);
     });
 }
 
@@ -117,10 +114,12 @@ function showEntryDrawer(type, recordId = null) {
 
     const overlay = document.createElement('div');
     overlay.className = 'drawer-overlay';
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0'; overlay.style.left = '0'; overlay.style.right = '0'; overlay.style.bottom = '0';
-    overlay.style.background = 'rgba(0,0,0,0.4)'; overlay.style.zIndex = '1000'; overlay.style.display = 'flex';
-    overlay.style.flexDirection = 'column'; overlay.style.justifyContent = 'flex-end';
+    // 直接注入内联样式确保层级
+    Object.assign(overlay.style, {
+        position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
+        background: 'rgba(0,0,0,0.4)', zIndex: '2000', display: 'flex',
+        flexDirection: 'column', justifyContent: 'flex-end'
+    });
 
     const now = oldData ? oldData.timestamp.replace(' ', 'T') : new Date().toLocaleString('sv-SE').slice(0, 16);
 
@@ -128,7 +127,7 @@ function showEntryDrawer(type, recordId = null) {
     if (type === 'routine') {
         dynamicHTML = `<div class="form-group"><label>事项</label><select id="f-type" class="form-input"><option value="洗澡">洗澡</option><option value="驱虫">驱虫</option><option value="换猫砂">换猫砂</option><option value="剪指甲">剪指甲</option></select></div>`;
     } else if (type === 'food') {
-        dynamicHTML = `<div class="form-group"><label>品牌</label><input type="text" id="f-brand" class="form-input" value="${oldData?.brand||''}"></div><div class="form-group"><label>种类</label><input type="text" id="f-kind" class="form-input" value="${oldData?.type||''}"></div>`;
+        dynamicHTML = `<div class="form-group"><label>品牌</label><input type="text" id="f-brand" class="form-input" value="${oldData?.brand||''}" placeholder="如：百利"></div><div class="form-group"><label>种类</label><input type="text" id="f-kind" class="form-input" value="${oldData?.type||''}" placeholder="如：干粮"></div>`;
     } else if (type === 'weight') {
         dynamicHTML = `<div class="form-group"><label>体重 (kg)</label><input type="number" step="0.01" id="f-weight" class="form-input" value="${oldData?.weight_kg||''}"></div>`;
     } else if (type === 'medical') {
@@ -138,15 +137,15 @@ function showEntryDrawer(type, recordId = null) {
     overlay.innerHTML = `
         <div class="drawer-content" style="background:white; border-top-left-radius:24px; border-top-right-radius:24px; padding:24px; animation: drawer-slide-up 0.3s ease-out;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h2 style="font-size:18px; font-weight:800;">${oldData ? '修改' : '记一笔'}${titles[type]}</h2>
-                <span id="close-drawer" style="font-size:24px; cursor:pointer;">×</span>
+                <h2 style="font-size:18px; font-weight:800;">${oldData ? '🐾 修改' : '🐾 记一笔'}${titles[type]}</h2>
+                <span id="close-drawer" style="font-size:24px; cursor:pointer; padding:10px;">×</span>
             </div>
-            <div class="form-group"><label>时间</label><input type="datetime-local" id="f-time" class="form-input" value="${now}"></div>
+            <div class="form-group"><label>发生时间</label><input type="datetime-local" id="f-time" class="form-input" value="${now}"></div>
             ${dynamicHTML}
-            <div class="form-group"><label>备注</label><textarea id="f-note" class="form-input" rows="2">${oldData?.note||''}</textarea></div>
+            <div class="form-group"><label>备注说明</label><textarea id="f-note" class="form-input" rows="2" placeholder="岁岁有什么想说的？">${oldData?.note||''}</textarea></div>
             <div style="display:flex; gap:12px; margin-top:20px;">
-                ${oldData ? `<button id="btn-del" class="btn" style="flex:1; background:#FEE2E2; color:#DC2626; border:none; border-radius:12px;">删除</button>` : ''}
-                <button id="btn-save" class="btn" style="flex:2; background:var(--color-primary); color:white; border:none; border-radius:12px; font-weight:700; padding:14px;">保存</button>
+                ${oldData ? `<button id="btn-del" style="flex:1; background:#FEE2E2; color:#DC2626; border:none; border-radius:12px; padding:14px; font-weight:700;">删除</button>` : ''}
+                <button id="btn-save" style="flex:2; background:var(--color-primary); color:white; border:none; border-radius:12px; font-weight:700; padding:14px;">保存记录</button>
             </div>
         </div>
     `;
@@ -194,7 +193,7 @@ function renderProfile() {
             <div class="card" style="text-align:center; padding: 40px 24px;">
                 <div style="width:80px; height:80px; background:var(--color-bg); border-radius:40px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:32px;">🐱</div>
                 <h2 style="font-size:22px; font-weight:900;">${suiSui.name}</h2>
-                <p style="color:var(--color-text-hint); font-size:13px; margin-top:6px;">已陪伴岁岁 800 天</p>
+                <p style="color:var(--color-text-hint); font-size:13px; margin-top:6px; font-weight:600;">已陪伴岁岁 800 天</p>
             </div>
             <div class="card" style="padding:0; overflow:hidden;">
                 <div id="btn-settings" style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px; cursor:pointer;">
@@ -208,7 +207,7 @@ function renderProfile() {
 }
 
 /**
- * 设置页
+ * 设置页面渲染
  */
 function renderSettings() {
     const config = getConfig();
@@ -220,27 +219,27 @@ function renderSettings() {
             </div>
             <div class="card">
                 <div style="margin-bottom:20px;">
-                    <label style="display:block; font-size:12px; font-weight:800; margin-bottom:8px; color:var(--color-text-hint);">GitHub Token</label>
+                    <label style="display:block; font-size:12px; font-weight:800; margin-bottom:8px; color:var(--color-text-hint);">GITHUB TOKEN</label>
                     <input type="password" id="i-token" class="form-input" style="width:100%; padding:14px; border:1px solid var(--color-divider); border-radius:12px;" value="${config.githubToken}">
                 </div>
                 <div style="margin-bottom:24px;">
-                    <label style="display:block; font-size:12px; font-weight:800; margin-bottom:8px; color:var(--color-text-hint);">AI Key</label>
+                    <label style="display:block; font-size:12px; font-weight:800; margin-bottom:8px; color:var(--color-text-hint);">AI KEY (CHATANYWHERE)</label>
                     <input type="password" id="i-ai" class="form-input" style="width:100%; padding:14px; border:1px solid var(--color-divider); border-radius:12px;" value="${config.aiKey}">
                 </div>
-                <button id="i-save" class="btn" style="width:100%; background:var(--color-primary); color:white; border-radius:14px; padding:16px;">保存配置</button>
+                <button id="i-save" style="width:100%; padding:16px; background:var(--color-primary); color:white; border:none; border-radius:14px; font-weight:800; font-size:15px; cursor:pointer;">保存配置</button>
             </div>
         </div>
     `;
     document.getElementById('btn-back').onclick = () => switchTab('profile');
     document.getElementById('i-save').onclick = () => {
         saveConfig({ ...config, githubToken: document.getElementById('i-token').value, aiKey: document.getElementById('i-ai').value });
-        alert('配置生效！');
+        alert('配置生效！🐾');
         switchTab('profile');
     };
 }
 
 /**
- * AI 录入抽屉
+ * 初始化 AI 录入抽屉 (修复 alert 占位)
  */
 export function initAIEntry() {
     const btn = document.getElementById('ai-entry');
@@ -248,19 +247,21 @@ export function initAIEntry() {
     btn.onclick = () => {
         const overlay = document.createElement('div');
         overlay.className = 'drawer-overlay';
-        overlay.style.position = 'fixed'; overlay.style.top = '0'; overlay.style.left = '0'; overlay.style.right = '0'; overlay.style.bottom = '0';
-        overlay.style.background = 'rgba(0,0,0,0.4)'; overlay.style.zIndex = '1000'; overlay.style.display = 'flex';
-        overlay.style.flexDirection = 'column'; overlay.style.justifyContent = 'flex-end';
+        Object.assign(overlay.style, {
+            position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
+            background: 'rgba(0,0,0,0.4)', zIndex: '2000', display: 'flex',
+            flexDirection: 'column', justifyContent: 'flex-end'
+        });
 
         overlay.innerHTML = `
-            <div class="drawer-content" style="background:white; border-top-left-radius:24px; border-top-right-radius:24px; padding:24px;">
+            <div class="drawer-content" style="background:white; border-top-left-radius:24px; border-top-right-radius:24px; padding:24px; animation: drawer-slide-up 0.3s ease-out;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                     <h2 style="font-size:18px; font-weight:800;">🐾 AI 智能记事</h2>
-                    <span id="close-ai" style="font-size:24px; cursor:pointer;">×</span>
+                    <span id="close-ai" style="font-size:24px; cursor:pointer; padding:10px;">×</span>
                 </div>
-                <textarea id="ai-input" class="form-input" rows="4" style="width:100%; padding:14px; border:1px solid var(--color-divider); border-radius:12px;" placeholder="可以说：岁岁刚刚称了体重，5.2kg"></textarea>
-                <button id="ai-parse" class="btn" style="width:100%; margin-top:16px; background:var(--color-yellow); color:#78350F; border-radius:14px; padding:16px; font-weight:800;">让 AI 帮我记</button>
-                <div id="ai-loading" style="display:none; text-align:center; margin-top:16px;">喵喵正在思考中... 🧠</div>
+                <textarea id="ai-input" class="form-input" rows="4" style="width:100%; padding:14px; border:1px solid var(--color-divider); border-radius:12px; font-size:14px;" placeholder="可以说：岁岁刚才称了体重，5.2kg"></textarea>
+                <button id="ai-parse" style="width:100%; margin-top:16px; background:var(--color-yellow); color:#78350F; border:none; border-radius:14px; padding:16px; font-weight:800; font-size:15px; cursor:pointer;">让 AI 帮我记</button>
+                <div id="ai-loading" style="display:none; text-align:center; margin-top:16px; font-size:14px;">喵喵正在思考中... 🧠</div>
                 <div id="ai-result" style="display:none; margin-top:16px; padding:16px; background:var(--color-bg); border-radius:12px; border:2px dashed var(--color-yellow);"></div>
             </div>
         `;
@@ -282,10 +283,11 @@ export function initAIEntry() {
                 loading.style.display = 'none';
                 resultDiv.style.display = 'block';
                 resultDiv.innerHTML = `
-                    <div style="font-size:13px;">
-                        <p>识别到：<strong>${res.category}</strong></p>
-                        <p>时间：${time}</p>
-                        <button id="ai-confirm" class="btn" style="width:100%; margin-top:12px; background:var(--color-primary); color:white; border-radius:8px; padding:8px;">确认存入</button>
+                    <div style="font-size:14px; line-height:1.6;">
+                        <p><strong>识别分类：</strong>${res.category}</p>
+                        <p><strong>发生时间：</strong>${time}</p>
+                        <p><strong>识别内容：</strong>${JSON.stringify(res.parsed_data)}</p>
+                        <button id="ai-confirm" style="width:100%; margin-top:16px; background:var(--color-primary); color:white; border:none; border-radius:10px; padding:12px; font-weight:700;">确认录入</button>
                     </div>
                 `;
                 document.getElementById('ai-confirm').onclick = () => {
