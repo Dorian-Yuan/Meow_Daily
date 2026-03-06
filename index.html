@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Meow_Daily - 喵喵日记</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div id="app" class="app-container">
+        <!-- 顶部导航 & Banner -->
+        <header class="header-banner">
+            <div class="ip-container">
+                <img src="assets/icons/meow-ip.png" alt="岁岁 IP">
+            </div>
+            <h1 class="logo-text">Meow Daily</h1>
+            <!-- 极简同步指示 -->
+            <div class="sync-indicator">
+                <span class="dot"></span>
+                <span>云端已就绪</span>
+            </div>
+        </header>
+
+        <!-- 主内容区 (由 JS 注入 content-wrapper) -->
+        <main id="main-content"></main>
+
+        <!-- AI 悬浮球 -->
+        <div id="ai-entry" class="ai-fab-button">AI</div>
+
+        <!-- 底部 Tabbar -->
+        <nav class="bottom-tabbar">
+            <div class="tab-item active" data-tab="home">
+                <span class="icon">🏠</span>
+                <span>首页</span>
+            </div>
+            <div class="tab-item" data-tab="records">
+                <span class="icon">📅</span>
+                <span>记录</span>
+            </div>
+            <div class="tab-item" data-tab="profile">
+                <span class="icon">🐱</span>
+                <span>我的</span>
+            </div>
+        </nav>
+    </div>
+
+    <script src="js/app.js" type="module"></script>
+</body>
+</html>

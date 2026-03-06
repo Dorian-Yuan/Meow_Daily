@@ -1,0 +1,29 @@
+name: Daily Meow Reminder
+
+on:
+  schedule:
+    # 每天早上 8:30 运行 (UTC 0:30)
+    - cron: '30 0 * * *'
+  # 允许手动在 Actions 页面点击运行测试
+  workflow_dispatch:
+
+jobs:
+  check-and-remind:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Run Daily Job Script
+      env:
+        BARK_KEY: ${{ secrets.BARK_KEY }}
+        CHATANYWHERE_API_KEY: ${{ secrets.CHATANYWHERE_API_KEY }}
+      run: |
+        npm install
+        npm run daily

@@ -1,0 +1,14 @@
+# Dependency directories
+node_modules/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Local data (optional, but keep db.json as template)
+# If you want to keep your personal db.json private, 
+# you should add it here, but we need it for the first upload as a schema.

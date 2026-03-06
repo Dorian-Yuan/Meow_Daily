@@ -1,0 +1,11 @@
+{
+  "cats": [],
+  "records": {},
+  "settings": {
+    "reminder_cycles": {
+      "nail_clipping": 14,
+      "litter_change": 30,
+      "deworming": 90
+    }
+  }
+}

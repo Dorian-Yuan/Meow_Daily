@@ -1,0 +1,35 @@
+:root {
+  /* 品牌主色系 - 回归 Spec 原色 */
+  --color-primary: #4066E0;
+  --color-primary-active: #3251B3;
+
+  /* 辅助色系 */
+  --color-orange: #F28C38;
+  --color-yellow: #FACC15;
+  --color-black: #000000;
+  --color-white: #FFFFFF;
+
+  /* 中性色系 */
+  --color-bg: #F9FAFB;
+  --color-text-title: #111827;
+  --color-text-main: #374151;
+  --color-text-hint: #6B7280;
+  --color-divider: #F3F4F6;
+
+  /* 功能色 */
+  --color-success: #10B981;
+  --color-danger: #EF4444;
+
+  /* 严格 8pt 网格系统 */
+  --spacing-8: 8px;
+  --spacing-16: 16px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+
+  /* 圆角规范 (12-16pt) */
+  --radius-12: 12px;
+  --radius-16: 16px;
+
+  /* 投影 - 极轻微软投影 (#00000010) */
+  --shadow-base: 0 2px 8px rgba(0, 0, 0, 0.06);
+}

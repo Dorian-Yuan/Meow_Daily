@@ -1,0 +1,10 @@
+{
+  "name": "meow-daily-scripts",
+  "version": "1.0.0",
+  "description": "GitHub Actions scripts for Meow_Daily",
+  "type": "module",
+  "scripts": {
+    "daily": "node .github/scripts/daily_job.js"
+  },
+  "dependencies": {}
+}

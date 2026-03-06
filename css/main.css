@@ -1,0 +1,178 @@
+/* 全局重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  line-height: 1.4;
+  padding-bottom: 100px;
+}
+
+/* Banner 区域 */
+.header-banner {
+  background-color: var(--color-primary);
+  padding: 56px 24px 40px;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+  color: var(--color-white);
+  text-align: center;
+  position: relative;
+}
+
+.header-banner .ip-container {
+  width: 90px;
+  height: 90px;
+  background-color: var(--color-white);
+  border-radius: 50%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.header-banner .ip-container img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.header-banner .logo-text {
+  font-size: 22px;
+  font-weight: 800;
+  margin-top: 16px;
+}
+
+.sync-indicator {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* 核心容器 - 控制外部留白 (16px) */
+.content-wrapper {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 快速入口 */
+.quick-actions {
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--color-white);
+  padding: 16px;
+  border-radius: var(--radius-16);
+  box-shadow: var(--shadow-base);
+}
+
+.action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  cursor: pointer;
+}
+
+.action-icon {
+  width: 44px;
+  height: 44px;
+  background-color: var(--color-bg);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.action-label {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* 卡片 - 控制内部留白 (24px) */
+.card {
+  background-color: var(--color-white);
+  border-radius: var(--radius-16);
+  padding: 24px; /* 严格 24px 留白 */
+  box-shadow: var(--shadow-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.card h3 {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text-title);
+  margin-bottom: 16px; /* 标题与内容的间隔 */
+}
+
+/* 底部 Tabbar */
+.bottom-tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background-color: var(--color-white);
+  display: flex;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.03);
+  z-index: 100;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--color-text-hint);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tab-item.active {
+  color: var(--color-primary);
+}
+
+.tab-item .icon {
+  font-size: 18px;
+}
+
+/* AI 悬浮球 */
+.ai-fab-button {
+  position: fixed;
+  right: 20px;
+  bottom: 92px;
+  width: 56px;
+  height: 56px;
+  background-color: var(--color-yellow);
+  border-radius: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: #78350F;
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.3);
+  z-index: 90;
+}

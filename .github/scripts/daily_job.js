@@ -1,0 +1,100 @@
+/**
+ * daily_job.js
+ * 每天被 GitHub Actions 触发，读取 db.json 并发送提醒
+ */
+import fs from 'fs';
+import path from 'path';
+
+// 从环境变量获取密钥 (由 GitHub Actions 注入)
+const BARK_KEY = process.env.BARK_KEY;
+const AI_KEY = process.env.CHATANYWHERE_API_KEY;
+
+const DB_PATH = path.resolve('./db.json');
+
+async function main() {
+    if (!BARK_KEY) {
+        console.error('❌ 未配置 BARK_KEY，跳过推送');
+        return;
+    }
+
+    console.log('🐾 开始读取岁岁的日记...');
+    const db = JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
+    const cat = db.cats[0];
+    const records = db.records[cat.cat_id] || {};
+    const settings = db.settings.reminder_cycles;
+
+    let reminders = [];
+    const now = new Date();
+
+    // 1. 检查日常护理 (如换猫砂、驱虫)
+    const routines = records.routine || [];
+    for (const [task, days] of Object.entries(settings)) {
+        // 找到该任务最后一次记录
+        const lastTask = routines.filter(r => r.type === task).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+        
+        if (lastTask) {
+            const lastDate = new Date(lastTask.timestamp);
+            const diffDays = Math.floor((now - lastDate) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays >= days) {
+                reminders.push(`岁岁已经 ${diffDays} 天没有【${task}】了！(周期: ${days}天)`);
+            }
+        } else {
+            reminders.push(`还没有岁岁【${task}】的记录哦，该安排了！`);
+        }
+    }
+
+    // 如果没有提醒，直接退出
+    if (reminders.length === 0) {
+        console.log('✅ 今天一切正常，岁岁没有需要操心的事。');
+        return;
+    }
+
+    console.log(`⚠️ 发现待办事项: \n${reminders.join('\n')}`);
+
+    // 2. 调用 AI 生成傲娇的宠物视角文案
+    let finalMessage = reminders.join('\n');
+    if (AI_KEY) {
+        try {
+            console.log('🧠 正在请 AI 转换成岁岁的语气...');
+            const response = await fetch('https://api.chatanywhere.tech/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${AI_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: 'gpt-3.5-turbo',
+                    messages: [
+                        { role: 'system', content: '你是一只叫“岁岁”的傲娇橘猫。你的主人设置了提醒。请根据提供的任务列表，用简短、傲娇、可爱的语气催促主人（铲屎官）去干活。字数控制在 50 字以内，多用 emoji。' },
+                        { role: 'user', content: reminders.join('\n') }
+                    ]
+                })
+            });
+            const data = await response.json();
+            finalMessage = data.choices[0].message.content;
+            console.log(`🤖 AI 润色结果: ${finalMessage}`);
+        } catch (e) {
+            console.error('❌ AI 转换失败，使用默认文案', e);
+        }
+    }
+
+    // 3. 通过 Bark 推送
+    const title = encodeURIComponent('🐾 岁岁的专属提醒');
+    const body = encodeURIComponent(finalMessage);
+    const barkUrl = `https://api.day.app/${BARK_KEY}/${title}/${body}?icon=https://raw.githubusercontent.com/yinyanghui/Meow_Daily/main/assets/icons/meow-ip.png`;
+
+    console.log('📱 正在发送 Bark 推送...');
+    try {
+        const res = await fetch(barkUrl);
+        if (res.ok) {
+            console.log('✅ 推送成功！');
+        } else {
+            console.error('❌ 推送失败', await res.text());
+        }
+    } catch (e) {
+        console.error('❌ Bark 请求异常', e);
+    }
+}
+
+main().catch(err => console.error('脚本执行崩溃:', err));
