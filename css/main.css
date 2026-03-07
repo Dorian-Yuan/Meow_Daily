@@ -18,8 +18,8 @@ body {
 .header-banner {
   background-color: var(--color-primary);
   padding: 56px 24px 40px;
-  border-bottom-left-radius: 24px;
-  border-bottom-right-radius: 24px;
+  border-bottom-left-radius: var(--radius-16);
+  border-bottom-right-radius: var(--radius-16);
   color: var(--color-white);
   text-align: center;
   position: relative;
@@ -34,7 +34,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-base);
 }
 
 .header-banner .ip-container img {
@@ -106,11 +106,11 @@ body {
   font-weight: 700;
 }
 
-/* 卡片 - 控制内部留白 (24px) */
+/* 卡片 - 控制内部留白 (16px) */
 .card {
   background-color: var(--color-white);
   border-radius: var(--radius-16);
-  padding: 24px; /* 严格 24px 留白 */
+  padding: var(--spacing-16);
   box-shadow: var(--shadow-base);
   position: relative;
   overflow: hidden;
@@ -132,10 +132,10 @@ body {
   height: 72px;
   background-color: var(--color-white);
   display: flex;
-  box-shadow: 0 -4px 12px rgba(0,0,0,0.03);
+  box-shadow: var(--shadow-base);
   z-index: 100;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  border-top-left-radius: var(--radius-16);
+  border-top-right-radius: var(--radius-16);
 }
 
 .tab-item {
@@ -173,6 +173,6 @@ body {
   justify-content: center;
   font-weight: 900;
   color: #78350F;
-  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.3);
+  box-shadow: var(--shadow-base);
   z-index: 90;
 }

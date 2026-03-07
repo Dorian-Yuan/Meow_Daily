@@ -137,7 +137,7 @@ function renderHome() {
                 ${reminders.length === 0 ?
             `<p style="font-size:14px; color:var(--color-text-main); font-weight:500;">${suiSui.name}今天表现很棒喵，近期没有待办任务！🐾</p>` :
             reminders.map(r => r.special ? `
-                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; background:linear-gradient(135deg, #FFFDF5, #FFF5F5); padding:10px; border-radius:12px;">
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; background:var(--color-bg); padding:10px; border-radius:var(--radius-12);">
                             <span style="font-size:24px;">${r.icon}</span>
                             <div style="flex:1; font-size:14px; font-weight:800; color:#E11D48;">${r.label}</div>
                         </div>
@@ -322,7 +322,7 @@ function renderRecords() {
 
         const icons = { routine: '🧹', food: '🍴', weight: '⚖️', medical: '🏥' };
         let title = r.type || (r._c === 'weight' ? '称重记录' : '记录');
-        let iconHtml = `<div style="width:44px; height:44px; background:var(--color-bg); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">${icons[r._c] || '🐾'}</div>`;
+        let iconHtml = `<div style="width:44px; height:44px; background:var(--color-bg); border-radius:var(--radius-12); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">${icons[r._c] || '🐾'}</div>`;
 
         let rightContent = '';
         if (r._c === 'weight') {
@@ -564,7 +564,7 @@ function renderProfile() {
                 <div style="width:96px; height:96px; background:var(--color-bg); border-radius:48px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:42px; border:4px solid var(--color-divider);">🐱</div>
                 <h2 style="font-size:24px; font-weight:900; color:var(--color-text-title);">${suiSui.name}</h2>
                 <div style="margin-top:12px; display:flex; justify-content:center;">
-                    <div class="tag tag-success" style="display:inline-flex; align-items:center; gap:4px; padding:6px 12px; border-radius:14px;">
+                    <div class="tag tag-success" style="display:inline-flex; align-items:center; gap:4px; padding:6px 12px; border-radius:var(--radius-12);">
                         <span style="display:flex; align-items:center;">${genderIcon}</span> 
                         <span style="font-size:12px; font-weight:700; line-height:1;">${genderText}</span>
                     </div>
@@ -734,7 +734,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.13 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.15 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
@@ -796,7 +796,7 @@ export function initAIEntry() {
                 <div class="form-group">
                     <textarea id="ai-input" class="form-input" rows="5" placeholder="可以说：岁岁昨晚8点剪了指甲，表现超级棒！"></textarea>
                 </div>
-                <button id="ai-parse" class="btn-drawer-save" style="background:var(--color-yellow); color:#78350F; box-shadow:0 4px 14px rgba(250, 204, 21, 0.4);">
+                <button id="ai-parse" class="btn-drawer-save" style="background:var(--color-yellow); color:#78350F; box-shadow:var(--shadow-soft);">
                     ✨ 让 AI 帮我记
                 </button>
                 <div id="ai-status" style="display:none; text-align:center; margin-top:20px; font-size:14px; font-weight:700; color:var(--color-primary);">
