@@ -121,8 +121,8 @@ function renderHome() {
                 <div class="action-item" data-type="medical"><div class="action-icon">🏥</div><div class="action-label">就诊</div></div>
             </section>
 
-            <div class="card" id="home-weight-card" style="cursor:pointer; display:flex; flex-direction:row; justify-content:space-between; align-items:center; padding:16px;">
-                <div style="display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:4px;">
+            <div class="card" id="home-weight-card" style="cursor:pointer; display:flex; flex-direction:row; justify-content:space-between; align-items:center; padding:var(--spacing-l);">
+                <div style="display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:var(--spacing-s);">
                     <div style="font-size:16px; font-weight:800; color:var(--color-text-title); line-height:1;">⚖️ 体重监测</div>
                     <div style="font-size:12px; color:var(--color-text-hint); font-weight:600; line-height:1;">✨ 最近记录：${weightRecords.length > 0 ? weightRecords[weightRecords.length - 1].timestamp.split(' ')[0] : '尚未记录'}</div>
                 </div>
@@ -133,19 +133,19 @@ function renderHome() {
             </div>
 
             <div class="card" style="border-left: 6px solid var(--color-yellow); background: #FFFDF5; padding-left: 20px;">
-                <h3>提醒事项</h3>
+                <h3 style="font-size:15px; font-weight:800; color:var(--color-text-title); margin:0;">提醒事项</h3>
                 ${reminders.length === 0 ?
             `<p style="font-size:14px; color:var(--color-text-main); font-weight:500;">${suiSui.name}今天表现很棒喵，近期没有待办任务！🐾</p>` :
             reminders.map(r => r.special ? `
-                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; background:var(--color-bg); padding:10px; border-radius:var(--radius-12);">
+                        <div style="display:flex; align-items:center; gap:var(--spacing-m); background:var(--color-bg); padding:10px; border-radius:var(--radius-12);">
                             <span style="font-size:24px;">${r.icon}</span>
                             <div style="flex:1; font-size:14px; font-weight:800; color:#E11D48;">${r.label}</div>
                         </div>
                     ` : `
-                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                        <div style="display:flex; align-items:center; gap:var(--spacing-m);">
                             <span style="font-size:18px;">${r.icon}</span>
                             <div style="flex:1;">
-                                <div style="font-size:14px; font-weight:800;">${r.label}</div>
+                                <div style="font-size:14px; font-weight:800; margin-bottom:var(--spacing-xs);">${r.label}</div>
                                 ${r.statusHtml}
                             </div>
                             <button class="btn profile-edit-btn" style="padding:6px 12px; margin:0; font-size:11px;" onclick="window.meow_quick_record('${r.label}')">去记录</button>
@@ -734,7 +734,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.16 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.17 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;

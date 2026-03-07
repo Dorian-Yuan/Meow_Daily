@@ -107,20 +107,11 @@ body {
 }
 
 /* 卡片 - 控制内部留白 (16px) */
-.card {
-  background-color: var(--color-white);
-  border-radius: var(--radius-16);
-  padding: var(--spacing-16);
-  box-shadow: var(--shadow-base);
-  position: relative;
-  overflow: hidden;
-}
 
 .card h3 {
   font-size: 15px;
   font-weight: 800;
   color: var(--color-text-title);
-  margin-bottom: 16px; /* 标题与内容的间隔 */
 }
 
 /* 底部 Tabbar */
