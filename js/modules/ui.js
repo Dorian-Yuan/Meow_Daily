@@ -255,6 +255,16 @@ function showEntryDrawer(category, recordId = null, presetSubtype = null) {
                 <div class="preset-tags">
                     ${presets.map(p => `<span class="preset-tag ${oldData?.type === p ? 'active' : ''}" data-val="${p}">${p}</span>`).join('')}
                 </div>
+            </div>
+            <div style="display:flex; gap:12px;">
+                <div class="form-group" style="flex:1;">
+                    <label>单价 (元/kg)</label>
+                    <input type="number" step="0.1" id="f-price" class="form-input" value="${oldData?.price_per_kg || ''}" placeholder="0.0">
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>日均食量 (g)</label>
+                    <input type="number" id="f-intake" class="form-input" value="${oldData?.daily_intake_g || ''}" placeholder="0">
+                </div>
             </div>`;
     } else if (category === 'weight') {
         dynamicHTML = `
@@ -271,6 +281,18 @@ function showEntryDrawer(category, recordId = null, presetSubtype = null) {
                 <select id="f-type" class="form-input">
                     ${types.map(t => `<option value="${t}" ${currentType === t ? 'selected' : ''}>${t}</option>`).join('')}
                 </select>
+            </div>
+            <div class="form-group">
+                <label>就诊医院</label>
+                <input type="text" id="f-hospital" class="form-input" value="${oldData?.hospital || ''}" placeholder="如：瑞鹏宠物医院">
+            </div>
+            <div class="form-group">
+                <label>症状/起因</label>
+                <input type="text" id="f-symptom" class="form-input" value="${oldData?.symptom || ''}" placeholder="如：软便/例行体检">
+            </div>
+            <div class="form-group">
+                <label>治疗方案</label>
+                <input type="text" id="f-treatment" class="form-input" value="${oldData?.treatment || ''}" placeholder="如：开益生菌/打消炎针">
             </div>
             <div class="form-group">
                 <label>花费金额 (元)</label>
@@ -334,10 +356,15 @@ function showEntryDrawer(category, recordId = null, presetSubtype = null) {
         if (category === 'food') {
             record.brand = overlay.querySelector('#f-brand').value;
             record.type = overlay.querySelector('#f-kind').value;
+            record.price_per_kg = parseFloat(overlay.querySelector('#f-price').value) || 0;
+            record.daily_intake_g = parseFloat(overlay.querySelector('#f-intake').value) || 0;
         }
         if (category === 'weight') record.weight_kg = parseFloat(overlay.querySelector('#f-weight').value) || 0;
         if (category === 'medical') {
             record.type = overlay.querySelector('#f-type').value;
+            record.hospital = overlay.querySelector('#f-hospital').value;
+            record.symptom = overlay.querySelector('#f-symptom').value;
+            record.treatment = overlay.querySelector('#f-treatment').value;
             record.cost = parseFloat(overlay.querySelector('#f-cost').value) || 0;
         }
 
@@ -528,7 +555,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.7 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.8 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
