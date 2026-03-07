@@ -170,23 +170,43 @@ function renderRecords() {
         }
 
         const icons = { routine: '🧹', food: '🍴', weight: '⚖️', medical: '🏥' };
-        const displayTitle = `${r._catLabel}-${r.type || (r._c === 'weight' ? '称重' : '记录')}`;
+        let title = r.type || (r._c === 'weight' ? '称重记录' : '记录');
+        let iconHtml = `<div style="width:44px; height:44px; background:var(--color-bg); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">${icons[r._c] || '🐾'}</div>`;
 
-        let rightValue = '';
-        if (r.weight_kg) rightValue = `${r.weight_kg}kg`;
-        else if (r.cost) rightValue = `￥${r.cost}`;
+        let rightContent = '';
+        if (r._c === 'weight') {
+            rightContent = `<div style="font-size:22px; font-weight:900; color:var(--color-primary); line-height:1;">${r.weight_kg}<span style="font-size:12px; margin-left:2px; color:var(--color-text-hint);">kg</span></div>`;
+        } else if (r._c === 'medical') {
+            rightContent = `<div style="font-size:20px; font-weight:900; color:#EF4444; line-height:1;">￥${r.cost || 0}</div>`;
+        } else if (r._c === 'food') {
+            let tags = [];
+            if (r.brand) tags.push(r.brand);
+            if (r.type) tags.push(r.type);
+            let tagStr = tags.length > 0 ? tags.join(' · ') : '未填写';
+            rightContent = `<div style="font-size:13px; font-weight:800; color:var(--color-text-title); background:var(--color-bg); padding:6px 10px; border-radius:8px;">${tagStr}</div>`;
+        } else if (r._c === 'routine') {
+            rightContent = `<div style="font-size:13px; font-weight:800; color:var(--color-primary); background:#EEF2FF; padding:6px 10px; border-radius:8px;">✨ 已完成</div>`;
+        }
+
+        let noteHtml = r.note 
+            ? `<div style="margin-top:12px; padding-top:12px; border-top:1.5px dashed var(--color-divider); font-size:13px; color:var(--color-text-hint); line-height:1.5; word-break:break-all;">${r.note}</div>` 
+            : '';
 
         html += `
-            <div class="card" style="margin-bottom:12px; padding:12px 16px; display:flex; align-items:center; gap:12px; cursor:pointer;" data-id="${r.record_id}" data-category="${r._c}">
-                <div style="width:44px; height:44px; background:var(--color-bg); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">${icons[r._c] || '🐾'}</div>
-                <div style="flex:1; min-width:0;">
-                    <div style="font-size:15px; font-weight:800; color:var(--color-text-title); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayTitle}</div>
-                    <div style="font-size:12px; color:var(--color-text-hint); margin-top:4px; font-weight:600;">${r.timestamp}</div>
+            <div class="card" style="margin-bottom:12px; padding:16px; display:flex; flex-direction:column; cursor:pointer;" data-id="${r.record_id}" data-category="${r._c}">
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                    <div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">
+                        ${iconHtml}
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-size:15px; font-weight:800; color:var(--color-text-title); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${r._catLabel} · ${title}</div>
+                            <div style="font-size:12px; color:var(--color-text-hint); margin-top:4px; font-weight:600;">${r.timestamp}</div>
+                        </div>
+                    </div>
+                    <div style="flex-shrink:0; text-align:right;">
+                        ${rightContent}
+                    </div>
                 </div>
-                <div style="text-align:right; flex-shrink:0;">
-                    ${rightValue ? `<div style="font-size:16px; font-weight:900; color:var(--color-primary); line-height:1.2;">${rightValue}</div>` : ''}
-                    ${r.note ? `<div style="font-size:11px; color:var(--color-text-hint); margin-top:${rightValue ? '4px' : '0'}; background:var(--color-bg); padding:2px 6px; border-radius:4px; display:inline-block;">📝 备注</div>` : ''}
-                </div>
+                ${noteHtml}
             </div>
         `;
     });
@@ -505,7 +525,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.5 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.6 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
