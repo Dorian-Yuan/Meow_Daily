@@ -377,7 +377,10 @@ function renderProfile() {
                 <div style="width:96px; height:96px; background:var(--color-bg); border-radius:48px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:42px; border:4px solid var(--color-divider);">🐱</div>
                 <h2 style="font-size:24px; font-weight:900; color:var(--color-text-title);">${suiSui.name}</h2>
                 <div style="margin-top:12px; display:flex; justify-content:center; gap:8px;">
-                    <span class="tag tag-success"><span>♂</span> <span>${suiSui.gender === 'neutered_male' ? '已绝育' : '男孩子'}</span></span>
+                    <div class="tag tag-success" style="display:inline-flex; align-items:center; justify-content:center; gap:4px; padding:6px 12px; height:28px; box-sizing:border-box;">
+                        <span style="font-family: system-ui, -apple-system, sans-serif; font-size:15px; line-height:1; display:flex; align-items:center; margin-bottom: 2px;">♂</span> 
+                        <span style="line-height:1; font-size:12px; font-weight:700;">${suiSui.gender === 'neutered_male' ? '已绝育' : '男孩子'}</span>
+                    </div>
                 </div>
                 <p style="color:var(--color-text-hint); font-size:14px; margin-top:20px; font-weight:700; letter-spacing:0.5px;">已陪伴${suiSui.name} ${companionDays} 天</p>
                 <div id="btn-edit-profile" class="profile-edit-btn">⚙️ 修改资料</div>
@@ -525,7 +528,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.6 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.7 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
