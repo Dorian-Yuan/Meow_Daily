@@ -31,11 +31,11 @@ const DEFAULT_DB = {
         }
     },
     settings: {
-        reminder_cycles: {
-            nail_clipping: 14,
-            litter_change: 30,
-            deworming: 90
-        }
+        reminders: [
+            { id: "rm_1", label: "剪指甲", days: 14, icon: "✂️" },
+            { id: "rm_2", label: "换猫砂", days: 30, icon: "🧹" },
+            { id: "rm_3", label: "驱虫", days: 90, icon: "💊" }
+        ]
     }
 };
 
@@ -49,6 +49,16 @@ export async function initStore() {
     if (localData) {
         try {
             dbState = JSON.parse(localData);
+            // 兼容性迁移: 升级旧版的 reminder_cycles 到 reminders
+            if (dbState.settings && dbState.settings.reminder_cycles && !dbState.settings.reminders) {
+                dbState.settings.reminders = [
+                    { id: "rm_" + Date.now() + 1, label: "剪指甲", days: dbState.settings.reminder_cycles.nail_clipping || 14, icon: "✂️" },
+                    { id: "rm_" + Date.now() + 2, label: "换猫砂", days: dbState.settings.reminder_cycles.litter_change || 30, icon: "🧹" },
+                    { id: "rm_" + Date.now() + 3, label: "驱虫", days: dbState.settings.reminder_cycles.deworming || 90, icon: "💊" }
+                ];
+                delete dbState.settings.reminder_cycles;
+                saveToLocal();
+            }
         } catch (e) {
             console.error('解析本地数据失败:', e);
             dbState = { ...DEFAULT_DB };

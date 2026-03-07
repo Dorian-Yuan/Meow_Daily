@@ -59,29 +59,67 @@ function renderHome() {
     const weightRecords = db.records[suiSui.cat_id]?.weight || [];
     const latestWeight = weightRecords.length > 0 ? [...weightRecords].sort((a, b) => b.timestamp.localeCompare(a.timestamp))[0].weight_kg : '--';
 
-    // 提醒引擎逻辑
     const reminders = [];
-    const cycles = db.settings.reminder_cycles;
     const catRecs = db.records[suiSui.cat_id] || {};
-    const now = new Date(getBJNow().replace(/-/g, '/'));
+    const todayStr = getBJNow().split(' ')[0];
+    const todayDate = new Date(todayStr.replace(/-/g, '/'));
+    const tMonth = todayDate.getMonth();
+    const tDay = todayDate.getDate();
 
-    const checkCycle = (type, label, icon) => {
-        const lastRec = (catRecs.routine || []).filter(r => r.type === label)
+    // 1. 纪念日检测
+    const birthDate = new Date(suiSui.birth_date.replace(/-/g, '/'));
+    if (birthDate.getMonth() === tMonth && birthDate.getDate() === tDay) {
+        const age = todayDate.getFullYear() - birthDate.getFullYear();
+        reminders.push({ special: true, icon: '🎂', label: `今天是${suiSui.name}的 ${age} 岁生日！` });
+    }
+
+    const adoptDate = new Date(suiSui.adoption_date.replace(/-/g, '/'));
+    if (adoptDate.getMonth() === tMonth && adoptDate.getDate() === tDay) {
+        const years = todayDate.getFullYear() - adoptDate.getFullYear();
+        if (years > 0) {
+            reminders.push({ special: true, icon: '🏠', label: `今天是${suiSui.name}到家 ${years} 周年纪念日！` });
+        }
+    }
+
+    // 2. 动态提醒事项检测
+    const customReminders = db.settings.reminders || [];
+    customReminders.forEach(rm => {
+        const lastRec = (catRecs.routine || []).filter(r => r.type === rm.label)
             .sort((a, b) => b.timestamp.localeCompare(a.timestamp))[0];
+        
+        let statusHtml = '';
+        let shouldShow = false;
+
         if (lastRec) {
-            const lastDate = new Date(lastRec.timestamp.replace(/-/g, '/'));
-            const diffDays = Math.floor((now - lastDate) / (1000 * 60 * 60 * 24));
-            if (diffDays >= cycles[type]) {
-                reminders.push({ label, days: diffDays, icon });
+            const lastDate = new Date(lastRec.timestamp.split(' ')[0].replace(/-/g, '/'));
+            const diffDays = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) {
+                statusHtml = `<div style="font-size:11px; color:var(--color-primary); font-weight:700;">✅ 今天已完成</div>`;
+                shouldShow = true;
+            } else {
+                const daysLeft = rm.days - diffDays;
+                if (daysLeft > 0 && daysLeft <= 5) { 
+                    statusHtml = `<div style="font-size:11px; color:var(--color-text-hint);">⏳ 还有 ${daysLeft} 天</div>`;
+                    shouldShow = true;
+                } else if (daysLeft <= 0) {
+                    if (daysLeft === 0) {
+                        statusHtml = `<div style="font-size:11px; color:#F59E0B; font-weight:700;">⚠️ 今天该做了！</div>`;
+                    } else {
+                        statusHtml = `<div style="font-size:11px; color:#EF4444; font-weight:700;">⚠️ 已逾期 ${Math.abs(daysLeft)} 天</div>`;
+                    }
+                    shouldShow = true;
+                }
             }
         } else {
-            reminders.push({ label, days: '?', icon, never: true });
+            statusHtml = `<div style="font-size:11px; color:var(--color-text-hint);">❓ 尚未记录过</div>`;
+            shouldShow = true;
         }
-    };
 
-    checkCycle('nail_clipping', '剪指甲', '✂️');
-    checkCycle('litter_change', '换猫砂', '🧹');
-    checkCycle('deworming', '驱虫', '💊');
+        if (shouldShow) {
+            reminders.push({ label: rm.label, icon: rm.icon || '🐾', statusHtml });
+        }
+    });
 
     mainContent.innerHTML = `
         <div class="content-wrapper">
@@ -104,13 +142,18 @@ function renderHome() {
             <div class="card" style="border-left: 6px solid var(--color-yellow); background: #FFFDF5; padding-left: 20px;">
                 <h3>提醒事项</h3>
                 ${reminders.length === 0 ?
-            `<p style="font-size:14px; color:var(--color-text-main); font-weight:500;">${suiSui.name}今天表现很棒喵，暂时没有待办任务！🐾</p>` :
-            reminders.map(r => `
+            `<p style="font-size:14px; color:var(--color-text-main); font-weight:500;">${suiSui.name}今天表现很棒喵，近期没有待办任务！🐾</p>` :
+            reminders.map(r => r.special ? `
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; background:linear-gradient(135deg, #FFFDF5, #FFF5F5); padding:10px; border-radius:12px;">
+                            <span style="font-size:24px;">${r.icon}</span>
+                            <div style="flex:1; font-size:14px; font-weight:800; color:#E11D48;">${r.label}</div>
+                        </div>
+                    ` : `
                         <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
                             <span style="font-size:18px;">${r.icon}</span>
                             <div style="flex:1;">
-                                <div style="font-size:14px; font-weight:800;">该${r.label}了</div>
-                                <div style="font-size:11px; color:var(--color-text-hint);">距离上次已过 ${r.days} 天</div>
+                                <div style="font-size:14px; font-weight:800;">${r.label}</div>
+                                ${r.statusHtml}
                             </div>
                             <button class="btn profile-edit-btn" style="padding:6px 12px; margin:0; font-size:11px;" onclick="window.meow_quick_record('${r.label}')">去记录</button>
                         </div>
@@ -532,6 +575,9 @@ function showProfileDrawer() {
  */
 function renderSettings() {
     const config = getConfig();
+    const db = getDB();
+    const reminders = db.settings.reminders || [];
+
     mainContent.innerHTML = `
         <div class="content-wrapper">
             <div style="display:flex; align-items:center; margin-bottom:12px; gap:8px;">
@@ -540,6 +586,22 @@ function renderSettings() {
             </div>
             
             <div class="card">
+                <h3 style="margin-bottom:12px;">⏰ 提醒事项管理</h3>
+                <div id="reminder-list" style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+                    ${reminders.map((rm, idx) => `
+                        <div style="display:flex; align-items:center; gap:8px; background:var(--color-bg); padding:8px 12px; border-radius:8px;">
+                            <span>${rm.icon}</span>
+                            <div style="flex:1; font-size:13px; font-weight:700;">${rm.label}</div>
+                            <div style="font-size:12px; color:var(--color-text-hint);">${rm.days} 天</div>
+                            <button class="btn-del-rm" data-idx="${idx}" style="background:none; border:none; color:#EF4444; font-size:16px; cursor:pointer; padding:0 4px;">×</button>
+                        </div>
+                    `).join('')}
+                </div>
+                <button id="btn-add-rm" class="btn profile-edit-btn" style="width:100%; margin:0; justify-content:center;">+ 添加新提醒</button>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom:12px;">🔗 云端与 AI 配置</h3>
                 <div class="form-group">
                     <label>GITHUB REPO (USER/REPO)</label>
                     <input type="text" id="i-repo" class="form-input" value="${config.githubRepo || ''}" placeholder="例如: yourname/meow_daily">
@@ -564,12 +626,36 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.9 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.10 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
 
     document.getElementById('btn-back').onclick = () => switchTab('profile');
+    
+    document.querySelectorAll('.btn-del-rm').forEach(btn => {
+        btn.onclick = () => {
+            if (confirm('确定删除该提醒吗？')) {
+                db.settings.reminders.splice(btn.dataset.idx, 1);
+                setDB(db);
+                renderSettings();
+            }
+        };
+    });
+
+    document.getElementById('btn-add-rm').onclick = () => {
+        const label = prompt('请输入提醒事项名称 (如: 梳毛)');
+        if (!label) return;
+        const daysStr = prompt('请输入提醒间隔天数 (如: 7)');
+        const days = parseInt(daysStr);
+        if (isNaN(days) || days <= 0) return alert('请输入有效的天数！');
+        const icon = prompt('请输入一个 Emoji 图标 (如: 🛁)', '🐾') || '🐾';
+        
+        db.settings.reminders.push({ id: 'rm_' + Date.now(), label, days, icon });
+        setDB(db);
+        renderSettings();
+    };
+
     document.getElementById('i-save').onclick = () => {
         const newCfg = {
             githubRepo: document.getElementById('i-repo').value.trim(),

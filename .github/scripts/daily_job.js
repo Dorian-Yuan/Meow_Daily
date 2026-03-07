@@ -21,26 +21,63 @@ async function main() {
     const db = JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
     const cat = db.cats[0];
     const records = db.records[cat.cat_id] || {};
-    const settings = db.settings.reminder_cycles;
 
     let reminders = [];
     const now = new Date();
+    
+    // 北京时间适配
+    const todayStr = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Shanghai' })).toISOString().split('T')[0];
+    const todayDate = new Date(todayStr.replace(/-/g, '/'));
+    const tMonth = todayDate.getMonth();
+    const tDay = todayDate.getDate();
 
-    // 1. 检查日常护理 (如换猫砂、驱虫)
+    // 0. 纪念日检测
+    if (cat.birth_date) {
+        const birthDate = new Date(cat.birth_date.replace(/-/g, '/'));
+        if (birthDate.getMonth() === tMonth && birthDate.getDate() === tDay) {
+            const age = todayDate.getFullYear() - birthDate.getFullYear();
+            reminders.push(`今天是岁岁的 ${age} 岁生日！快准备好吃的罐罐！🎂`);
+        }
+    }
+
+    if (cat.adoption_date) {
+        const adoptDate = new Date(cat.adoption_date.replace(/-/g, '/'));
+        if (adoptDate.getMonth() === tMonth && adoptDate.getDate() === tDay) {
+            const years = todayDate.getFullYear() - adoptDate.getFullYear();
+            if (years > 0) {
+                reminders.push(`今天是岁岁来到家里的第 ${years} 周年纪念日！🏠`);
+            }
+        }
+    }
+
+    // 1. 检查日常护理动态提醒
     const routines = records.routine || [];
-    for (const [task, days] of Object.entries(settings)) {
+    const customReminders = db.settings.reminders || [];
+    
+    // 兼容旧版 reminder_cycles
+    if (customReminders.length === 0 && db.settings.reminder_cycles) {
+        for (const [key, days] of Object.entries(db.settings.reminder_cycles)) {
+            let label = key;
+            if (key === 'nail_clipping') label = '剪指甲';
+            if (key === 'litter_change') label = '换猫砂';
+            if (key === 'deworming') label = '驱虫';
+            customReminders.push({ label, days });
+        }
+    }
+
+    for (const rm of customReminders) {
         // 找到该任务最后一次记录
-        const lastTask = routines.filter(r => r.type === task).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+        const lastTask = routines.filter(r => r.type === rm.label).sort((a, b) => new Date(b.timestamp.replace(/-/g, '/')) - new Date(a.timestamp.replace(/-/g, '/')))[0];
         
         if (lastTask) {
-            const lastDate = new Date(lastTask.timestamp);
-            const diffDays = Math.floor((now - lastDate) / (1000 * 60 * 60 * 24));
+            const lastDate = new Date(lastTask.timestamp.split(' ')[0].replace(/-/g, '/'));
+            const diffDays = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
             
-            if (diffDays >= days) {
-                reminders.push(`岁岁已经 ${diffDays} 天没有【${task}】了！(周期: ${days}天)`);
+            if (diffDays >= rm.days) {
+                reminders.push(`岁岁已经 ${diffDays} 天没有【${rm.label}】了！(设定周期: ${rm.days}天)`);
             }
         } else {
-            reminders.push(`还没有岁岁【${task}】的记录哦，该安排了！`);
+            reminders.push(`还没有岁岁【${rm.label}】的记录哦，该安排了！`);
         }
     }
 
@@ -66,14 +103,16 @@ async function main() {
                 body: JSON.stringify({
                     model: 'gpt-3.5-turbo',
                     messages: [
-                        { role: 'system', content: '你是一只叫“岁岁”的傲娇橘猫。你的主人设置了提醒。请根据提供的任务列表，用简短、傲娇、可爱的语气催促主人（铲屎官）去干活。字数控制在 50 字以内，多用 emoji。' },
+                        { role: 'system', content: '你是一只叫“岁岁”的傲娇小猫。你的主人设置了提醒。请根据提供的任务列表，用简短、傲娇、可爱的语气催促主人（铲屎官）去干活。如果今天是你的生日或纪念日，记得要礼物！字数控制在 60 字以内，多用 emoji。' },
                         { role: 'user', content: reminders.join('\n') }
                     ]
                 })
             });
             const data = await response.json();
-            finalMessage = data.choices[0].message.content;
-            console.log(`🤖 AI 润色结果: ${finalMessage}`);
+            if (data.choices && data.choices[0]) {
+                finalMessage = data.choices[0].message.content;
+                console.log(`🤖 AI 润色结果: ${finalMessage}`);
+            }
         } catch (e) {
             console.error('❌ AI 转换失败，使用默认文案', e);
         }
