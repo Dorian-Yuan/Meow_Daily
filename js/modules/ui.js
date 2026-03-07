@@ -172,16 +172,20 @@ function renderRecords() {
         const icons = { routine: '🧹', food: '🍴', weight: '⚖️', medical: '🏥' };
         const displayTitle = `${r._catLabel}-${r.type || (r._c === 'weight' ? '称重' : '记录')}`;
 
+        let rightValue = '';
+        if (r.weight_kg) rightValue = `${r.weight_kg}kg`;
+        else if (r.cost) rightValue = `￥${r.cost}`;
+
         html += `
-            <div class="card" style="margin-bottom:8px; padding:16px; display:flex; align-items:center; gap:16px; cursor:pointer;" data-id="${r.record_id}" data-category="${r._c}">
-                <div style="width:48px; height:48px; background:var(--color-bg); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px;">${icons[r._c] || '🐾'}</div>
-                <div style="flex:1;">
-                    <div style="font-size:14px; font-weight:800; color:var(--color-text-title);">${displayTitle}</div>
-                    <div style="font-size:11px; color:var(--color-text-hint); margin-top:4px; font-weight:600;">${r.timestamp}</div>
+            <div class="card" style="margin-bottom:12px; padding:12px 16px; display:flex; align-items:center; gap:12px; cursor:pointer;" data-id="${r.record_id}" data-category="${r._c}">
+                <div style="width:44px; height:44px; background:var(--color-bg); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">${icons[r._c] || '🐾'}</div>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-size:15px; font-weight:800; color:var(--color-text-title); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${displayTitle}</div>
+                    <div style="font-size:12px; color:var(--color-text-hint); margin-top:4px; font-weight:600;">${r.timestamp}</div>
                 </div>
-                <div style="text-align:right;">
-                    <div style="font-size:16px; font-weight:900; color:var(--color-primary);">${r.weight_kg ? r.weight_kg + 'kg' : (r.cost ? '￥' + r.cost : '')}</div>
-                    ${r.note ? `<div style="font-size:10px; color:var(--color-text-hint); margin-top:2px;">有备注</div>` : ''}
+                <div style="text-align:right; flex-shrink:0;">
+                    ${rightValue ? `<div style="font-size:16px; font-weight:900; color:var(--color-primary); line-height:1.2;">${rightValue}</div>` : ''}
+                    ${r.note ? `<div style="font-size:11px; color:var(--color-text-hint); margin-top:${rightValue ? '4px' : '0'}; background:var(--color-bg); padding:2px 6px; border-radius:4px; display:inline-block;">📝 备注</div>` : ''}
                 </div>
             </div>
         `;
@@ -501,7 +505,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.4 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.5 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
