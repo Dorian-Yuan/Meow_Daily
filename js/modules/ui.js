@@ -560,19 +560,22 @@ function renderProfile() {
 
     mainContent.innerHTML = `
         <div class="content-wrapper">
-            <div class="card" style="text-align:center; padding: 48px 24px 32px;">
-                <div style="width:96px; height:96px; background:var(--color-bg); border-radius:48px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:42px; border:4px solid var(--color-divider);">🐱</div>
-                <h2 style="font-size:24px; font-weight:900; color:var(--color-text-title);">${suiSui.name}</h2>
-                <div style="margin-top:12px; display:flex; justify-content:center;">
-                    <div class="tag tag-success" style="display:inline-flex; align-items:center; gap:4px; padding:6px 12px; border-radius:var(--radius-12);">
-                        <span style="display:flex; align-items:center;">${genderIcon}</span> 
-                        <span style="font-size:12px; font-weight:700; line-height:1;">${genderText}</span>
+            <div class="card" style="display:flex; flex-direction:row; align-items:center; gap:var(--spacing-l); padding:var(--spacing-l);">
+                <div style="width:72px; height:72px; background:var(--color-bg); border-radius:36px; display:flex; align-items:center; justify-content:center; font-size:32px; border:3px solid var(--color-divider); flex-shrink:0;">🐱</div>
+                <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:var(--spacing-xs);">
+                    <div style="display:flex; align-items:center; gap:var(--spacing-s);">
+                        <h2 style="font-size:20px; font-weight:900; color:var(--color-text-title); line-height:1;">${suiSui.name}</h2>
+                        <div class="tag tag-success" style="display:inline-flex; align-items:center; gap:4px; padding:4px 8px; border-radius:var(--radius-12);">
+                            <span style="display:flex; align-items:center;">${genderIcon}</span> 
+                            <span style="font-size:11px; font-weight:700; line-height:1;">${genderText}</span>
+                        </div>
                     </div>
+                    <p style="color:var(--color-text-hint); font-size:13px; font-weight:700; line-height:1; margin-top:4px;">陪伴第 ${companionDays} 天</p>
                 </div>
-                <p style="color:var(--color-text-hint); font-size:14px; margin-top:20px; font-weight:700; letter-spacing:0.5px;">已陪伴${suiSui.name} ${companionDays} 天</p>
-                <div id="btn-edit-profile" class="profile-edit-btn">⚙️ 修改资料</div>
             </div>
             
+            <button id="btn-edit-profile" class="btn profile-edit-btn" style="width:100%; margin:0; justify-content:center;">⚙️ 修改资料</button>
+
             <div class="card" style="padding:12px 24px;">
                 <div class="milestone-item">
                     <div class="milestone-icon">🎂</div>
@@ -734,7 +737,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.17 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.18 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
