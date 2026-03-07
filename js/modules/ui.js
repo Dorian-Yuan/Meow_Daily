@@ -121,16 +121,14 @@ function renderHome() {
                 <div class="action-item" data-type="medical"><div class="action-icon">🏥</div><div class="action-label">就诊</div></div>
             </section>
 
-            <div class="card" id="home-weight-card" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                    <div style="font-size:16px; font-weight:800; color:var(--color-text-title); margin-bottom:4px; display:flex; align-items:center; gap:6px;">⚖️ 体重监测</div>
+            <div class="card" id="home-weight-card" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:16px;">
+                <div style="display:flex; flex-direction:column; gap:4px;">
+                    <div style="font-size:16px; font-weight:800; color:var(--color-text-title); display:flex; align-items:center; gap:6px;">⚖️ 体重监测</div>
                     <div style="font-size:12px; color:var(--color-text-hint); font-weight:600;">✨ 最近记录：${weightRecords.length > 0 ? weightRecords[weightRecords.length - 1].timestamp.split(' ')[0] : '尚未记录'}</div>
                 </div>
-                <div style="text-align:right;">
-                    <div style="display:flex; align-items:baseline; justify-content:flex-end; gap:2px;">
-                        <span style="font-size:32px; font-weight:900; color:var(--color-primary); line-height:1;">${latestWeight}</span>
-                        <span style="font-size:14px; color:var(--color-text-hint); font-weight:700;">kg</span>
-                    </div>
+                <div style="display:flex; align-items:baseline; gap:2px;">
+                    <span style="font-size:32px; font-weight:900; color:var(--color-primary); line-height:1;">${latestWeight}</span>
+                    <span style="font-size:14px; color:var(--color-text-hint); font-weight:700;">kg</span>
                 </div>
             </div>
 
