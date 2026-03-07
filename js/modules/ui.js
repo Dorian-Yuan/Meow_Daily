@@ -353,7 +353,7 @@ function renderProfile() {
                 <div style="width:96px; height:96px; background:var(--color-bg); border-radius:48px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:42px; border:4px solid var(--color-divider);">🐱</div>
                 <h2 style="font-size:24px; font-weight:900; color:var(--color-text-title);">${suiSui.name}</h2>
                 <div style="margin-top:12px; display:flex; justify-content:center; gap:8px;">
-                    <span class="tag tag-success">♂ ${suiSui.gender === 'neutered_male' ? '已绝育' : '男孩子'}</span>
+                    <span class="tag tag-success"><span>♂</span> <span>${suiSui.gender === 'neutered_male' ? '已绝育' : '男孩子'}</span></span>
                 </div>
                 <p style="color:var(--color-text-hint); font-size:14px; margin-top:20px; font-weight:700; letter-spacing:0.5px;">已陪伴${suiSui.name} ${companionDays} 天</p>
                 <div id="btn-edit-profile" class="profile-edit-btn">⚙️ 修改资料</div>
@@ -372,6 +372,13 @@ function renderProfile() {
                     <div style="flex:1;">
                         <div style="font-size:14px; font-weight:800;">来到家里</div>
                         <div style="font-size:12px; color:var(--color-text-hint);">${suiSui.adoption_date}</div>
+                    </div>
+                </div>
+                <div class="milestone-item">
+                    <div class="milestone-icon">💊</div>
+                    <div style="flex:1;">
+                        <div style="font-size:14px; font-weight:800;">绝育时间</div>
+                        <div style="font-size:12px; color:var(--color-text-hint);">${suiSui.neutering_date || '尚未填写'}</div>
                     </div>
                 </div>
             </div>
@@ -429,6 +436,10 @@ function showProfileDrawer() {
                 <label>来到家里</label>
                 <input type="date" id="p-adoption" class="form-input" value="${suiSui.adoption_date}">
             </div>
+            <div class="form-group">
+                <label>绝育时间</label>
+                <input type="date" id="p-neutering" class="form-input" value="${suiSui.neutering_date || ''}">
+            </div>
             <button id="p-save" class="btn-drawer-save" style="margin-top:20px;">更新资料</button>
         </div>
     `;
@@ -443,7 +454,8 @@ function showProfileDrawer() {
             name: overlay.querySelector('#p-name').value,
             gender: overlay.querySelector('#p-gender').value,
             birth_date: overlay.querySelector('#p-birth').value,
-            adoption_date: overlay.querySelector('#p-adoption').value
+            adoption_date: overlay.querySelector('#p-adoption').value,
+            neutering_date: overlay.querySelector('#p-neutering').value
         };
         updateCatProfile(suiSui.cat_id, updates);
         showToast('资料已更新 🐾', 'success');

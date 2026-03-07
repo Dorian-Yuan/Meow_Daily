@@ -18,7 +18,8 @@ const DEFAULT_DB = {
             name: "岁岁",
             gender: "neutered_male",
             birth_date: "2021-05-20",
-            adoption_date: "2021-08-01"
+            adoption_date: "2021-08-01",
+            neutering_date: "2021-12-15"
         }
     ],
     records: {
@@ -151,8 +152,9 @@ export function setDB(newDB) {
  * cats/settings 以本地为准，records 取并集 (同 ID 保留本地)
  */
 export function mergeDB(localDB, remoteDB) {
+    if (!remoteDB || !remoteDB.records) return localDB;
     const merged = JSON.parse(JSON.stringify(localDB));
-    for (const catId of Object.keys(remoteDB.records || {})) {
+    for (const catId of Object.keys(remoteDB.records)) {
         if (!merged.records[catId]) {
             merged.records[catId] = { routine: [], food: [], weight: [], medical: [] };
         }
