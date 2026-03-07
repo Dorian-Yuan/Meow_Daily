@@ -619,33 +619,43 @@ export function initSyncButton() {
     btn.onclick = async () => {
         const config = getConfig();
         if (!config.githubToken || !config.githubRepo) {
-            showToast('请先配置 GitHub Token 与 仓库', 'error');
+            showToast('请先在设置中配置 GitHub Token 和 仓库', 'error');
             switchTab('settings');
             return;
         }
+
+        if (btn.classList.contains('syncing')) return; // 防止重复点击
 
         btn.classList.add('syncing');
         btn.querySelector('.sync-text').textContent = '同步中...';
 
         try {
-            // 1. Pull
+            console.log('🐾 开始云端同步...');
+            
+            // 1. 获取云端数据 (Pull)
             const remote = await fetchCloudDB(config);
+            console.log('✅ 云端拉取完成，SHA:', remote.sha);
 
-            // 2. Merge
-            const localDB = getDB();
+            // 2. 合并数据 (Merge)
+            const localDB = JSON.parse(JSON.stringify(getDB())); // 确保本地数据是最新的深拷贝
             const mergedDB = mergeDB(localDB, remote.db);
+            console.log('✅ 数据合并完成');
 
-            // 3. Push
+            // 3. 推送到云端 (Push)
             await pushCloudDB(config, mergedDB, remote.sha);
+            console.log('✅ 云端推送成功');
 
-            // 4. Update Local
+            // 4. 更新本地状态 (Update)
             setDB(mergedDB);
-
+            
             showToast('云端同步成功 🐾', 'success');
-            // 刷新当前页
-            switchTab(document.querySelector('.tab-item.active').dataset.tab);
+            
+            // 刷新当前 Tab 视图
+            const activeTab = document.querySelector('.tab-item.active');
+            if (activeTab) switchTab(activeTab.dataset.tab);
+
         } catch (e) {
-            console.error(e);
+            console.error('❌ 同步过程中出错:', e);
             showToast(e.message, 'error');
         } finally {
             btn.classList.remove('syncing');
