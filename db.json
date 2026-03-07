@@ -1,6 +1,34 @@
 {
-  "cats": [],
-  "records": {},
+  "cats": [
+    {
+      "cat_id": "c_sui_sui",
+      "name": "岁岁",
+      "gender": "male",
+      "birth_date": "2025-07-27",
+      "adoption_date": "2025-11-02"
+    }
+  ],
+  "records": {
+    "c_sui_sui": {
+      "routine": [
+        {
+          "record_id": "r_1772847758437",
+          "timestamp": "2026-03-02 20:42",
+          "note": "",
+          "type": "剪指甲"
+        },
+        {
+          "record_id": "r_1772847791149",
+          "timestamp": "2026-03-06 01:42",
+          "note": "",
+          "type": "换猫砂"
+        }
+      ],
+      "food": [],
+      "weight": [],
+      "medical": []
+    }
+  },
   "settings": {
     "reminder_cycles": {
       "nail_clipping": 14,
