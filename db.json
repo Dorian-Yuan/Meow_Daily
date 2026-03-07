@@ -52,10 +52,19 @@
     }
   },
   "settings": {
-    "reminder_cycles": {
-      "nail_clipping": 14,
-      "litter_change": 30,
-      "deworming": 90
-    }
+    "reminders": [
+      {
+        "id": "rm_1772863238560",
+        "label": "剪指甲",
+        "days": 15,
+        "icon": "✂️"
+      },
+      {
+        "id": "rm_1772863251066",
+        "label": "换猫砂",
+        "days": 15,
+        "icon": "💩"
+      }
+    ]
   }
 }
