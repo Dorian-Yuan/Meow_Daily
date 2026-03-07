@@ -560,7 +560,7 @@ function renderProfile() {
 
     mainContent.innerHTML = `
         <div class="content-wrapper">
-            <div class="card" style="display:flex; flex-direction:row; align-items:center; gap:var(--spacing-l); padding:var(--spacing-l);">
+            <div class="card" id="profile-card" style="display:flex; flex-direction:row; align-items:center; gap:var(--spacing-l); padding:var(--spacing-l); cursor:pointer;">
                 <div style="width:72px; height:72px; background:var(--color-bg); border-radius:36px; display:flex; align-items:center; justify-content:center; font-size:32px; border:3px solid var(--color-divider); flex-shrink:0;">🐱</div>
                 <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:var(--spacing-xs);">
                     <div style="display:flex; align-items:center; gap:var(--spacing-s);">
@@ -572,9 +572,8 @@ function renderProfile() {
                     </div>
                     <p style="color:var(--color-text-hint); font-size:13px; font-weight:700; line-height:1; margin-top:4px;">陪伴第 ${companionDays} 天</p>
                 </div>
+                <div style="color:var(--color-text-hint); font-size:12px;">⚙️</div>
             </div>
-            
-            <button id="btn-edit-profile" class="btn profile-edit-btn" style="width:100%; margin:0; justify-content:center;">⚙️ 修改资料</button>
 
             <div class="card" style="padding:12px 24px;">
                 <div class="milestone-item">
@@ -613,7 +612,7 @@ function renderProfile() {
     `;
 
     document.getElementById('btn-settings').onclick = () => switchTab('settings');
-    document.getElementById('btn-edit-profile').onclick = () => showProfileDrawer();
+    document.getElementById('profile-card').onclick = () => showProfileDrawer();
 }
 
 /**
@@ -737,7 +736,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.18 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.19 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
