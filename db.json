@@ -1,6 +1,21 @@
 {
-  "cats": [],
-  "records": {},
+  "cats": [
+    {
+      "cat_id": "c_sui_sui",
+      "name": "岁岁",
+      "gender": "neutered_male",
+      "birth_date": "2025-07-27",
+      "adoption_date": "2025-11-02"
+    }
+  ],
+  "records": {
+    "c_sui_sui": {
+      "routine": [],
+      "food": [],
+      "weight": [],
+      "medical": []
+    }
+  },
   "settings": {
     "reminder_cycles": {
       "nail_clipping": 14,
