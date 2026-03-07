@@ -88,7 +88,6 @@ function renderHome() {
             .sort((a, b) => b.timestamp.localeCompare(a.timestamp))[0];
         
         let statusHtml = '';
-        let shouldShow = false;
 
         if (lastRec) {
             const lastDate = new Date(lastRec.timestamp.split(' ')[0].replace(/-/g, '/'));
@@ -96,29 +95,21 @@ function renderHome() {
             
             if (diffDays === 0) {
                 statusHtml = `<div style="font-size:11px; color:var(--color-primary); font-weight:700;">✅ 今天已完成</div>`;
-                shouldShow = true;
             } else {
                 const daysLeft = rm.days - diffDays;
-                if (daysLeft > 0 && daysLeft <= 5) { 
+                if (daysLeft > 0) { 
                     statusHtml = `<div style="font-size:11px; color:var(--color-text-hint);">⏳ 还有 ${daysLeft} 天</div>`;
-                    shouldShow = true;
-                } else if (daysLeft <= 0) {
-                    if (daysLeft === 0) {
-                        statusHtml = `<div style="font-size:11px; color:#F59E0B; font-weight:700;">⚠️ 今天该做了！</div>`;
-                    } else {
-                        statusHtml = `<div style="font-size:11px; color:#EF4444; font-weight:700;">⚠️ 已逾期 ${Math.abs(daysLeft)} 天</div>`;
-                    }
-                    shouldShow = true;
+                } else if (daysLeft === 0) {
+                    statusHtml = `<div style="font-size:11px; color:#F59E0B; font-weight:700;">⚠️ 今天该做了！</div>`;
+                } else {
+                    statusHtml = `<div style="font-size:11px; color:#EF4444; font-weight:700;">⚠️ 已逾期 ${Math.abs(daysLeft)} 天</div>`;
                 }
             }
         } else {
             statusHtml = `<div style="font-size:11px; color:var(--color-text-hint);">❓ 尚未记录过</div>`;
-            shouldShow = true;
         }
 
-        if (shouldShow) {
-            reminders.push({ label: rm.label, icon: rm.icon || '🐾', statusHtml });
-        }
+        reminders.push({ label: rm.label, icon: rm.icon || '🐾', statusHtml });
     });
 
     mainContent.innerHTML = `
