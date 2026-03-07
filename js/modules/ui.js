@@ -344,7 +344,7 @@ function renderRecords() {
             : '';
 
         html += `
-            <div class="card" style="margin-bottom:12px; padding:16px; display:flex; flex-direction:column; cursor:pointer;" data-id="${r.record_id}" data-category="${r._c}">
+            <div class="card" style="padding:16px; display:flex; flex-direction:column; cursor:pointer;" data-id="${r.record_id}" data-category="${r._c}">
                 <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
                     <div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">
                         ${iconHtml}
@@ -572,7 +572,6 @@ function renderProfile() {
                     </div>
                     <p style="color:var(--color-text-hint); font-size:13px; font-weight:700; line-height:1; margin-top:4px;">陪伴第 ${companionDays} 天</p>
                 </div>
-                <div style="color:var(--color-text-hint); font-size:12px;">⚙️</div>
             </div>
 
             <div class="card" style="padding:12px 24px;">
@@ -736,7 +735,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.19 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.20 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
