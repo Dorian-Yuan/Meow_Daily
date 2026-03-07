@@ -54,8 +54,20 @@ export async function initStore() {
             dbState = { ...DEFAULT_DB };
         }
     } else {
-        // 首次使用，初始化示例
-        dbState = { ...DEFAULT_DB };
+        // 首次使用或换新浏览器，尝试拉取静态托管的 db.json
+        try {
+            const res = await fetch('./db.json?t=' + Date.now());
+            if (res.ok) {
+                const cloudData = await res.json();
+                dbState = cloudData;
+                console.log('🐾 成功从公开环境拉取基础数据');
+            } else {
+                throw new Error('db.json 返回非 200 状态');
+            }
+        } catch (e) {
+            console.log('🐾 无法拉取公开数据，使用默认模板初始化', e);
+            dbState = { ...DEFAULT_DB };
+        }
         saveToLocal();
     }
     return dbState;
