@@ -123,15 +123,14 @@ function renderHome() {
 
             <div class="card" id="home-weight-card" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <div style="font-size:14px; font-weight:800; color:var(--color-text-title); margin-bottom:8px; display:flex; align-items:center; gap:6px;">⚖️ 体重监测</div>
-                    <div style="display:flex; align-items:baseline; gap:4px;">
-                        <span style="font-size:36px; font-weight:900; color:var(--color-primary); line-height:1;">${latestWeight}</span>
+                    <div style="font-size:16px; font-weight:800; color:var(--color-text-title); margin-bottom:4px; display:flex; align-items:center; gap:6px;">⚖️ 体重监测</div>
+                    <div style="font-size:12px; color:var(--color-text-hint); font-weight:600;">✨ 最近记录：${weightRecords.length > 0 ? weightRecords[weightRecords.length - 1].timestamp.split(' ')[0] : '尚未记录'}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="display:flex; align-items:baseline; justify-content:flex-end; gap:2px;">
+                        <span style="font-size:32px; font-weight:900; color:var(--color-primary); line-height:1;">${latestWeight}</span>
                         <span style="font-size:14px; color:var(--color-text-hint); font-weight:700;">kg</span>
                     </div>
-                    <p style="font-size:11px; color:var(--color-text-hint); margin-top:8px;">✨ 最近记录：${weightRecords.length > 0 ? weightRecords[weightRecords.length - 1].timestamp.split(' ')[0] : '尚未记录'}</p>
-                </div>
-                <div style="width:56px; height:56px; background:#EEF2FF; border-radius:16px; display:flex; align-items:center; justify-content:center;">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                 </div>
             </div>
 
@@ -737,7 +736,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.12 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.13 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
