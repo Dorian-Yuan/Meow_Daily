@@ -3,9 +3,10 @@
     {
       "cat_id": "c_sui_sui",
       "name": "岁岁",
-      "gender": "male",
+      "gender": "neutered_male",
       "birth_date": "2025-07-27",
-      "adoption_date": "2025-11-02"
+      "adoption_date": "2025-11-02",
+      "neutering_date": "2026-03-07"
     }
   ],
   "records": {
