@@ -398,15 +398,24 @@ function renderProfile() {
     const now = new Date(getBJNow().split(' ')[0].replace(/-/g, '/'));
     const companionDays = Math.floor((now - adoptionDate) / (1000 * 60 * 60 * 24)) + 1;
 
+    let genderIcon = suiSui.gender.includes('female') 
+        ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><circle cx="12" cy="10" r="7"></circle><line x1="12" y1="17" x2="12" y2="23"></line><line x1="9" y1="20" x2="15" y2="20"></line></svg>`
+        : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><circle cx="10" cy="14" r="7"></circle><line x1="15" y1="9" x2="21" y2="3"></line><polyline points="15 3 21 3 21 9"></polyline></svg>`;
+    
+    let genderText = '未绝育';
+    if (suiSui.gender === 'neutered_male' || suiSui.gender === 'neutered_female') {
+        genderText = '已绝育';
+    }
+
     mainContent.innerHTML = `
         <div class="content-wrapper">
             <div class="card" style="text-align:center; padding: 48px 24px 32px;">
                 <div style="width:96px; height:96px; background:var(--color-bg); border-radius:48px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:42px; border:4px solid var(--color-divider);">🐱</div>
                 <h2 style="font-size:24px; font-weight:900; color:var(--color-text-title);">${suiSui.name}</h2>
-                <div style="margin-top:12px; display:flex; justify-content:center; gap:8px;">
-                    <div class="tag tag-success" style="display:inline-flex; align-items:center; justify-content:center; gap:4px; padding:6px 12px; height:28px; box-sizing:border-box;">
-                        <span style="font-family: system-ui, -apple-system, sans-serif; font-size:15px; line-height:1; display:flex; align-items:center; margin-bottom: 2px;">♂</span> 
-                        <span style="line-height:1; font-size:12px; font-weight:700;">${suiSui.gender === 'neutered_male' ? '已绝育' : '男孩子'}</span>
+                <div style="margin-top:12px; display:flex; justify-content:center;">
+                    <div class="tag tag-success" style="display:inline-flex; align-items:center; gap:4px; padding:6px 12px; border-radius:14px;">
+                        <span style="display:flex; align-items:center;">${genderIcon}</span> 
+                        <span style="font-size:12px; font-weight:700; line-height:1;">${genderText}</span>
                     </div>
                 </div>
                 <p style="color:var(--color-text-hint); font-size:14px; margin-top:20px; font-weight:700; letter-spacing:0.5px;">已陪伴${suiSui.name} ${companionDays} 天</p>
@@ -555,7 +564,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.8 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.9 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
