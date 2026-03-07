@@ -317,7 +317,7 @@ function renderRecords() {
         const month = r.timestamp.slice(0, 7);
         if (month !== lastMonth) {
             lastMonth = month;
-            html += `<h2 style="font-size:15px; font-weight:900; margin: 8px 12px 12px; color:var(--color-text-hint);">${month.replace('-', '年')}月</h2>`;
+            html += `<h2 style="font-size:14px; font-weight:900; margin: var(--spacing-16) var(--spacing-8) 0; color:var(--color-text-hint);">${month.replace('-', '年')}月</h2>`;
         }
 
         const icons = { routine: '🧹', food: '🍴', weight: '⚖️', medical: '🏥' };
