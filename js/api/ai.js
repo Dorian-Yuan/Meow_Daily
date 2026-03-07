@@ -1,12 +1,23 @@
 /**
  * ai.js - ChatAnywhere API 封装
  * 负责将自然语言解析为结构化 JSON
+ * 全局强制 Asia/Shanghai 时区
  */
 import { getConfig } from '../store.js';
 
+/** 获取北京时间 Date 对象 */
+function getBJTime() {
+    return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }));
+}
+
+/** 格式化为 YYYY-MM-DD HH:mm */
+function fmtBJ(d) {
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 /**
  * 请求 AI 解析文本
- * @param {string} text 用户输入的文字
  */
 export async function parseTextWithAI(text) {
     const config = getConfig();
@@ -24,7 +35,7 @@ export async function parseTextWithAI(text) {
     // 若 category=food，必须包含: "brand"(品牌), "type"(干粮/罐头等), "daily_intake_g"(数字)
     // 若 category=medical，必须包含: "hospital"(医院), "symptom"(症状), "treatment"(治疗方案), "cost"(数字金额)
   },
-  "mentioned_time": "提取用户话语中提及的时间状语（如'昨天晚上8点'、'刚才'），若未提及则返回空字符串。"
+  "mentioned_time": "提取用户话语中提及的时间状语（如'昨天晚上8点'、'刚刚'），若未提及则返回空字符串。"
 }
 严禁输出任何多余的解释性纯文本。`;
 
@@ -52,21 +63,30 @@ export async function parseTextWithAI(text) {
 }
 
 /**
- * 处理提及的时间状语，返回标准的 YYYY-MM-DD HH:mm
- * @param {string} mentionedTime 
+ * 处理提及的时间状语，返回 YYYY-MM-DD HH:mm (北京时间)
  */
 export function processMentionedTime(mentionedTime) {
-    const now = new Date();
+    const now = getBJTime();
+
     if (!mentionedTime || mentionedTime.includes('刚才') || mentionedTime.includes('刚刚')) {
-        return now.toISOString().slice(0, 16).replace('T', ' ');
+        return fmtBJ(now);
     }
-    
-    // 简单的日期回溯逻辑 (未来可增强)
+
     if (mentionedTime.includes('昨天')) {
-        const yesterday = new Date(now);
-        yesterday.setDate(now.getDate() - 1);
-        return yesterday.toISOString().slice(0, 16).replace('T', ' ');
+        const y = new Date(now);
+        y.setDate(now.getDate() - 1);
+        // 尝试提取具体时间
+        const hourMatch = mentionedTime.match(/(\d{1,2})\s*[点时]/);
+        if (hourMatch) y.setHours(parseInt(hourMatch[1]), 0);
+        return fmtBJ(y);
     }
-    
-    return now.toISOString().slice(0, 16).replace('T', ' ');
+
+    if (mentionedTime.includes('前天')) {
+        const d = new Date(now);
+        d.setDate(now.getDate() - 2);
+        return fmtBJ(d);
+    }
+
+    // 默认使用当前北京时间
+    return fmtBJ(now);
 }

@@ -32,4 +32,15 @@
 
   /* 投影 - 极轻微软投影 (#00000010) */
   --shadow-base: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  /* 组件层变量别名 */
+  --radius-card: 16px;
+  --radius-button: 12px;
+  --radius-tag: 8px;
+  --spacing-xs: 4px;
+  --spacing-s: 8px;
+  --spacing-m: 12px;
+  --spacing-l: 16px;
+  --spacing-xl: 24px;
+  --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.06);
 }

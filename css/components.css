@@ -1,8 +1,8 @@
-/* 圆角卡片组件 */
+/* ======== 圆角卡片 ======== */
 .card {
   background-color: var(--color-white);
   border-radius: var(--radius-card);
-  padding: var(--spacing-l);
+  padding: var(--spacing-xl);
   box-shadow: var(--shadow-soft);
   display: flex;
   flex-direction: column;
@@ -10,7 +10,7 @@
   position: relative;
 }
 
-/* 按钮组件 */
+/* ======== 按钮组件 ======== */
 .btn {
   border: none;
   outline: none;
@@ -39,7 +39,7 @@
   color: var(--color-white);
 }
 
-/* 标签组件 */
+/* ======== 标签 ======== */
 .tag {
   padding: 2px 8px;
   border-radius: var(--radius-tag);
@@ -52,109 +52,301 @@
   color: var(--color-success);
 }
 
-/* 列表容器 */
-.list-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-m);
-}
-
-/* 设置列表项样式 */
-.settings-list {
-  padding: 0;
-  overflow: hidden;
-}
-
-.settings-item {
-  display: flex;
-  align-items: center;
-  padding: var(--spacing-l);
-  cursor: pointer;
-  transition: background-color 0.2s;
-  border-bottom: 1px solid var(--color-divider);
-}
-
-.settings-item:last-child {
-  border-bottom: none;
-}
-
-.settings-item:active {
-  background-color: var(--color-bg);
-}
-
-.settings-item .icon {
-  margin-right: var(--spacing-m);
-  font-size: 18px;
-}
-
-.settings-item .label {
-  flex: 1;
-  font-size: 15px;
-  font-weight: 500;
-}
-
-/* 表单项样式 */
+/* ======== 表单 ======== */
 .form-group {
-  margin-bottom: var(--spacing-l);
+  margin-bottom: 16px;
 }
 
 .form-group label {
   display: block;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: var(--spacing-xs);
-  color: var(--color-text-title);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-hint);
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
 }
 
 .form-input {
   width: 100%;
-  padding: var(--spacing-m);
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-button);
+  padding: 14px 16px;
+  border: 1.5px solid var(--color-divider);
+  border-radius: 14px;
   font-size: 14px;
+  background: var(--color-bg);
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
 }
 
 .form-input:focus {
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(64, 102, 224, 0.1);
+  background: var(--color-white);
 }
 
-/* Modal 弹窗样式 */
-.modal-overlay {
+/* ======== 抽屉弹窗 - 治愈系重绘 ======== */
+.drawer-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.4);
+  background: rgba(17, 24, 39, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  animation: overlay-fade 0.25s ease;
+}
+
+@keyframes overlay-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.drawer-panel {
+  background: var(--color-white);
+  border-radius: 28px 28px 0 0;
+  padding: 12px 24px 34px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: drawer-up 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes drawer-up {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+.drawer-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--color-divider);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.drawer-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-text-title);
+}
+
+.drawer-close {
+  font-size: 28px;
+  cursor: pointer;
+  padding: 4px 8px;
+  color: var(--color-text-hint);
+  line-height: 1;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.drawer-close:active {
+  background: var(--color-bg);
+}
+
+/* ======== 抽屉按钮 ======== */
+.btn-drawer-save {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--color-primary), #6366F1);
+  color: var(--color-white);
+  box-shadow: 0 4px 14px rgba(64, 102, 224, 0.3);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.btn-drawer-save:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 8px rgba(64, 102, 224, 0.2);
+}
+
+.btn-drawer-delete {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  background: #FEF2F2;
+  color: #DC2626;
+  transition: transform 0.1s;
+}
+
+.btn-drawer-delete:active {
+  transform: scale(0.98);
+}
+
+.drawer-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* ======== 饮食预设标签 ======== */
+.preset-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.preset-tag {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1.5px solid var(--color-divider);
+  background: var(--color-white);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.preset-tag:active,
+.preset-tag.active {
+  background: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+}
+
+/* ======== Toast 通知 ======== */
+.toast {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 700;
+  z-index: 3000;
+  animation: toast-in 0.3s ease forwards;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+}
+
+.toast-success {
+  background: #ECFDF5;
+  color: #065F46;
+}
+
+.toast-error {
+  background: #FEF2F2;
+  color: #991B1B;
+}
+
+.toast-info {
+  background: #EFF6FF;
+  color: #1E40AF;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ======== 同步指示器增强 ======== */
+.sync-indicator .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-success);
+  display: inline-block;
+}
+
+.sync-indicator.syncing .dot {
+  background: var(--color-yellow);
+  animation: pulse-dot 1s infinite;
+}
+
+@keyframes pulse-dot {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* ======== 档案编辑按钮 ======== */
+.profile-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 20px;
+  border-radius: 20px;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-divider);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.2s;
+}
+
+.profile-edit-btn:active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+/* ======== 里程碑卡片 ======== */
+.milestone-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.milestone-item:last-child {
+  border-bottom: none;
+}
+
+.milestone-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  padding: var(--spacing-xl);
+  font-size: 16px;
 }
-
-.modal-content {
-  background-color: var(--color-white);
-  border-radius: var(--radius-card);
-  padding: var(--spacing-xl);
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  animation: modal-fade-in 0.3s ease;
-}
-
-@keyframes modal-fade-in {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.modal-actions {
-  margin-top: var(--spacing-xl);
-  display: flex;
-  gap: var(--spacing-m);
-  justify-content: flex-end;
-}
-
-

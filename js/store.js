@@ -126,3 +126,45 @@ export function deleteRecord(catId, category, recordId) {
         saveToLocal();
     }
 }
+
+/**
+ * 更新猫咪档案信息
+ */
+export function updateCatProfile(catId, updates) {
+    const cat = dbState.cats.find(c => c.cat_id === catId);
+    if (cat) {
+        Object.assign(cat, updates);
+        saveToLocal();
+    }
+}
+
+/**
+ * 替换整个 DB 状态 (用于同步后的合并)
+ */
+export function setDB(newDB) {
+    dbState = newDB;
+    saveToLocal();
+}
+
+/**
+ * 合并本地与云端数据 (Pull-Merge 策略)
+ * cats/settings 以本地为准，records 取并集 (同 ID 保留本地)
+ */
+export function mergeDB(localDB, remoteDB) {
+    const merged = JSON.parse(JSON.stringify(localDB));
+    for (const catId of Object.keys(remoteDB.records || {})) {
+        if (!merged.records[catId]) {
+            merged.records[catId] = { routine: [], food: [], weight: [], medical: [] };
+        }
+        for (const cat of ['routine', 'food', 'weight', 'medical']) {
+            const localRecs = merged.records[catId][cat] || [];
+            const remoteRecs = (remoteDB.records[catId]?.[cat]) || [];
+            const localIds = new Set(localRecs.map(r => r.record_id));
+            for (const r of remoteRecs) {
+                if (!localIds.has(r.record_id)) localRecs.push(r);
+            }
+            merged.records[catId][cat] = localRecs;
+        }
+    }
+    return merged;
+}

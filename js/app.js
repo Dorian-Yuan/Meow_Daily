@@ -2,17 +2,18 @@
  * app.js - 修复导航逻辑
  */
 import { initStore } from './store.js';
-import { switchTab, initAIEntry } from './modules/ui.js';
+import { switchTab, initAIEntry, initSyncButton } from './modules/ui.js';
 
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('🐾 Meow_Daily 重构版启动...');
-    
+
     // 初始化数据
     await initStore();
-    
+
     // 强制渲染首页
     switchTab('home');
     initAIEntry();
+    initSyncButton();
 
     // 绑定底部导航 (使用事件委派确保可靠性)
     document.querySelector('.bottom-tabbar').addEventListener('click', (e) => {
