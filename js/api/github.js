@@ -12,10 +12,11 @@ export async function fetchCloudDB(config) {
     const url = `https://api.github.com/repos/${githubRepo}/contents/db.json`; 
     
     const res = await fetch(url, {
+        method: 'GET',
+        cache: 'no-store', // 使用原生 fetch 缓存控制，避免触发 CORS 预检失败
         headers: {
             'Authorization': `Bearer ${githubToken}`, // 恢复为标准 Bearer
-            'Accept': 'application/vnd.github.v3+json',
-            'Cache-Control': 'no-cache'
+            'Accept': 'application/vnd.github.v3+json'
         }
     });
 
