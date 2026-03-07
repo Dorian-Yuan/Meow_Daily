@@ -26,7 +26,14 @@
         }
       ],
       "food": [],
-      "weight": [],
+      "weight": [
+        {
+          "record_id": "r_1772852193144",
+          "timestamp": "2026-03-07 10:56",
+          "note": "绝育前",
+          "weight_kg": 3.4
+        }
+      ],
       "medical": []
     }
   },
