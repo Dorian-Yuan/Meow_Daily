@@ -121,13 +121,18 @@ function renderHome() {
                 <div class="action-item" data-type="medical"><div class="action-icon">🏥</div><div class="action-label">就诊</div></div>
             </section>
 
-            <div class="card">
-                <h3>体重监测</h3>
-                <div style="display:flex; align-items:baseline; gap:8px; margin-top:4px;">
-                    <span style="font-size:32px; font-weight:900; color:var(--color-primary); line-height:1;">${latestWeight}</span>
-                    <span style="font-size:14px; color:var(--color-text-hint); font-weight:700;">kg</span>
+            <div class="card" id="home-weight-card" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="font-size:14px; font-weight:800; color:var(--color-text-title); margin-bottom:8px; display:flex; align-items:center; gap:6px;">⚖️ 体重监测</div>
+                    <div style="display:flex; align-items:baseline; gap:4px;">
+                        <span style="font-size:36px; font-weight:900; color:var(--color-primary); line-height:1;">${latestWeight}</span>
+                        <span style="font-size:14px; color:var(--color-text-hint); font-weight:700;">kg</span>
+                    </div>
+                    <p style="font-size:11px; color:var(--color-text-hint); margin-top:8px;">✨ 最近记录：${weightRecords.length > 0 ? weightRecords[weightRecords.length - 1].timestamp.split(' ')[0] : '尚未记录'}</p>
                 </div>
-                <p style="font-size:12px; color:var(--color-text-hint); margin-top:12px;">✨ 最近一次称重：${weightRecords.length > 0 ? weightRecords[weightRecords.length - 1].timestamp : '尚未记录'}</p>
+                <div style="width:56px; height:56px; background:#EEF2FF; border-radius:16px; display:flex; align-items:center; justify-content:center;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                </div>
             </div>
 
             <div class="card" style="border-left: 6px solid var(--color-yellow); background: #FFFDF5; padding-left: 20px;">
@@ -162,6 +167,121 @@ function renderHome() {
         const type = 'routine';
         showEntryDrawer(type, null, label);
     };
+
+    document.getElementById('home-weight-card').onclick = () => {
+        showWeightChartDrawer(weightRecords);
+    };
+}
+
+/**
+ * 渲染体重历史趋势图弹窗
+ */
+function showWeightChartDrawer(weightRecords) {
+    if (!weightRecords || weightRecords.length === 0) {
+        showToast('暂无体重记录', 'info');
+        return;
+    }
+
+    const records = [...weightRecords].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+    const displayRecords = records.slice(-10); // 取最近10条
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'drawer-overlay';
+
+    overlay.innerHTML = `
+        <div class="drawer-panel" style="min-height: 55vh;">
+            <div class="drawer-handle"></div>
+            <div class="drawer-header">
+                <h2 class="drawer-title">📈 体重变化趋势</h2>
+                <span id="close-chart" class="drawer-close">×</span>
+            </div>
+            <div style="padding: 10px 0;">
+                <canvas id="weight-chart-canvas" width="320" height="200" style="width: 100%; height: auto; border-radius: 12px; background: var(--color-bg);"></canvas>
+            </div>
+            <div style="margin-top: 16px;">
+                <h3 style="font-size: 14px; margin-bottom: 12px; color: var(--color-text-title);">近期记录</h3>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    ${[...displayRecords].reverse().map(r => `
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px; background: var(--color-bg); border-radius: 12px;">
+                            <span style="font-size: 13px; font-weight: 600; color: var(--color-text-title);">${r.timestamp.split(' ')[0]}</span>
+                            <span style="font-size: 15px; font-weight: 800; color: var(--color-primary);">${r.weight_kg} kg</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const close = () => {
+        overlay.querySelector('.drawer-panel').style.transform = 'translateY(100%)';
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 300);
+    };
+    overlay.querySelector('#close-chart').onclick = close;
+    overlay.onclick = (e) => { if (e.target === overlay) close(); };
+
+    // 绘制图表
+    const canvas = overlay.querySelector('#weight-chart-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const cw = canvas.width;
+    const ch = canvas.height;
+    
+    const padding = 30;
+    const weights = displayRecords.map(r => r.weight_kg);
+    const maxW = Math.max(...weights) + 0.5;
+    const minW = Math.max(0, Math.min(...weights) - 0.5);
+    
+    ctx.clearRect(0, 0, cw, ch);
+    
+    // 背景网格线与Y轴文字
+    ctx.strokeStyle = '#E5E7EB';
+    ctx.lineWidth = 1;
+    ctx.font = '10px sans-serif';
+    ctx.fillStyle = '#9CA3AF';
+    ctx.textAlign = 'right';
+    
+    const steps = 4;
+    for(let i = 0; i <= steps; i++) {
+        const y = padding + (ch - padding * 2) * (1 - i / steps);
+        const val = minW + (maxW - minW) * (i / steps);
+        
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(cw - padding, y);
+        ctx.stroke();
+        ctx.fillText(val.toFixed(1), padding - 5, y + 3);
+    }
+    
+    // 数据折线
+    if (weights.length > 0) {
+        ctx.beginPath();
+        ctx.strokeStyle = '#4066E0';
+        ctx.lineWidth = 3;
+        ctx.lineJoin = 'round';
+        
+        displayRecords.forEach((r, i) => {
+            const x = padding + (cw - padding * 2) * (i / Math.max(1, displayRecords.length - 1));
+            const y = padding + (ch - padding * 2) * (1 - (r.weight_kg - minW) / (maxW - minW));
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+        
+        // 数据点圆圈
+        displayRecords.forEach((r, i) => {
+            const x = padding + (cw - padding * 2) * (i / Math.max(1, displayRecords.length - 1));
+            const y = padding + (ch - padding * 2) * (1 - (r.weight_kg - minW) / (maxW - minW));
+            
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fill();
+            ctx.stroke();
+        });
+    }
 }
 
 /**
@@ -617,7 +737,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.10 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.12 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
