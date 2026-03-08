@@ -38,6 +38,18 @@
           "timestamp": "2026-03-07 10:56",
           "note": "绝育前",
           "weight_kg": 3.4
+        },
+        {
+          "record_id": "r_1772933597371",
+          "timestamp": "2026-01-31 19:32",
+          "note": "",
+          "weight_kg": 3
+        },
+        {
+          "record_id": "r_1772973014805",
+          "timestamp": "2025-11-20 08:29",
+          "note": "",
+          "weight_kg": 1.4
         }
       ],
       "medical": [
