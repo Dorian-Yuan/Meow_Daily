@@ -6,12 +6,18 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+html {
+  background-color: var(--color-primary); /* 修复 iOS PWA 顶部下拉回弹露出白底的问题 */
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background-color: var(--color-bg);
+  background-color: var(--color-bg); /* 维持主体和底部的灰白色 */
   color: var(--color-text-main);
   line-height: 1.4;
   padding-bottom: 100px;
+  min-height: 100vh;
+  overscroll-behavior-y: none; /* 在支持的 iOS 16+ 设备上直接阻断全局橡皮筋回弹 */
 }
 
 /* Banner 区域 */
