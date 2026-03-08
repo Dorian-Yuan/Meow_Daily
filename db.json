@@ -62,6 +62,16 @@
           "symptom": "",
           "treatment": "",
           "cost": 330
+        },
+        {
+          "record_id": "r_1772987987820",
+          "timestamp": "2025-11-07 00:38",
+          "note": "",
+          "type": "疫苗",
+          "hospital": "汉斯雪瑞",
+          "symptom": "",
+          "treatment": "妙三多猫三联第一针",
+          "cost": 119
         }
       ]
     }
