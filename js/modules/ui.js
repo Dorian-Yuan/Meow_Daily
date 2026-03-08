@@ -126,7 +126,7 @@ function renderHome() {
             <div class="card" id="home-weight-card" style="cursor:pointer; display:flex; flex-direction:row; justify-content:space-between; align-items:center; padding:var(--spacing-l);">
                 <div style="display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:var(--spacing-s);">
                     <div style="font-size:16px; font-weight:800; color:var(--color-text-title); line-height:1;">⚖️ 体重监测</div>
-                    <div style="font-size:12px; color:var(--color-text-hint); font-weight:600; line-height:1;">✨ 最近记录：${weightRecords.length > 0 ? weightRecords[weightRecords.length - 1].timestamp.split(' ')[0] : '尚未记录'}</div>
+                    <div style="font-size:12px; color:var(--color-text-hint); font-weight:600; line-height:1;">✨ 最近记录：${latestWeightDate}</div>
                 </div>
                 <div style="display:flex; align-items:baseline; justify-content:flex-end; gap:2px; height:100%;">
                     <span style="font-size:32px; font-weight:900; color:var(--color-primary); line-height:1;">${latestWeight}</span>
@@ -742,7 +742,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.26 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.27 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
