@@ -710,7 +710,7 @@ function renderSettings() {
             </div>
 
             <div class="card">
-                <h3 style="margin-bottom:12px;">🔗 云端与 AI 配置</h3>
+                <h3 style="margin-bottom:12px;">🔗 云端同步配置</h3>
                 <div class="form-group">
                     <label>GITHUB REPO (USER/REPO)</label>
                     <input type="text" id="i-repo" class="form-input" value="${config.githubRepo || ''}" placeholder="例如: yourname/meow_daily">
@@ -720,22 +720,21 @@ function renderSettings() {
                     <input type="password" id="i-token" class="form-input" value="${config.githubToken || ''}">
                 </div>
                 
-                <hr style="border:none; border-top:1.5px dashed var(--color-divider); margin:12px 0 24px;">
-                
-                <div class="form-group">
-                    <label>AI KEY (CHATANYWHERE)</label>
-                    <input type="password" id="i-ai" class="form-input" value="${config.aiKey || ''}">
-                </div>
-                <div class="form-group">
-                    <label>AI MODEL NAME</label>
-                    <input type="text" id="i-model" class="form-input" value="${config.aiModel || 'gpt-3.5-turbo'}" placeholder="例如: gpt-4o-mini">
-                </div>
-                
                 <button id="i-save" class="btn-drawer-save" style="margin-top:12px;">保存配置</button>
+            </div>
+
+            <div class="card" style="padding:0; overflow:hidden;">
+                <div id="btn-ai-settings" style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px; cursor:pointer;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span style="font-size:18px;">🤖</span>
+                        <span style="font-size:15px; font-weight:700;">AI 设置</span>
+                    </div>
+                    <span style="color:var(--color-text-hint); font-size:12px;">❯</span>
+                </div>
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.21 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.22 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
@@ -766,15 +765,99 @@ function renderSettings() {
     };
 
     document.getElementById('i-save').onclick = () => {
+        const currentConfig = getConfig();
         const newCfg = {
+            ...currentConfig,
             githubRepo: document.getElementById('i-repo').value.trim(),
-            githubToken: document.getElementById('i-token').value.trim(),
-            aiKey: document.getElementById('i-ai').value.trim(),
-            aiModel: document.getElementById('i-model').value.trim()
+            githubToken: document.getElementById('i-token').value.trim()
         };
         saveConfig(newCfg);
         showToast('配置已生效 🐾', 'success');
         switchTab('profile');
+    };
+
+    document.getElementById('btn-ai-settings').onclick = () => renderAISettings();
+}
+
+/**
+ * 渲染 AI 设置独立页面
+ */
+function renderAISettings() {
+    const config = getConfig();
+    const db = getDB();
+    
+    // 默认 prompts
+    const defaultParser = `你是一个严格的宠物日记数据提取API。请将用户的自然语言转化为精确的JSON格式。不要生成任何绝对时间戳（时间戳由前端系统自动生成）。\n必须严格遵守以下JSON结构返回，缺失的数据用null表示：\n{\n  "category": "必须是以下枚举值之一：routine(日常护理), food(饮食), weight(体重), medical(医疗)",\n  "parsed_data": {\n    // 若 category=weight，必须包含: "weight_kg"(数字), "note"(字符串)\n    // 若 category=routine，必须包含: "type"(如驱虫、洗澡、换猫砂等), "note"(字符串)\n    // 若 category=food，必须包含: "brand"(品牌), "type"(干粮/罐头等), "daily_intake_g"(数字)\n    // 若 category=medical，必须包含: "hospital"(医院), "symptom"(症状), "treatment"(治疗方案), "cost"(数字金额)\n  },\n  "mentioned_time": "提取用户话语中提及的时间状语（如'昨天晚上8点'、'刚刚'），若未提及则返回空字符串。"\n}\n严禁输出任何多余的解释性纯文本。`;
+    const defaultDaily = \`你是一只叫“岁岁”的傲娇小猫。你的主人设置了提醒。请根据提供的任务列表，用简短、傲娇、可爱的语气催促主人（铲屎官）去干活。如果今天是你的生日或纪念日，记得要礼物！字数控制在 60 字以内，多用 emoji。\`;
+    const defaultWeekly = \`你是一只叫“岁岁”的橘猫。请根据提供的本周数据，给主人写一封简短的本周总结。要求：语气治愈、偶尔傲娇，包含本周开销汇总和健康建议（如体重变化）。字数 150 字以内，多用 emoji。\`;
+
+    const prompts = config.prompts || db.settings?.prompts || {};
+
+    mainContent.innerHTML = \`
+        <div class="content-wrapper">
+            <div style="display:flex; align-items:center; margin-bottom:12px; gap:8px;">
+                <span id="btn-back-ai" style="cursor:pointer; font-size:24px; padding:4px;">←</span>
+                <h2 style="font-size:18px; font-weight:900;">AI 设置</h2>
+            </div>
+            
+            <div class="card">
+                <div class="form-group">
+                    <label>AI KEY (CHATANYWHERE)</label>
+                    <input type="password" id="ai-key" class="form-input" value="\${config.aiKey || ''}">
+                </div>
+                <div class="form-group">
+                    <label>AI MODEL NAME</label>
+                    <input type="text" id="ai-model" class="form-input" value="\${config.aiModel || 'gpt-3.5-turbo'}" placeholder="例如: gpt-4o-mini">
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom:12px;">💬 Prompt 自定义</h3>
+                
+                <div class="form-group">
+                    <label>智能记事 (前端提取数据)</label>
+                    <textarea id="p-parser" class="form-input" rows="5" style="font-size: 12px;">\${prompts.parser || defaultParser}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>日常提醒 (后台 Actions 语气)</label>
+                    <textarea id="p-daily" class="form-input" rows="4" style="font-size: 12px;">\${prompts.daily || defaultDaily}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>每周总结 (后台 Actions 语气)</label>
+                    <textarea id="p-weekly" class="form-input" rows="4" style="font-size: 12px;">\${prompts.weekly || defaultWeekly}</textarea>
+                </div>
+                
+                <button id="ai-save" class="btn-drawer-save" style="margin-top:12px;">保存 AI 设置</button>
+            </div>
+        </div>
+    \`;
+
+    document.getElementById('btn-back-ai').onclick = () => renderSettings();
+
+    document.getElementById('ai-save').onclick = () => {
+        const currentConfig = getConfig();
+        const newCfg = {
+            ...currentConfig,
+            aiKey: document.getElementById('ai-key').value.trim(),
+            aiModel: document.getElementById('ai-model').value.trim(),
+            prompts: {
+                parser: document.getElementById('p-parser').value.trim(),
+                daily: document.getElementById('p-daily').value.trim(),
+                weekly: document.getElementById('p-weekly').value.trim()
+            }
+        };
+        saveConfig(newCfg);
+        
+        // 同时保存到 db.json，以便 GitHub Actions 后端读取
+        const currentDB = getDB();
+        if (!currentDB.settings) currentDB.settings = {};
+        currentDB.settings.prompts = newCfg.prompts;
+        setDB(currentDB);
+
+        showToast('AI 设置已保存并暂存至本地 🐾', 'success');
+        renderSettings();
     };
 }
 

@@ -94,6 +94,10 @@ async function main() {
     if (AI_KEY) {
         try {
             console.log('🧠 正在请 AI 转换成岁岁的语气...');
+            
+            const defaultPrompt = '你是一只叫“岁岁”的傲娇小猫。你的主人设置了提醒。请根据提供的任务列表，用简短、傲娇、可爱的语气催促主人（铲屎官）去干活。如果今天是你的生日或纪念日，记得要礼物！字数控制在 60 字以内，多用 emoji。';
+            const systemPrompt = (db.settings && db.settings.prompts && db.settings.prompts.daily) ? db.settings.prompts.daily : defaultPrompt;
+
             const response = await fetch('https://api.chatanywhere.tech/v1/chat/completions', {
                 method: 'POST',
                 headers: {
@@ -103,7 +107,7 @@ async function main() {
                 body: JSON.stringify({
                     model: 'gpt-3.5-turbo',
                     messages: [
-                        { role: 'system', content: '你是一只叫“岁岁”的傲娇小猫。你的主人设置了提醒。请根据提供的任务列表，用简短、傲娇、可爱的语气催促主人（铲屎官）去干活。如果今天是你的生日或纪念日，记得要礼物！字数控制在 60 字以内，多用 emoji。' },
+                        { role: 'system', content: systemPrompt },
                         { role: 'user', content: reminders.join('\n') }
                     ]
                 })

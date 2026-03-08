@@ -21,11 +21,11 @@ function fmtBJ(d) {
  */
 export async function parseTextWithAI(text) {
     const config = getConfig();
-    const { aiKey, aiModel } = config;
+    const { aiKey, aiModel, prompts } = config;
 
     if (!aiKey) throw new Error('请先在设置中配置 AI API Key');
 
-    const systemPrompt = `你是一个严格的宠物日记数据提取API。请将用户的自然语言转化为精确的JSON格式。不要生成任何绝对时间戳（时间戳由前端系统自动生成）。
+    const defaultSystemPrompt = `你是一个严格的宠物日记数据提取API。请将用户的自然语言转化为精确的JSON格式。不要生成任何绝对时间戳（时间戳由前端系统自动生成）。
 必须严格遵守以下JSON结构返回，缺失的数据用null表示：
 {
   "category": "必须是以下枚举值之一：routine(日常护理), food(饮食), weight(体重), medical(医疗)",
@@ -38,6 +38,8 @@ export async function parseTextWithAI(text) {
   "mentioned_time": "提取用户话语中提及的时间状语（如'昨天晚上8点'、'刚刚'），若未提及则返回空字符串。"
 }
 严禁输出任何多余的解释性纯文本。`;
+
+    const systemPrompt = (prompts && prompts.parser) ? prompts.parser : defaultSystemPrompt;
 
     const response = await fetch('https://api.chatanywhere.tech/v1/chat/completions', {
         method: 'POST',
