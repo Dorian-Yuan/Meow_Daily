@@ -25,7 +25,8 @@ export async function parseTextWithAI(text) {
 
     if (!aiKey) throw new Error('请先在设置中配置 AI API Key');
 
-    const defaultSystemPrompt = `你是一个严格的宠物日记数据提取API。请将用户的自然语言转化为精确的JSON格式。不要生成任何绝对时间戳（时间戳由前端系统自动生成）。
+    const defaultSystemPrompt = `你是一个严格的宠物日记数据提取API。请将用户的自然语言转化为精确的JSON格式。
+如果需要，你可以结合当前时间，直接在 mentioned_time 中返回绝对时间戳（YYYY-MM-DD HH:mm 格式）。
 必须严格遵守以下JSON结构返回，缺失的数据用null表示：
 {
   "category": "必须是以下枚举值之一：routine(日常护理), food(饮食), weight(体重), medical(医疗)",
@@ -35,11 +36,14 @@ export async function parseTextWithAI(text) {
     // 若 category=food，必须包含: "brand"(品牌), "type"(干粮/罐头等), "daily_intake_g"(数字)
     // 若 category=medical，必须包含: "hospital"(医院), "symptom"(症状), "treatment"(治疗方案), "cost"(数字金额)
   },
-  "mentioned_time": "提取用户话语中提及的时间状语（如'昨天晚上8点'、'刚刚'），若未提及则返回空字符串。"
+  "mentioned_time": "提取用户话语中提及的时间，如果有上下文当前时间，可以直接计算为 YYYY-MM-DD HH:mm 返回。"
 }
 严禁输出任何多余的解释性纯文本。`;
 
     const systemPrompt = (prompts && prompts.parser) ? prompts.parser : defaultSystemPrompt;
+
+    const nowStr = fmtBJ(getBJTime());
+    const enrichedText = text + ` (当前时间: ${nowStr})`;
 
     const response = await fetch('https://api.chatanywhere.tech/v1/chat/completions', {
         method: 'POST',
@@ -52,7 +56,7 @@ export async function parseTextWithAI(text) {
             response_format: { "type": "json_object" },
             messages: [
                 { role: 'system', content: systemPrompt },
-                { role: 'user', content: text }
+                { role: 'user', content: enrichedText }
             ]
         })
     });
@@ -70,7 +74,15 @@ export async function parseTextWithAI(text) {
 export function processMentionedTime(mentionedTime) {
     const now = getBJTime();
 
-    if (!mentionedTime || mentionedTime.includes('刚才') || mentionedTime.includes('刚刚')) {
+    if (!mentionedTime) {
+        return fmtBJ(now);
+    }
+    
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(mentionedTime)) {
+        return mentionedTime;
+    }
+
+    if (mentionedTime.includes('刚才') || mentionedTime.includes('刚刚')) {
         return fmtBJ(now);
     }
 

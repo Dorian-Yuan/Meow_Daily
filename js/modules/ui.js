@@ -371,11 +371,15 @@ function renderRecords() {
 /**
  * 唤起录入/编辑抽屉 - 深度重绘
  */
-function showEntryDrawer(category, recordId = null, presetSubtype = null) {
+function showEntryDrawer(category, recordId = null, presetSubtype = null, prefillData = null) {
     const titles = { routine: '日常记录', food: '饮食录入', weight: '称重记录', medical: '就诊/健康' };
     const db = getDB();
     const suiSui = db.cats[0];
-    const oldData = recordId ? db.records[suiSui.cat_id][category].find(r => r.record_id === recordId) : null;
+    let oldData = recordId ? db.records[suiSui.cat_id][category].find(r => r.record_id === recordId) : null;
+    
+    if (prefillData) {
+        oldData = prefillData;
+    }
 
     const overlay = document.createElement('div');
     overlay.className = 'drawer-overlay';
@@ -451,11 +455,13 @@ function showEntryDrawer(category, recordId = null, presetSubtype = null) {
             </div>`;
     }
 
+    const isEditing = (oldData && recordId);
+
     overlay.innerHTML = `
         <div class="drawer-panel">
             <div class="drawer-handle"></div>
             <div class="drawer-header">
-                <h2 class="drawer-title">${oldData ? '🐾 修改' : '🐾 记一笔'}${titles[category]}</h2>
+                <h2 class="drawer-title">${isEditing ? '🐾 修改' : '🐾 记一笔'}${titles[category]}</h2>
                 <span id="close-drawer" class="drawer-close">×</span>
             </div>
             <div class="form-group">
@@ -468,7 +474,7 @@ function showEntryDrawer(category, recordId = null, presetSubtype = null) {
                 <textarea id="f-note" class="form-input" rows="3" placeholder="写点什么吧...">${oldData?.note || ''}</textarea>
             </div>
             <div class="drawer-actions">
-                ${oldData ? `<button id="btn-del" class="btn-drawer-delete">删除记录</button>` : ''}
+                ${isEditing ? `<button id="btn-del" class="btn-drawer-delete">删除记录</button>` : ''}
                 <button id="btn-save" class="btn-drawer-save">保存记录</button>
             </div>
         </div>
@@ -498,7 +504,7 @@ function showEntryDrawer(category, recordId = null, presetSubtype = null) {
 
     overlay.querySelector('#btn-save').onclick = async () => {
         const record = {
-            record_id: oldData ? oldData.record_id : 'r_' + Date.now(),
+            record_id: isEditing ? oldData.record_id : 'r_' + Date.now(),
             timestamp: overlay.querySelector('#f-time').value.replace('T', ' '),
             note: overlay.querySelector('#f-note').value
         };
@@ -520,12 +526,12 @@ function showEntryDrawer(category, recordId = null, presetSubtype = null) {
         }
 
         addOrUpdateRecord(suiSui.cat_id, category, record);
-        showToast(oldData ? '已更新 🐾' : '记录成功 🐾', 'success');
+        showToast(isEditing ? '已更新 🐾' : '记录成功 🐾', 'success');
         close();
         switchTab(document.querySelector('.tab-item.active').dataset.tab);
     };
 
-    if (oldData) {
+    if (isEditing) {
         overlay.querySelector('#btn-del').onclick = () => {
             if (confirm('要删除这条记录吗？')) {
                 deleteRecord(suiSui.cat_id, category, recordId);
@@ -887,8 +893,6 @@ export function initAIEntry() {
                     <div class="syncing" style="display:inline-block; margin-right:8px;"><span class="dot"></span></div>
                     喵喵正在思考中... 🧠
                 </div>
-                <div id="ai-result" style="display:none; margin-top:24px; padding:20px; background:var(--color-bg); border-radius:16px; border:2px dashed var(--color-yellow);">
-                </div>
             </div>
         `;
         document.body.appendChild(overlay);
@@ -899,14 +903,12 @@ export function initAIEntry() {
         const input = overlay.querySelector('#ai-input');
         const parseBtn = overlay.querySelector('#ai-parse');
         const status = overlay.querySelector('#ai-status');
-        const resultDiv = overlay.querySelector('#ai-result');
 
         parseBtn.onclick = async () => {
             const text = input.value.trim();
             if (!text) return;
 
             status.style.display = 'block';
-            resultDiv.style.display = 'none';
             parseBtn.disabled = true;
             parseBtn.style.opacity = '0.6';
 
@@ -915,32 +917,18 @@ export function initAIEntry() {
                 const time = processMentionedTime(res.mentioned_time);
 
                 status.style.display = 'none';
-                resultDiv.style.display = 'block';
+                
+                // 关闭当前 AI 输入抽屉，打开编辑抽屉
+                close();
 
-                const catMap = { routine: '日常', food: '饮食', weight: '体重', medical: '就诊' };
-                resultDiv.innerHTML = `
-                    <div style="font-size:14px; line-height:1.6;">
-                        <h4 style="margin-bottom:12px; color:var(--color-text-title); font-weight:900;">识别成果：</h4>
-                        <div style="display:flex; flex-direction:column; gap:8px;">
-                            <p><b>分类：</b>${catMap[res.category] || res.category}</p>
-                            <p><b>时间：</b>${time}</p>
-                            <p><b>内容：</b>${JSON.stringify(res.parsed_data)}</p>
-                        </div>
-                        <button id="ai-confirm" class="btn-drawer-save" style="margin-top:20px;">确认录入</button>
-                    </div>
-                `;
-
-                document.getElementById('ai-confirm').onclick = () => {
-                    addOrUpdateRecord(getDB().cats[0].cat_id, res.category, {
-                        record_id: 'r_' + Date.now(),
-                        timestamp: time,
-                        ...res.parsed_data
-                    });
-                    showToast('AI 记好啦 🐾', 'success');
-                    close();
-                    if (document.querySelector('.tab-item[data-tab="home"].active')) renderHome();
-                    else switchTab('records');
+                // 将解析数据结构转化为 prefillData 格式
+                const prefillData = {
+                    timestamp: time,
+                    ...res.parsed_data
                 };
+                
+                showEntryDrawer(res.category, null, null, prefillData);
+
             } catch (e) {
                 status.style.display = 'none';
                 parseBtn.disabled = false;
