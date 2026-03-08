@@ -7,17 +7,22 @@
 }
 
 html {
-  background-color: var(--color-primary); /* 修复 iOS PWA 顶部下拉回弹露出白底的问题 */
+  background-color: var(--color-primary); /* 彻底阻断 iOS 露白：让根节点颜色为品牌蓝 */
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background-color: var(--color-bg); /* 维持主体和底部的灰白色 */
+  background-color: var(--color-primary); /* 让 body 也是蓝色，iOS 下拉时只会看到蓝底 */
   color: var(--color-text-main);
   line-height: 1.4;
-  padding-bottom: 100px;
+  overscroll-behavior-y: none; /* 在支持的设备上阻断全局回弹 */
+}
+
+/* 用 app-container 承载原本的灰白色背景 */
+.app-container {
+  background-color: var(--color-bg);
   min-height: 100vh;
-  overscroll-behavior-y: none; /* 在支持的 iOS 16+ 设备上直接阻断全局橡皮筋回弹 */
+  padding-bottom: 100px;
 }
 
 /* Banner 区域 */
