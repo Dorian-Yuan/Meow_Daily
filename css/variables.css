@@ -42,8 +42,8 @@
   --radius-max: 9999px;
 
   /* 投影 - 治愈系软投影 */
-  --shadow-base: 0 4px 12px rgba(0, 0, 0, 0.04);
-  --shadow-hover: 0 8px 24px rgba(64, 102, 224, 0.08); /* 带点品牌色的投影 */
+  --shadow-base: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 8px 24px rgba(64, 102, 224, 0.15); /* 带点品牌色的投影 */
   --shadow-float: 0 12px 32px rgba(0, 0, 0, 0.08);
 
   /* 动效曲线 (极致顺滑) */
@@ -51,7 +51,7 @@
   --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* 组件层变量别名 */
-  --radius-card: var(--radius-20);
+  --radius-card: var(--radius-16);
   --radius-button: var(--radius-16);
   --radius-tag: var(--radius-8);
   

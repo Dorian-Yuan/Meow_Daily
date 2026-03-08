@@ -115,15 +115,15 @@ function renderHome() {
     });
 
     mainContent.innerHTML = `
-        <div class="content-wrapper">
-            <section class="quick-actions">
+        <div class="content-wrapper fade-in-up stagger-1">
+            <section class="quick-actions fade-in-up stagger-1">
                 <div class="action-item" data-type="routine"><div class="action-icon">🧹</div><div class="action-label">日常</div></div>
                 <div class="action-item" data-type="food"><div class="action-icon">🍴</div><div class="action-label">饮食</div></div>
                 <div class="action-item" data-type="weight"><div class="action-icon">⚖️</div><div class="action-label">体重</div></div>
                 <div class="action-item" data-type="medical"><div class="action-icon">🏥</div><div class="action-label">就诊</div></div>
             </section>
 
-            <div class="card" id="home-weight-card" style="cursor:pointer; display:flex; flex-direction:row; justify-content:space-between; align-items:center; padding:var(--spacing-l);">
+            <div class="card fade-in-up stagger-2" id="home-weight-card" style="cursor:pointer; display:flex; flex-direction:row; justify-content:space-between; align-items:center; padding:var(--spacing-l);">
                 <div style="display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:var(--spacing-s);">
                     <div style="font-size:16px; font-weight:800; color:var(--color-text-title); line-height:1;">⚖️ 体重监测</div>
                     <div style="font-size:12px; color:var(--color-text-hint); font-weight:600; line-height:1;">✨ 最近记录：${latestWeightDate}</div>
@@ -134,7 +134,7 @@ function renderHome() {
                 </div>
             </div>
 
-            <div class="card" style="border-left: 6px solid var(--color-yellow); background: #FFFDF5; padding-left: 20px;">
+            <div class="card fade-in-up stagger-3" style="border-left: 6px solid var(--color-yellow); background: #FFFDF5; padding-left: 20px;">
                 <h3 style="font-size:15px; font-weight:800; color:var(--color-text-title); margin:0;">提醒事项</h3>
                 ${reminders.length === 0 ?
             `<p style="font-size:14px; color:var(--color-text-main); font-weight:500;">${suiSui.name}今天表现很棒喵，近期没有待办任务！🐾</p>` :
@@ -304,7 +304,7 @@ function renderRecords() {
 
     if (all.length === 0) {
         mainContent.innerHTML = `
-            <div class="content-wrapper">
+            <div class="content-wrapper fade-in-up stagger-1">
                 <div class="card" style="text-align:center; padding:60px 24px;">
                     <p style="color:var(--color-text-hint); font-size:14px; font-weight:600;">还没有记过${suiSui.name}的生活呢喵~ 🐾</p>
                 </div>
@@ -313,7 +313,7 @@ function renderRecords() {
         return;
     }
 
-    let html = '<div class="content-wrapper">';
+    let html = '<div class="content-wrapper fade-in-up stagger-1">';
     let lastMonth = '';
     all.forEach(r => {
         const month = r.timestamp.slice(0, 7);
@@ -567,7 +567,7 @@ function renderProfile() {
     }
 
     mainContent.innerHTML = `
-        <div class="content-wrapper">
+        <div class="content-wrapper fade-in-up stagger-1">
             <div class="card" id="profile-card" style="display:flex; flex-direction:row; align-items:center; gap:var(--spacing-l); padding:var(--spacing-l); cursor:pointer;">
                 <div style="width:72px; height:72px; background:var(--color-bg); border-radius:36px; display:flex; align-items:center; justify-content:center; font-size:32px; border:3px solid var(--color-divider); flex-shrink:0;">🐱</div>
                 <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:var(--spacing-xs);">
@@ -696,7 +696,7 @@ function renderSettings() {
     const reminders = db.settings.reminders || [];
 
     mainContent.innerHTML = `
-        <div class="content-wrapper">
+        <div class="content-wrapper fade-in-up stagger-1">
             <div style="display:flex; align-items:center; margin-bottom:12px; gap:8px;">
                 <span id="btn-back" style="cursor:pointer; font-size:24px; padding:4px;">←</span>
                 <h2 style="font-size:18px; font-weight:900;">系统设置</h2>
@@ -742,7 +742,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.0.27 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.1.0 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
@@ -802,7 +802,7 @@ function renderAISettings() {
     const prompts = config.prompts || db.settings?.prompts || {};
 
     mainContent.innerHTML = `
-        <div class="content-wrapper">
+        <div class="content-wrapper fade-in-up stagger-1">
             <div style="display:flex; align-items:center; margin-bottom:12px; gap:8px;">
                 <span id="btn-back-ai" style="cursor:pointer; font-size:24px; padding:4px;">←</span>
                 <h2 style="font-size:18px; font-weight:900;">AI 设置</h2>
@@ -990,7 +990,7 @@ export function initSyncButton() {
             showToast(e.message, 'error');
         } finally {
             btn.classList.remove('syncing');
-            btn.querySelector('.sync-text').textContent = '云端同步';
+            btn.querySelector('.sync-text').textContent = '保存并同步';
         }
     };
 }
