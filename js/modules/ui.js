@@ -57,7 +57,9 @@ function renderHome() {
     const db = getDB();
     const suiSui = db.cats[0];
     const weightRecords = db.records[suiSui.cat_id]?.weight || [];
-    const latestWeight = weightRecords.length > 0 ? [...weightRecords].sort((a, b) => b.timestamp.localeCompare(a.timestamp))[0].weight_kg : '--';
+    const sortedWeights = [...weightRecords].sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+    const latestWeight = sortedWeights.length > 0 ? sortedWeights[0].weight_kg : '--';
+    const latestWeightDate = sortedWeights.length > 0 ? sortedWeights[0].timestamp.split(' ')[0] : '尚未记录';
 
     const reminders = [];
     const catRecs = db.records[suiSui.cat_id] || {};
