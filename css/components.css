@@ -569,7 +569,7 @@ input[type="date"].form-input {
   height: 100%;
 }
 
-/* --- Records Filter Bar (V2.4.3 UX Precision) --- */
+/* --- Records Filter Bar (V2.4.4 UX Final) --- */
 .record-filter-bar {
   position: sticky;
   top: 196px;
@@ -578,7 +578,7 @@ input[type="date"].form-input {
   background: var(--color-bg);
   /* 与列表底色完全一致，无模糊干扰 */
   padding: 32px 0 4px 0;
-  /* 顶部呼吸感加大 (32px)，底部紧凑 (4px) */
+  /* 维持 2.4.3 的上下间距比例 (上疏下密) */
   margin: 0;
   display: flex;
   gap: 12px;
@@ -586,13 +586,13 @@ input[type="date"].form-input {
   scrollbar-width: none;
 }
 
-/* 使用伪元素作为首尾占位符，确保初始状态与内容完美对齐 */
+/* 修正对齐：8px 伪元素 + 12px Gap = 20px 视觉偏移，完美对接下方卡片 */
 .record-filter-bar::before,
 .record-filter-bar::after {
   content: '';
-  flex: 0 0 20px;
-  /* 匹配 .content-wrapper 的 20px 边距 */
+  flex: 0 0 8px;
 }
+
 
 .record-filter-bar::-webkit-scrollbar {
   display: none;

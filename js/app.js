@@ -5,7 +5,7 @@ import { initStore } from './store.js';
 import { switchTab, initAIEntry, initSyncButton } from './modules/ui.js';
 
 window.addEventListener('DOMContentLoaded', async () => {
-    console.log('🐾 Meow_Daily V2.4.3 Records UX Precision PWA 启动...');
+    console.log('🐾 Meow_Daily V2.4.4 Records Alignment Perfected PWA 启动...');
 
     // 初始化数据
     await initStore();
