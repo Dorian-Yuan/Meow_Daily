@@ -786,7 +786,7 @@ function renderSettings() {
     mainContent.innerHTML = `
         <div class="content-wrapper fade-in delay-1">
             <div class="sticky-nav-header">
-                <span id="btn-back" style="cursor:pointer; font-size:24px; padding:4px;">←</span>
+                <span id="btn-back" style="cursor:pointer; font-size:24px;">←</span>
                 <h2 style="font-size:18px; font-weight:900;">系统设置</h2>
             </div>
             
@@ -829,7 +829,7 @@ function renderSettings() {
                 </div>
             </div>
             
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.4.4 "SuiSui" Perfect Alignment Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.4.5 "SuiSui" UI Polishing Build</p>
         </div>
     `;
 
@@ -890,7 +890,7 @@ function renderAISettings() {
     mainContent.innerHTML = `
         <div class="content-wrapper fade-in delay-1">
             <div class="sticky-nav-header">
-                <span id="btn-back-ai" style="cursor:pointer; font-size:24px; padding:4px;">←</span>
+                <span id="btn-back-ai" style="cursor:pointer; font-size:24px;">←</span>
                 <h2 style="font-size:18px; font-weight:900;">AI 设置</h2>
             </div>
             
