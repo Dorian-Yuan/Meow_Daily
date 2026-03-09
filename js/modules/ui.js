@@ -163,7 +163,7 @@ function renderHome() {
                 <div class="overview-item">
                     <span class="ov-icon">✨</span>
                     <div class="ov-text">
-                        <span class="ov-value">V2.4.9</span>
+                        <span class="ov-value">V2.4.10</span>
                         <span class="ov-label">系统版本</span>
                     </div>
                 </div>
@@ -380,7 +380,7 @@ function renderRecords() {
                 </div>
             `).join('')}
         </div>
-        <div class="content-wrapper fade-in" style="margin-top:0; padding-top:0;">
+        <div class="content-wrapper fade-in" style="margin-top:0; padding-top:16px;">
     `;
 
     let lastMonth = '';
@@ -694,7 +694,7 @@ function renderProfile() {
                 </div>
             </div>
 
-            <div id="btn-settings" class="card" style="flex-direction:row; justify-content:space-between; align-items:center; padding:20px 24px; cursor:pointer;">
+            <div id="btn-settings" class="card" style="flex-direction:row; justify-content:space-between; align-items:center; padding:20px 24px; cursor:pointer; overflow:visible; transform:translateZ(0);">
                 <div style="display:flex; align-items:center; gap:12px;">
                     <span style="font-size:18px;">⚙️</span>
                     <span style="font-size:15px; font-weight:700;">系统设置</span>
@@ -817,7 +817,7 @@ function renderSettings() {
                 <button id="i-save" class="btn-drawer-save" style="margin-top:12px;">保存配置</button>
             </div>
 
-            <div id="btn-ai-settings" class="card" style="flex-direction:row; justify-content:space-between; align-items:center; padding:20px 24px; cursor:pointer;">
+            <div id="btn-ai-settings" class="card" style="flex-direction:row; justify-content:space-between; align-items:center; padding:20px 24px; cursor:pointer; overflow:visible; transform:translateZ(0);">
                 <div style="display:flex; align-items:center; gap:12px;">
                     <span style="font-size:18px;">🤖</span>
                     <span style="font-size:15px; font-weight:700;">AI 设置</span>
@@ -825,7 +825,7 @@ function renderSettings() {
                 <span style="color:var(--color-text-hint); font-size:12px;">❯</span>
             </div>
             
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600; text-align:center;">Meow_Daily V2.4.9 "SuiSui" PWA Logo Update Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600; text-align:center;">Meow_Daily V2.4.10 "SuiSui" PWA Logo Update Build</p>
         </div>
     `;
 
