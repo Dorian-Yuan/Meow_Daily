@@ -5,7 +5,7 @@ import { initStore } from './store.js';
 import { switchTab, initAIEntry, initSyncButton } from './modules/ui.js';
 
 window.addEventListener('DOMContentLoaded', async () => {
-    console.log('🐾 Meow_Daily V2.2.0 Premium Header Effects 启动...');
+    console.log('🐾 Meow_Daily V2.2.1 Premium Header Effects 启动...');
 
     // 初始化数据
     await initStore();
