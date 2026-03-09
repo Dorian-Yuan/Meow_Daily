@@ -163,7 +163,7 @@ function renderHome() {
                 <div class="overview-item">
                     <span class="ov-icon">✨</span>
                     <div class="ov-text">
-                        <span class="ov-value">V2.4.8</span>
+                        <span class="ov-value">V2.4.9</span>
                         <span class="ov-label">系统版本</span>
                     </div>
                 </div>
@@ -813,7 +813,7 @@ function renderSettings() {
 
             <div class="card" style="display:block; padding:0; overflow:hidden;"><div id="btn-ai-settings" style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px; cursor:pointer;"><div style="display:flex; align-items:center; gap:12px;"><span style="font-size:18px;">🤖</span><span style="font-size:15px; font-weight:700;">AI 设置</span></div><span style="color:var(--color-text-hint); font-size:12px;">❯</span></div></div>
             
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600; text-align:center;">Meow_Daily V2.4.8 "SuiSui" PWA Logo Update Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600; text-align:center;">Meow_Daily V2.4.9 "SuiSui" PWA Logo Update Build</p>
         </div>
     `;
 
@@ -873,7 +873,7 @@ function renderAISettings() {
 
     mainContent.innerHTML = `
         <div class="content-wrapper fade-in delay-1">
-            <div class="sticky-nav-header">
+            <div style="padding: 12px 20px 24px; display: flex; align-items: center; gap: 8px;">
                 <span id="btn-back-ai" style="cursor:pointer; font-size:24px;">←</span>
                 <h2 style="font-size:18px; font-weight:900;">AI 设置</h2>
             </div>
