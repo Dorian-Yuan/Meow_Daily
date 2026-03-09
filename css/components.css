@@ -568,3 +568,51 @@ input[type="date"].form-input {
   width: 100%;
   height: 100%;
 }
+
+/* --- Records Filter Bar --- */
+.record-filter-bar {
+  position: sticky;
+  top: 72px;
+  /* Just below the header-banner */
+  z-index: 1060;
+  background: var(--color-bg-warm);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 12px 20px;
+  margin: 0 -20px 16px -20px;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.record-filter-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-chip {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--color-bg);
+  color: var(--color-text-hint);
+  border: 1.5px solid var(--color-divider);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filter-chip.active {
+  background: var(--color-primary);
+  color: #FFFFFF;
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(64, 102, 224, 0.3);
+  transform: scale(1.05);
+}
+
+.filter-chip:active {
+  transform: scale(0.95);
+}

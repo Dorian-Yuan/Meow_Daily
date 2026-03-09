@@ -10,6 +10,8 @@ import { parseTextWithAI, processMentionedTime } from '../api/ai.js';
 import { fetchCloudDB, pushCloudDB } from '../api/github.js';
 
 const mainContent = document.getElementById('main-content');
+let currentRecordFilter = 'all'; // 记录页分类筛选状态
+
 
 // ---- 辅助工具 ----
 
@@ -161,7 +163,7 @@ function renderHome() {
                 <div class="overview-item">
                     <span class="ov-icon">✨</span>
                     <div class="ov-text">
-                        <span class="ov-value">V2.3.0</span>
+                        <span class="ov-value">V2.4.0</span>
                         <span class="ov-label">系统版本</span>
                     </div>
                 </div>
@@ -342,7 +344,13 @@ function renderRecords() {
         });
     });
 
-    all.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+    // 分类筛选逻辑
+    let filteredRecords = all;
+    if (currentRecordFilter !== 'all') {
+        filteredRecords = all.filter(r => r._c === currentRecordFilter);
+    }
+
+    filteredRecords.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
 
     if (all.length === 0) {
         mainContent.innerHTML = `
@@ -355,10 +363,29 @@ function renderRecords() {
         return;
     }
 
-    let html = '<div class="content-wrapper fade-in delay-1">';
+    // 记录筛选栏 HTML
+    const filterTabs = [
+        { id: 'all', label: '全部', icon: '🐾' },
+        { id: 'routine', label: '日常', icon: '🧹' },
+        { id: 'food', label: '饮食', icon: '🍴' },
+        { id: 'weight', label: '体重', icon: '⚖️' },
+        { id: 'medical', label: '就诊', icon: '🏥' }
+    ];
+
+    let html = `
+        <div class="record-filter-bar">
+            ${filterTabs.map(t => `
+                <div class="filter-chip ${currentRecordFilter === t.id ? 'active' : ''}" data-filter="${t.id}">
+                    ${t.icon} ${t.label}
+                </div>
+            `).join('')}
+        </div>
+        <div class="content-wrapper fade-in" style="margin-top:0; padding-top:0;">
+    `;
+
     let lastMonth = '';
 
-    all.forEach((r, idx) => {
+    filteredRecords.forEach((r, idx) => {
         const month = r.timestamp.slice(0, 7);
         if (month !== lastMonth) {
             lastMonth = month;
@@ -417,6 +444,14 @@ function renderRecords() {
         `;
     });
     mainContent.innerHTML = html + '</div>';
+
+    // 绑定筛选点击事件
+    mainContent.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.onclick = () => {
+            currentRecordFilter = chip.dataset.filter;
+            renderRecords();
+        };
+    });
 
     mainContent.querySelectorAll('.card[data-id]').forEach(card => {
         card.onclick = () => showEntryDrawer(card.dataset.category, card.dataset.id);
@@ -794,7 +829,7 @@ function renderSettings() {
                 </div>
             </div>
             
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.3.0 "SuiSui" Dark Mode Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.4.0 "SuiSui" Records Filter Build</p>
         </div>
     `;
 
