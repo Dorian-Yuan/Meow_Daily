@@ -163,7 +163,7 @@ function renderHome() {
                 <div class="overview-item">
                     <span class="ov-icon">✨</span>
                     <div class="ov-text">
-                        <span class="ov-value">V2.4.4</span>
+                        <span class="ov-value">V2.4.5</span>
                         <span class="ov-label">系统版本</span>
                     </div>
                 </div>

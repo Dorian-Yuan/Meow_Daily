@@ -527,7 +527,8 @@ input[type="date"].form-input {
   top: 196px;
   /* banner 底部大约 196px，确保无缝贴合 */
   z-index: 1050;
-  background: var(--color-bg);
+  background: var(--color-bg) !important;
+  /* 强制背景色一致 */
   padding: 12px 20px 4px;
   /* 减小底部 padding 让标题更紧凑 */
   margin: 0 -20px;
@@ -571,7 +572,7 @@ input[type="date"].form-input {
   height: 100%;
 }
 
-/* --- Records Filter Bar (V2.4.4 UX Final) --- */
+/* --- Records Filter Bar (V2.4.5 UI Final) --- */
 .record-filter-bar {
   position: sticky;
   top: 196px;
