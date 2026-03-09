@@ -569,25 +569,29 @@ input[type="date"].form-input {
   height: 100%;
 }
 
-/* --- Records Filter Bar --- */
+/* --- Records Filter Bar (V2.4.3 UX Precision) --- */
 .record-filter-bar {
   position: sticky;
   top: 196px;
   /* 匹配 .app-container 的 padding-top，紧贴 header-banner */
   z-index: 1060;
   background: var(--color-bg);
-  /* 与列表底色一致，消除割裂感 */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: 16px 0;
-  /* 垂直留白增加，水平由 content-wrapper 控制 */
-  margin: 0 0 16px 0;
-  /* 移除负 margin，实现测边对齐 */
+  /* 与列表底色完全一致，无模糊干扰 */
+  padding: 32px 0 4px 0;
+  /* 顶部呼吸感加大 (32px)，底部紧凑 (4px) */
+  margin: 0;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   overflow-x: auto;
   scrollbar-width: none;
-  /* 移除 border-bottom 以获得更无缝的视觉效果 */
+}
+
+/* 使用伪元素作为首尾占位符，确保初始状态与内容完美对齐 */
+.record-filter-bar::before,
+.record-filter-bar::after {
+  content: '';
+  flex: 0 0 20px;
+  /* 匹配 .content-wrapper 的 20px 边距 */
 }
 
 .record-filter-bar::-webkit-scrollbar {
@@ -601,7 +605,6 @@ input[type="date"].form-input {
   font-size: 13px;
   font-weight: 700;
   background: var(--color-bg-warm);
-  /* 未激活状态使用暖色背景 */
   color: var(--color-text-hint);
   border: 1.5px solid var(--color-divider);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -611,11 +614,11 @@ input[type="date"].form-input {
 
 .filter-chip.active {
   background: var(--color-primary);
-  /* 严格使用品牌蓝 */
+  /* 严格匹配品牌蓝 */
   color: #FFFFFF;
   border-color: var(--color-primary);
-  box-shadow: 0 4px 12px rgba(64, 102, 224, 0.3);
   transform: scale(1.05);
+  /* 移除阴影以保证色块纯净统一 */
 }
 
 .filter-chip:active {
