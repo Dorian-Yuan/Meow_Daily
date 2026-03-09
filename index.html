@@ -9,18 +9,25 @@
     <title>Meow_Daily - 喵喵日记</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="assets/icons/meow-ip.png">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Noto+Sans+SC:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/components.css">
 </head>
 <body>
     <div id="app" class="app-container">
+        <!-- 装饰背景元素 -->
+        <span class="paw-deco paw-1">🐾</span>
+        <span class="paw-deco paw-2">🐾</span>
+        <span class="paw-deco paw-3">🐾</span>
+
         <!-- 顶部导航 & Banner -->
-        <header class="header-banner">
+        <header class="header-banner fade-up delay-1">
             <div class="ip-container">
                 <img src="assets/icons/meow-ip.png" alt="岁岁 IP">
             </div>
             <h1 class="logo-text">Meow Daily</h1>
+            <p class="logo-subtitle">岁岁的成长日记</p>
             <!-- 极简同步指示 -->
             <div id="sync-btn" class="sync-indicator" style="cursor:pointer;">
                 <span class="dot"></span>
@@ -32,7 +39,7 @@
         <main id="main-content"></main>
 
         <!-- AI 悬浮球 -->
-        <div id="ai-entry" class="ai-fab-button">AI</div>
+        <div id="ai-entry" class="ai-fab-button">🐾</div>
 
         <!-- 底部 Tabbar -->
         <nav class="bottom-tabbar">

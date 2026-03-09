@@ -3,28 +3,39 @@
   background-color: var(--color-white);
   border-radius: var(--radius-card);
   padding: var(--spacing-l);
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-m);
   position: relative;
-  transition: all 0.3s var(--transition-spring);
-  border: 1px solid rgba(0,0,0,0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
 }
 
 /* 如果卡片是可点击的，增加交互反馈 */
-.card[onclick], .card[data-id], #home-weight-card, #profile-card, #btn-settings, #btn-ai-settings {
+.card[onclick],
+.card[data-id],
+#home-weight-card,
+#profile-card,
+#btn-settings,
+#btn-ai-settings {
   cursor: pointer;
 }
 
-.card[onclick]:hover, .card[data-id]:hover, #home-weight-card:hover, #profile-card:hover {
+.card[onclick]:hover,
+.card[data-id]:hover,
+#home-weight-card:hover,
+#profile-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-hover);
 }
 
-.card[onclick]:active, .card[data-id]:active, #home-weight-card:active, #profile-card:active {
-  transform: scale(0.98);
-  box-shadow: var(--shadow-soft);
+.card[onclick]:active,
+.card[data-id]:active,
+#home-weight-card:active,
+#profile-card:active {
+  transform: scale(0.985);
+  box-shadow: var(--shadow-sm);
 }
 
 /* ======== 按钮组件 ======== */
@@ -130,9 +141,9 @@ input[type="date"].form-input {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(17, 24, 39, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(90, 70, 55, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   z-index: 2000;
   display: flex;
   flex-direction: column;
@@ -141,31 +152,41 @@ input[type="date"].form-input {
 }
 
 @keyframes overlay-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .drawer-panel {
   background: var(--color-white);
-  border-radius: 32px 32px 0 0;
-  padding: 16px 24px 40px;
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  padding: 20px 24px 40px;
   max-height: 85vh;
   overflow-y: auto;
   animation: drawer-up 0.4s var(--transition-spring);
-  box-shadow: 0 -8px 32px rgba(0,0,0,0.1);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
 }
 
 @keyframes drawer-up {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
 }
 
 .drawer-handle {
-  width: 48px;
+  width: 36px;
   height: 6px;
   background: var(--color-divider);
   border-radius: var(--radius-max);
-  margin: 0 auto 24px;
+  margin: 0 auto 18px;
 }
 
 .drawer-header {
@@ -276,30 +297,43 @@ input[type="date"].form-input {
 /* ======== Toast 通知 ======== */
 .toast {
   position: fixed;
-  top: 80px;
+  top: 56px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 14px 28px;
-  border-radius: var(--radius-max);
-  font-size: 15px;
+  padding: 10px 22px;
+  border-radius: var(--r-full);
+  font-size: 13px;
   font-weight: 800;
   z-index: 3000;
-  animation: toast-in 0.4s var(--transition-spring) forwards;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  animation: toast-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  box-shadow: var(--shadow-lg);
   white-space: nowrap;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
-.toast-success { background: rgba(16, 185, 129, 0.95); color: white; }
-.toast-error { background: rgba(239, 68, 68, 0.95); color: white; }
-.toast-info { background: rgba(17, 24, 39, 0.95); color: white; }
+.toast-success {
+  background: rgba(16, 185, 129, 0.95);
+  color: white;
+}
+
+.toast-error {
+  background: rgba(239, 68, 68, 0.95);
+  color: white;
+}
+
+.toast-info {
+  background: rgba(31, 24, 20, 0.95);
+  color: white;
+}
 
 @keyframes toast-in {
   from {
     opacity: 0;
     transform: translateX(-50%) translateY(-30px) scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0) scale(1);
@@ -323,8 +357,17 @@ input[type="date"].form-input {
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.8); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
 }
 
 /* ======== 档案编辑按钮 ======== */
@@ -373,4 +416,112 @@ input[type="date"].form-input {
   align-items: center;
   justify-content: center;
   font-size: 22px;
+}
+
+/* ======== 徽章系统 ======== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: var(--radius-max);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: var(--color-white);
+  line-height: 1;
+  white-space: nowrap;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.badge-success {
+  background: linear-gradient(135deg, #10B981, #06B6D4);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.badge-info {
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.badge-warning {
+  background: linear-gradient(135deg, #F59E0B, #F28C38);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+/* ======== 健康提醒条 ======== */
+.health-tip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #F3EFFF;
+  border-radius: var(--radius-16);
+  border-left: 4px solid #8B5CF6;
+  font-size: 13px;
+  font-weight: 700;
+  color: #5B21B6;
+  line-height: 1.4;
+}
+
+.health-tip .tip-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* ======== 今日概览卡片 (2x2 仪表盘) ======== */
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.overview-item {
+  background: var(--color-white);
+  border-radius: var(--radius-16);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-divider);
+  transition: transform 0.2s ease;
+}
+
+.overview-item:active {
+  transform: scale(0.97);
+}
+
+.overview-item .ov-icon {
+  font-size: 22px;
+}
+
+.overview-item .ov-value {
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--color-text-title);
+  line-height: 1;
+}
+
+.overview-item .ov-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-hint);
+}
+
+/* ======== SVG 迷你折线图 ======== */
+.mini-chart {
+  width: 100%;
+  height: 60px;
+  margin-top: 8px;
+  border-radius: var(--radius-12);
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+.mini-chart svg {
+  width: 100%;
+  height: 100%;
 }

@@ -53,107 +53,184 @@ export function switchTab(tabName) {
 /**
  * 首页渲染 - 仪表盘与提醒引擎
  */
+/**
+ * 首页渲染 - 仪表盘与提醒引擎
+ */
 function renderHome() {
     const db = getDB();
     const suiSui = db.cats[0];
-    const weightRecords = db.records[suiSui.cat_id]?.weight || [];
+    const catRecs = db.records[suiSui.cat_id] || {};
+    const weightRecords = catRecs.weight || [];
     const sortedWeights = [...weightRecords].sort((a, b) => b.timestamp.localeCompare(a.timestamp));
     const latestWeight = sortedWeights.length > 0 ? sortedWeights[0].weight_kg : '--';
     const latestWeightDate = sortedWeights.length > 0 ? sortedWeights[0].timestamp.split(' ')[0] : '尚未记录';
 
-    const reminders = [];
-    const catRecs = db.records[suiSui.cat_id] || {};
     const todayStr = getBJNow().split(' ')[0];
     const todayDate = new Date(todayStr.replace(/-/g, '/'));
+    const currentMonth = todayStr.slice(0, 7);
+
+    // 1. 统计数据计算
+    // 陪伴天数
+    const adoptionDate = new Date(suiSui.adoption_date.replace(/-/g, '/'));
+    const companionDays = Math.floor((todayDate - adoptionDate) / (1000 * 60 * 60 * 24)) + 1;
+    // 本月饮食记录数
+    const monthFoodCount = (catRecs.food || []).filter(r => r.timestamp.startsWith(currentMonth)).length;
+    // 本月就诊花费
+    const monthMedicalCost = (catRecs.medical || [])
+        .filter(r => r.timestamp.startsWith(currentMonth))
+        .reduce((sum, r) => sum + (parseFloat(r.cost) || 0), 0);
+
+    // 2. 提醒引擎
+    const reminders = [];
     const tMonth = todayDate.getMonth();
     const tDay = todayDate.getDate();
 
-    // 1. 纪念日检测
+    // 纪念日检测
     const birthDate = new Date(suiSui.birth_date.replace(/-/g, '/'));
     if (birthDate.getMonth() === tMonth && birthDate.getDate() === tDay) {
-        const age = todayDate.getFullYear() - birthDate.getFullYear();
-        reminders.push({ special: true, icon: '🎂', label: `今天是${suiSui.name}的 ${age} 岁生日！` });
+        reminders.push({ special: true, icon: '🎂', label: `今天是${suiSui.name}的 ${todayDate.getFullYear() - birthDate.getFullYear()} 岁生日！` });
     }
 
-    const adoptDate = new Date(suiSui.adoption_date.replace(/-/g, '/'));
-    if (adoptDate.getMonth() === tMonth && adoptDate.getDate() === tDay) {
-        const years = todayDate.getFullYear() - adoptDate.getFullYear();
-        if (years > 0) {
-            reminders.push({ special: true, icon: '🏠', label: `今天是${suiSui.name}到家 ${years} 周年纪念日！` });
-        }
-    }
-
-    // 2. 动态提醒事项检测
+    let healthTipHtml = '';
     const customReminders = db.settings.reminders || [];
+    let urgentCount = 0;
+
     customReminders.forEach(rm => {
         const lastRec = (catRecs.routine || []).filter(r => r.type === rm.label)
             .sort((a, b) => b.timestamp.localeCompare(a.timestamp))[0];
-        
-        let statusHtml = '';
 
+        let statusHtml = '';
         if (lastRec) {
             const lastDate = new Date(lastRec.timestamp.split(' ')[0].replace(/-/g, '/'));
             const diffDays = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
-            
+            const daysLeft = rm.days - diffDays;
+
             if (diffDays === 0) {
                 statusHtml = `<div style="font-size:11px; color:var(--color-primary); font-weight:700;">✅ 今天已完成</div>`;
+            } else if (daysLeft > 0) {
+                statusHtml = `<div style="font-size:11px; color:var(--color-text-hint);">⏳ 还有 ${daysLeft} 天</div>`;
             } else {
-                const daysLeft = rm.days - diffDays;
-                if (daysLeft > 0) { 
-                    statusHtml = `<div style="font-size:11px; color:var(--color-text-hint);">⏳ 还有 ${daysLeft} 天</div>`;
-                } else if (daysLeft === 0) {
-                    statusHtml = `<div style="font-size:11px; color:#F59E0B; font-weight:700;">⚠️ 今天该做了！</div>`;
-                } else {
-                    statusHtml = `<div style="font-size:11px; color:#EF4444; font-weight:700;">⚠️ 已逾期 ${Math.abs(daysLeft)} 天</div>`;
-                }
+                statusHtml = `<div style="font-size:11px; color:#EF4444; font-weight:700;">⚠️ 已逾期 ${Math.abs(daysLeft)} 天</div>`;
+                urgentCount++;
             }
         } else {
             statusHtml = `<div style="font-size:11px; color:var(--color-text-hint);">❓ 尚未记录过</div>`;
+            urgentCount++;
         }
-
         reminders.push({ label: rm.label, icon: rm.icon || '🐾', statusHtml });
     });
 
+    if (urgentCount > 0) {
+        healthTipHtml = `
+            <div class="health-tip fade-up delay-2">
+                <span class="tip-icon">💜</span>
+                <span>主子提醒：喵！有 ${urgentCount} 项待办已经过期或需要关注啦，快去看看！</span>
+            </div>
+        `;
+    }
+
+    // 3. SVG 体重趋势图生成
+    let svgChartHtml = '';
+    if (sortedWeights.length >= 2) {
+        const last7 = [...weightRecords]
+            .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+            .slice(-7);
+        const ws = last7.map(r => r.weight_kg);
+        const maxW = Math.max(...ws) + 0.2;
+        const minW = Math.max(0, Math.min(...ws) - 0.2);
+        const range = maxW - minW || 1;
+
+        const pts = last7.map((r, i) => {
+            const x = (i / (last7.length - 1)) * 100;
+            const y = 100 - ((r.weight_kg - minW) / range) * 80 - 10; // 留白 10%
+            return `${x},${y}`;
+        }).join(' ');
+
+        svgChartHtml = `
+            <div class="mini-chart">
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <path d="M ${pts}" fill="none" stroke="var(--color-primary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                    ${last7.map((r, i) => {
+            const x = (i / (last7.length - 1)) * 100;
+            const y = 100 - ((r.weight_kg - minW) / range) * 80 - 10;
+            return `<circle cx="${x}" cy="${y}" r="3" fill="var(--color-white)" stroke="var(--color-primary)" stroke-width="2" />`;
+        }).join('')}
+                </svg>
+            </div>
+        `;
+    }
+
     mainContent.innerHTML = `
-        <div class="content-wrapper fade-in-up stagger-1">
-            <section class="quick-actions fade-in-up stagger-1">
+        <div class="content-wrapper">
+            <!-- 2x2 概览仪表盘 -->
+            <section class="overview-grid fade-up delay-1">
+                <div class="overview-item">
+                    <span class="ov-icon">🏠</span>
+                    <span class="ov-value">${companionDays}</span>
+                    <span class="ov-label">陪伴天数</span>
+                </div>
+                <div class="overview-item">
+                    <span class="ov-icon">🍴</span>
+                    <span class="ov-value">${monthFoodCount}</span>
+                    <span class="ov-label">本月开饭</span>
+                </div>
+                <div class="overview-item">
+                    <span class="ov-icon">🪙</span>
+                    <span class="ov-value">${monthMedicalCost.toFixed(0)}</span>
+                    <span class="ov-label">本月花费</span>
+                </div>
+                <div class="overview-item">
+                    <span class="ov-icon">✨</span>
+                    <span class="ov-value">V2.1</span>
+                    <span class="ov-label">系统版本</span>
+                </div>
+            </section>
+
+            ${healthTipHtml}
+
+            <section class="quick-actions fade-up delay-3">
                 <div class="action-item" data-type="routine"><div class="action-icon">🧹</div><div class="action-label">日常</div></div>
                 <div class="action-item" data-type="food"><div class="action-icon">🍴</div><div class="action-label">饮食</div></div>
                 <div class="action-item" data-type="weight"><div class="action-icon">⚖️</div><div class="action-label">体重</div></div>
                 <div class="action-item" data-type="medical"><div class="action-icon">🏥</div><div class="action-label">就诊</div></div>
             </section>
 
-            <div class="card fade-in-up stagger-2" id="home-weight-card" style="cursor:pointer; display:flex; flex-direction:row; justify-content:space-between; align-items:center; padding:var(--spacing-l);">
-                <div style="display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:var(--spacing-s);">
-                    <div style="font-size:16px; font-weight:800; color:var(--color-text-title); line-height:1;">⚖️ 体重监测</div>
-                    <div style="font-size:12px; color:var(--color-text-hint); font-weight:600; line-height:1;">✨ 最近记录：${latestWeightDate}</div>
+            <div class="card fade-up delay-4" id="home-weight-card" style="cursor:pointer; padding:var(--spacing-l);">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="display:flex; flex-direction:column; gap:var(--spacing-s);">
+                        <div style="font-size:16px; font-weight:800; color:var(--color-text-title);">⚖️ 体重监测</div>
+                        <div style="font-size:12px; color:var(--color-text-hint); font-weight:600;">✨ 最近记录：${latestWeightDate}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <span style="font-size:32px; font-weight:900; color:var(--color-primary);">${latestWeight}</span>
+                        <span style="font-size:14px; color:var(--color-text-hint); font-weight:700;">kg</span>
+                    </div>
                 </div>
-                <div style="display:flex; align-items:baseline; justify-content:flex-end; gap:2px; height:100%;">
-                    <span style="font-size:32px; font-weight:900; color:var(--color-primary); line-height:1;">${latestWeight}</span>
-                    <span style="font-size:14px; color:var(--color-text-hint); font-weight:700;">kg</span>
-                </div>
+                ${svgChartHtml}
             </div>
 
-            <div class="card fade-in-up stagger-3" style="border-left: 6px solid var(--color-yellow); background: #FFFDF5; padding-left: 20px;">
-                <h3 style="font-size:15px; font-weight:800; color:var(--color-text-title); margin:0;">提醒事项</h3>
-                ${reminders.length === 0 ?
+            <div class="card fade-up delay-5" style="border-left: 6px solid var(--color-yellow); background: #FFFDF5; padding-left: 20px;">
+                <h3 style="font-size:15px; font-weight:800; color:var(--color-text-title); margin-bottom:12px;">提醒事项</h3>
+                <div style="display:flex; flex-direction:column; gap:16px;">
+                    ${reminders.length === 0 ?
             `<p style="font-size:14px; color:var(--color-text-main); font-weight:500;">${suiSui.name}今天表现很棒喵，近期没有待办任务！🐾</p>` :
             reminders.map(r => r.special ? `
-                        <div style="display:flex; align-items:center; gap:var(--spacing-m); background:var(--color-bg); padding:10px; border-radius:var(--radius-12);">
-                            <span style="font-size:24px;">${r.icon}</span>
-                            <div style="flex:1; font-size:14px; font-weight:800; color:#E11D48;">${r.label}</div>
-                        </div>
-                    ` : `
-                        <div style="display:flex; align-items:center; gap:var(--spacing-m);">
-                            <span style="font-size:18px;">${r.icon}</span>
-                            <div style="flex:1;">
-                                <div style="font-size:14px; font-weight:800; margin-bottom:var(--spacing-xs);">${r.label}</div>
-                                ${r.statusHtml}
+                            <div style="display:flex; align-items:center; gap:var(--spacing-m); background:rgba(225, 29, 72, 0.05); padding:10px; border-radius:var(--radius-12);">
+                                <span style="font-size:24px;">${r.icon}</span>
+                                <div style="flex:1; font-size:14px; font-weight:800; color:#E11D48;">${r.label}</div>
                             </div>
-                            <button class="btn profile-edit-btn" style="padding:6px 12px; margin:0; font-size:11px;" onclick="window.meow_quick_record('${r.label}')">去记录</button>
-                        </div>
-                    `).join('')
+                        ` : `
+                            <div style="display:flex; align-items:center; gap:var(--spacing-m);">
+                                <span style="font-size:18px;">${r.icon}</span>
+                                <div style="flex:1;">
+                                    <div style="font-size:14px; font-weight:800; margin-bottom:var(--spacing-xs);">${r.label}</div>
+                                    ${r.statusHtml}
+                                </div>
+                                <button class="btn profile-edit-btn" style="padding:6px 12px; margin:0; font-size:11px;" onclick="window.meow_quick_record('${r.label}')">去记录</button>
+                            </div>
+                        `).join('')
         }
+                </div>
             </div>
         </div>
     `;
@@ -162,10 +239,7 @@ function renderHome() {
         el.onclick = () => showEntryDrawer(el.dataset.type);
     });
 
-    window.meow_quick_record = (label) => {
-        const type = 'routine';
-        showEntryDrawer(type, null, label);
-    };
+    window.meow_quick_record = (label) => showEntryDrawer('routine', null, label);
 
     document.getElementById('home-weight-card').onclick = () => {
         showWeightChartDrawer(weightRecords);
@@ -183,7 +257,7 @@ function showWeightChartDrawer(weightRecords) {
 
     const records = [...weightRecords].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
     const displayRecords = records.slice(-10); // 取最近10条
-    
+
     const overlay = document.createElement('div');
     overlay.className = 'drawer-overlay';
 
@@ -227,40 +301,40 @@ function showWeightChartDrawer(weightRecords) {
     const ctx = canvas.getContext('2d');
     const cw = canvas.width;
     const ch = canvas.height;
-    
+
     const padding = 30;
     const weights = displayRecords.map(r => r.weight_kg);
     const maxW = Math.max(...weights) + 0.5;
     const minW = Math.max(0, Math.min(...weights) - 0.5);
-    
+
     ctx.clearRect(0, 0, cw, ch);
-    
+
     // 背景网格线与Y轴文字
     ctx.strokeStyle = '#E5E7EB';
     ctx.lineWidth = 1;
     ctx.font = '10px sans-serif';
     ctx.fillStyle = '#9CA3AF';
     ctx.textAlign = 'right';
-    
+
     const steps = 4;
-    for(let i = 0; i <= steps; i++) {
+    for (let i = 0; i <= steps; i++) {
         const y = padding + (ch - padding * 2) * (1 - i / steps);
         const val = minW + (maxW - minW) * (i / steps);
-        
+
         ctx.beginPath();
         ctx.moveTo(padding, y);
         ctx.lineTo(cw - padding, y);
         ctx.stroke();
         ctx.fillText(val.toFixed(1), padding - 5, y + 3);
     }
-    
+
     // 数据折线
     if (weights.length > 0) {
         ctx.beginPath();
         ctx.strokeStyle = '#4066E0';
         ctx.lineWidth = 3;
         ctx.lineJoin = 'round';
-        
+
         displayRecords.forEach((r, i) => {
             const x = padding + (cw - padding * 2) * (i / Math.max(1, displayRecords.length - 1));
             const y = padding + (ch - padding * 2) * (1 - (r.weight_kg - minW) / (maxW - minW));
@@ -268,12 +342,12 @@ function showWeightChartDrawer(weightRecords) {
             else ctx.lineTo(x, y);
         });
         ctx.stroke();
-        
+
         // 数据点圆圈
         displayRecords.forEach((r, i) => {
             const x = padding + (cw - padding * 2) * (i / Math.max(1, displayRecords.length - 1));
             const y = padding + (ch - padding * 2) * (1 - (r.weight_kg - minW) / (maxW - minW));
-            
+
             ctx.beginPath();
             ctx.arc(x, y, 4, 0, Math.PI * 2);
             ctx.fillStyle = '#FFFFFF';
@@ -304,7 +378,7 @@ function renderRecords() {
 
     if (all.length === 0) {
         mainContent.innerHTML = `
-            <div class="content-wrapper fade-in-up stagger-1">
+            <div class="content-wrapper fade-up delay-1">
                 <div class="card" style="text-align:center; padding:60px 24px;">
                     <p style="color:var(--color-text-hint); font-size:14px; font-weight:600;">还没有记过${suiSui.name}的生活呢喵~ 🐾</p>
                 </div>
@@ -313,13 +387,14 @@ function renderRecords() {
         return;
     }
 
-    let html = '<div class="content-wrapper fade-in-up stagger-1">';
+    let html = '<div class="content-wrapper fade-up delay-1">';
     let lastMonth = '';
-    all.forEach(r => {
+
+    all.forEach((r, idx) => {
         const month = r.timestamp.slice(0, 7);
         if (month !== lastMonth) {
             lastMonth = month;
-            html += `<h2 style="font-size:14px; font-weight:900; margin: var(--spacing-16) var(--spacing-8) 0; color:var(--color-text-hint);">${month.replace('-', '年')}月</h2>`;
+            html += `<h2 class="fade-up delay-1" style="font-size:14px; font-weight:900; margin: var(--spacing-16) var(--spacing-8) 8px; color:var(--color-text-hint);">${month.replace('-', '年')}月</h2>`;
         }
 
         const icons = { routine: '🧹', food: '🍴', weight: '⚖️', medical: '🏥' };
@@ -327,10 +402,18 @@ function renderRecords() {
         let iconHtml = `<div style="width:44px; height:44px; background:var(--color-bg); border-radius:var(--radius-12); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">${icons[r._c] || '🐾'}</div>`;
 
         let rightContent = '';
+        let badgeHtml = '';
+
         if (r._c === 'weight') {
             rightContent = `<div style="font-size:22px; font-weight:900; color:var(--color-primary); line-height:1;">${r.weight_kg}<span style="font-size:12px; margin-left:2px; color:var(--color-text-hint);">kg</span></div>`;
+            // 比较上一次体重（all 是降序，所以 idx+1 是上一个记录）
+            const prev = all.slice(idx + 1).find(p => p._c === 'weight');
+            if (prev && r.weight_kg > prev.weight_kg) {
+                badgeHtml = `<span class="badge badge-success">增长 +${(r.weight_kg - prev.weight_kg).toFixed(2)}</span>`;
+            }
         } else if (r._c === 'medical') {
             rightContent = `<div style="font-size:20px; font-weight:900; color:#EF4444; line-height:1;">￥${r.cost || 0}</div>`;
+            badgeHtml = `<span class="badge badge-info">${r.type || '就诊'}</span>`;
         } else if (r._c === 'food') {
             let tags = [];
             if (r.brand) tags.push(r.brand);
@@ -341,12 +424,14 @@ function renderRecords() {
             rightContent = `<div style="font-size:13px; font-weight:800; color:var(--color-primary); background:#EEF2FF; padding:6px 10px; border-radius:8px;">✨ 已完成</div>`;
         }
 
-        let noteHtml = r.note 
-            ? `<div style="margin-top:12px; padding-top:12px; border-top:1.5px dashed var(--color-divider); font-size:13px; color:var(--color-text-hint); line-height:1.5; word-break:break-all;">${r.note}</div>` 
+        let noteHtml = r.note
+            ? `<div style="margin-top:12px; padding-top:12px; border-top:1.5px dashed var(--color-divider); font-size:13px; color:var(--color-text-hint); line-height:1.5; word-break:break-all;">${r.note}</div>`
             : '';
 
+        const delay = Math.min(6, (idx % 6) + 1);
         html += `
-            <div class="card" style="padding:16px; display:flex; flex-direction:column; cursor:pointer;" data-id="${r.record_id}" data-category="${r._c}">
+            <div class="card fade-up delay-${delay}" style="padding:16px; display:flex; flex-direction:column; cursor:pointer;" data-id="${r.record_id}" data-category="${r._c}">
+                ${badgeHtml}
                 <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
                     <div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">
                         ${iconHtml}
@@ -378,7 +463,7 @@ function showEntryDrawer(category, recordId = null, presetSubtype = null, prefil
     const db = getDB();
     const suiSui = db.cats[0];
     let oldData = recordId ? db.records[suiSui.cat_id][category].find(r => r.record_id === recordId) : null;
-    
+
     if (prefillData) {
         oldData = prefillData;
     }
@@ -557,17 +642,17 @@ function renderProfile() {
     const now = new Date(getBJNow().split(' ')[0].replace(/-/g, '/'));
     const companionDays = Math.floor((now - adoptionDate) / (1000 * 60 * 60 * 24)) + 1;
 
-    let genderIcon = suiSui.gender.includes('female') 
+    let genderIcon = suiSui.gender.includes('female')
         ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><circle cx="12" cy="10" r="7"></circle><line x1="12" y1="17" x2="12" y2="23"></line><line x1="9" y1="20" x2="15" y2="20"></line></svg>`
         : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><circle cx="10" cy="14" r="7"></circle><line x1="15" y1="9" x2="21" y2="3"></line><polyline points="15 3 21 3 21 9"></polyline></svg>`;
-    
+
     let genderText = '未绝育';
     if (suiSui.gender === 'neutered_male' || suiSui.gender === 'neutered_female') {
         genderText = '已绝育';
     }
 
     mainContent.innerHTML = `
-        <div class="content-wrapper fade-in-up stagger-1">
+        <div class="content-wrapper fade-up delay-1">
             <div class="card" id="profile-card" style="display:flex; flex-direction:row; align-items:center; gap:var(--spacing-l); padding:var(--spacing-l); cursor:pointer;">
                 <div style="width:72px; height:72px; background:var(--color-bg); border-radius:36px; display:flex; align-items:center; justify-content:center; font-size:32px; border:3px solid var(--color-divider); flex-shrink:0;">🐱</div>
                 <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:var(--spacing-xs);">
@@ -696,7 +781,7 @@ function renderSettings() {
     const reminders = db.settings.reminders || [];
 
     mainContent.innerHTML = `
-        <div class="content-wrapper fade-in-up stagger-1">
+        <div class="content-wrapper fade-up delay-1">
             <div style="display:flex; align-items:center; margin-bottom:12px; gap:8px;">
                 <span id="btn-back" style="cursor:pointer; font-size:24px; padding:4px;">←</span>
                 <h2 style="font-size:18px; font-weight:900;">系统设置</h2>
@@ -742,13 +827,13 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.1.1 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.1.2 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
 
     document.getElementById('btn-back').onclick = () => switchTab('profile');
-    
+
     document.querySelectorAll('.btn-del-rm').forEach(btn => {
         btn.onclick = () => {
             if (confirm('确定删除该提醒吗？')) {
@@ -766,7 +851,7 @@ function renderSettings() {
         const days = parseInt(daysStr);
         if (isNaN(days) || days <= 0) return alert('请输入有效的天数！');
         const icon = prompt('请输入一个 Emoji 图标 (如: 🛁)', '🐾') || '🐾';
-        
+
         db.settings.reminders.push({ id: 'rm_' + Date.now(), label, days, icon });
         setDB(db);
         renderSettings();
@@ -793,7 +878,7 @@ function renderSettings() {
 function renderAISettings() {
     const config = getConfig();
     const db = getDB();
-    
+
     // 默认 prompts
     const defaultParser = `你是一个严格的宠物日记数据提取API。请将用户的自然语言转化为精确的JSON格式。不要生成任何绝对时间戳（时间戳由前端系统自动生成）。\n必须严格遵守以下JSON结构返回，缺失的数据用null表示：\n{\n  "category": "必须是以下枚举值之一：routine(日常护理), food(饮食), weight(体重), medical(医疗)",\n  "parsed_data": {\n    // 若 category=weight，必须包含: "weight_kg"(数字), "note"(字符串)\n    // 若 category=routine，必须包含: "type"(如驱虫、洗澡、换猫砂等), "note"(字符串)\n    // 若 category=food，必须包含: "brand"(品牌), "type"(干粮/罐头等), "daily_intake_g"(数字)\n    // 若 category=medical，必须包含: "hospital"(医院), "symptom"(症状), "treatment"(治疗方案), "cost"(数字金额)\n  },\n  "mentioned_time": "提取用户话语中提及的时间状语（如'昨天晚上8点'、'刚刚'），若未提及则返回空字符串。"\n}\n严禁输出任何多余的解释性纯文本。`;
     const defaultDaily = `你是一只叫“岁岁”的傲娇小猫。你的主人设置了提醒。请根据提供的任务列表，用简短、傲娇、可爱的语气催促主人（铲屎官）去干活。如果今天是你的生日或纪念日，记得要礼物！字数控制在 60 字以内，多用 emoji。`;
@@ -802,7 +887,7 @@ function renderAISettings() {
     const prompts = config.prompts || db.settings?.prompts || {};
 
     mainContent.innerHTML = `
-        <div class="content-wrapper fade-in-up stagger-1">
+        <div class="content-wrapper fade-up delay-1">
             <div style="display:flex; align-items:center; margin-bottom:12px; gap:8px;">
                 <span id="btn-back-ai" style="cursor:pointer; font-size:24px; padding:4px;">←</span>
                 <h2 style="font-size:18px; font-weight:900;">AI 设置</h2>
@@ -857,7 +942,7 @@ function renderAISettings() {
             }
         };
         saveConfig(newCfg);
-        
+
         // 同时保存到 db.json，以便 GitHub Actions 后端读取
         const currentDB = getDB();
         if (!currentDB.settings) currentDB.settings = {};
@@ -919,7 +1004,7 @@ export function initAIEntry() {
                 const time = processMentionedTime(res.mentioned_time);
 
                 status.style.display = 'none';
-                
+
                 // 关闭当前 AI 输入抽屉，打开编辑抽屉
                 close();
 
@@ -928,7 +1013,7 @@ export function initAIEntry() {
                     timestamp: time,
                     ...res.parsed_data
                 };
-                
+
                 showEntryDrawer(res.category, null, null, prefillData);
 
             } catch (e) {
@@ -962,7 +1047,7 @@ export function initSyncButton() {
 
         try {
             console.log('🐾 开始云端同步...');
-            
+
             // 1. 获取云端数据 (Pull)
             const remote = await fetchCloudDB(config);
             console.log('✅ 云端拉取完成，SHA:', remote.sha);
@@ -978,9 +1063,9 @@ export function initSyncButton() {
 
             // 4. 更新本地状态 (Update)
             setDB(mergedDB);
-            
+
             showToast('云端同步成功 🐾', 'success');
-            
+
             // 刷新当前 Tab 视图
             const activeTab = document.querySelector('.tab-item.active');
             if (activeTab) switchTab(activeTab.dataset.tab);
