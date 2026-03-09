@@ -74,12 +74,10 @@ body {
 .app-container {
   background-color: var(--color-bg);
   min-height: 100vh;
-  padding-bottom: 120px;
-  /* 为更具悬浮感的tabbar留出更多空间 */
+  padding-top: 196px;
+  /* 为固定 banner 留出空间 */
   position: relative;
   z-index: 1;
-  overflow: hidden;
-  /* For paw deco */
 }
 
 /* 多彩渐变光晕背景装饰 */
@@ -108,10 +106,12 @@ body {
   border-bottom-right-radius: 24px;
   color: var(--color-white);
   text-align: center;
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 1000;
-  /* 提高 z-index 确保盖过所有内容 */
+  left: 0;
+  right: 0;
+  z-index: 1100;
+  /* 高于 sticky headers (900/800) */
   box-shadow: 0 4px 16px rgba(64, 102, 224, 0.1);
   transition: all 0.3s var(--transition-smooth);
 }
