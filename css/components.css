@@ -167,7 +167,7 @@ input[type="date"].form-input {
   padding: 20px 24px 40px;
   max-height: 85vh;
   overflow-y: auto;
-  animation: drawer-up 0.4s var(--transition-spring);
+  animation: drawer-up 0.4s var(--transition-out);
   box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
 }
 

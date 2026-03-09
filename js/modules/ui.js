@@ -943,8 +943,13 @@ export function initAIEntry() {
         `;
         document.body.appendChild(overlay);
 
-        const close = () => overlay.remove();
+        const close = () => {
+            overlay.querySelector('.drawer-panel').style.transform = 'translateY(100%)';
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 300);
+        };
         overlay.querySelector('#close-ai').onclick = close;
+        overlay.onclick = (e) => { if (e.target === overlay) close(); };
 
         const input = overlay.querySelector('#ai-input');
         const parseBtn = overlay.querySelector('#ai-parse');
