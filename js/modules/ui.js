@@ -163,7 +163,7 @@ function renderHome() {
                 <div class="overview-item">
                     <span class="ov-icon">✨</span>
                     <div class="ov-text">
-                        <span class="ov-value">V2.4.7</span>
+                        <span class="ov-value">V2.4.8</span>
                         <span class="ov-label">系统版本</span>
                     </div>
                 </div>
@@ -694,15 +694,7 @@ function renderProfile() {
                 </div>
             </div>
 
-            <div class="card" style="padding:0; overflow:hidden; gap:0;">
-                <div id="btn-settings" style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px; cursor:pointer;">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <span style="font-size:18px;">⚙️</span>
-                        <span style="font-size:15px; font-weight:700;">系统设置</span>
-                    </div>
-                    <span style="color:var(--color-text-hint); font-size:12px;">❯</span>
-                </div>
-            </div>
+            <div class="card" style="display:block; padding:0; overflow:hidden;"><div id="btn-settings" style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px; cursor:pointer;"><div style="display:flex; align-items:center; gap:12px;"><span style="font-size:18px;">⚙️</span><span style="font-size:15px; font-weight:700;">系统设置</span></div><span style="color:var(--color-text-hint); font-size:12px;">❯</span></div></div>
         </div>
     `;
 
@@ -819,17 +811,9 @@ function renderSettings() {
                 <button id="i-save" class="btn-drawer-save" style="margin-top:12px;">保存配置</button>
             </div>
 
-            <div class="card" style="padding:0; overflow:hidden; gap:0;">
-                <div id="btn-ai-settings" style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px; cursor:pointer;">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <span style="font-size:18px;">🤖</span>
-                        <span style="font-size:15px; font-weight:700;">AI 设置</span>
-                    </div>
-                    <span style="color:var(--color-text-hint); font-size:12px;">❯</span>
-                </div>
-            </div>
+            <div class="card" style="display:block; padding:0; overflow:hidden;"><div id="btn-ai-settings" style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px; cursor:pointer;"><div style="display:flex; align-items:center; gap:12px;"><span style="font-size:18px;">🤖</span><span style="font-size:15px; font-weight:700;">AI 设置</span></div><span style="color:var(--color-text-hint); font-size:12px;">❯</span></div></div>
             
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600; text-align:center;">Meow_Daily V2.4.7 "SuiSui" PWA Logo Update Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600; text-align:center;">Meow_Daily V2.4.8 "SuiSui" PWA Logo Update Build</p>
         </div>
     `;
 
