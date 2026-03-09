@@ -9,6 +9,8 @@
 html {
   background-color: var(--color-primary);
   /* 彻底阻断 iOS 露白：让根节点颜色为品牌蓝 */
+  overflow-x: hidden;
+  width: 100%;
 }
 
 body {
@@ -20,6 +22,8 @@ body {
   overscroll-behavior-y: none;
   /* 在支持的设备上阻断全局回弹 */
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* 装饰背景元素 */
@@ -75,9 +79,11 @@ body {
   background-color: var(--color-bg);
   min-height: 100vh;
   padding-top: 196px;
+  padding-bottom: 120px;
   /* 为固定 banner 留出空间 */
   position: relative;
   z-index: 1;
+  overflow: hidden;
 }
 
 /* 多彩渐变光晕背景装饰 */
