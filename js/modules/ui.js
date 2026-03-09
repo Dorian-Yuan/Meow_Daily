@@ -161,7 +161,7 @@ function renderHome() {
                 <div class="overview-item">
                     <span class="ov-icon">✨</span>
                     <div class="ov-text">
-                        <span class="ov-value">V2.1.14</span>
+                        <span class="ov-value">V2.1.15</span>
                         <span class="ov-label">系统版本</span>
                     </div>
                 </div>
@@ -787,7 +787,7 @@ function renderSettings() {
                 </div>
             </div>
             
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.1.14 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.1.15 "SuiSui" Premium Build</p>
         </div>
     `;
 
@@ -839,7 +839,7 @@ function renderAISettings() {
     const db = getDB();
 
     // 默认 prompts
-    const defaultParser = `你是一个严格的宠物日记数据提取API。请将用户的自然语言转化为精确的JSON格式。不要生成任何绝对时间戳（时间戳由前端系统自动生成）。\n对于提及的日期，请务必转换为标准格式，例如 "26年1月20日" 转换为 "2026-01-20 00:00"。\n必须严格遵守以下JSON结构返回，缺失的数据用null表示：\n{\n  "category": "必须是以下枚举值之一：routine(日常护理), food(饮食), weight(体重), medical(医疗)",\n  "parsed_data": {\n    // 若 category=weight，必须包含: "weight_kg"(数字), "note"(字符串)\n    // 若 category=routine，必须包含: "type"(如驱虫、洗澡、换猫砂等), "note"(字符串)\n    // 若 category=food，必须包含: "brand"(品牌), "type"(干粮/罐头等), "daily_intake_g"(数字)\n    // 若 category=medical，必须包含: "hospital"(医院), "symptom"(症状), "treatment"(治疗方案), "cost"(数字金额)\n  },\n  "mentioned_time": "提取用户话语中提及的时间状语（如'昨天晚上8点'、'刚刚'），若未提及则返回空字符串。"\n}\n严禁输出任何多余的解释性纯文本。`;
+    const defaultParser = `你是一个严格的宠物日记数据提取API。请将用户的自然语言转化为精确的JSON格式。不要生成任何绝对时间戳（时间戳由前端系统自动生成）。\n【重要】如果用户提到了具体日期（如"26年1月31号"），请直接在 mentioned_time 中返回 "YYYY-MM-DD HH:mm" 格式。\n【示例】用户说 "26年1月31号去医院"，你应返回 "mentioned_time": "2026-01-31 00:00"。\n必须严格遵守以下JSON结构返回，缺失的数据用null表示：\n{\n  "category": "必须是以下枚举值之一：routine(日常护理), food(饮食), weight(体重), medical(医疗)",\n  "parsed_data": {\n    // 若 category=weight，必须包含: "weight_kg"(数字), "note"(字符串)\n    // 若 category=routine，必须包含: "type"(如驱虫、洗澡、换猫砂等), "note"(字符串)\n    // 若 category=food，必须包含: "brand"(品牌), "type"(干粮/罐头等), "daily_intake_g"(数字)\n    // 若 category=medical，必须包含: "hospital"(医院), "symptom"(症状), "treatment"(治疗方案), "cost"(数字金额)\n  },\n  "mentioned_time": "提取用户话语中提及的时间，尽量直接返回 YYYY-MM-DD HH:mm。"\n}\n严禁输出任何多余的解释性纯文本。`;
     const defaultDaily = `你是一只叫“岁岁”的傲娇小猫。你的主人设置了提醒。请根据提供的任务列表，用简短、傲娇、可爱的语气催促主人（铲屎官）去干活。如果今天是你的生日或纪念日，记得要礼物！字数控制在 60 字以内，多用 emoji。`;
     const defaultWeekly = `你是一只叫“岁岁”的橘猫。请根据提供的本周数据，给主人写一封简短的本周总结。要求：语气治愈、偶尔傲娇，包含本周开销汇总和健康建议（如体重变化）。字数 150 字以内，多用 emoji。`;
 

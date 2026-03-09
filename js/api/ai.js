@@ -26,8 +26,8 @@ export async function parseTextWithAI(text) {
     if (!aiKey) throw new Error('请先在设置中配置 AI API Key');
 
     const defaultSystemPrompt = `你是一个严格的宠物日记数据提取API。请将用户的自然语言转化为精确的JSON格式。
-如果需要，你可以结合当前时间 (当前时间: ${fmtBJ(getBJTime())})，直接在 mentioned_time 中返回绝对时间戳 (YYYY-MM-DD HH:mm 格式)。
-对于提及的日期，请务必转换为标准格式，例如 "26年1月20日" 转换为 "2026-01-20 00:00"。
+【重要】如果用户提到了具体日期（如"26年1月31号"），请结合当前时间 (当前时间: ${fmtBJ(getBJTime())})，计算出绝对日期并在 mentioned_time 中直接返回 "YYYY-MM-DD HH:mm" 格式。
+【示例】用户说 "26年1月31号去医院"，你应返回 "mentioned_time": "2026-01-31 00:00" (如果没有具体时间，请设为 00:00)。
 必须严格遵守以下JSON结构返回，缺失的数据用null表示：
 {
   "category": "必须是以下枚举值之一：routine(日常护理), food(饮食), weight(体重), medical(医疗)",
@@ -37,7 +37,7 @@ export async function parseTextWithAI(text) {
     // 若 category=food，必须包含: "brand"(品牌), "type"(干粮/罐头等), "daily_intake_g"(数字)
     // 若 category=medical，必须包含: "hospital"(医院), "symptom"(症状), "treatment"(治疗方案), "cost"(数字金额)
   },
-  "mentioned_time": "提取用户话语中提及的时间，如果有上下文当前时间，可以直接计算为 YYYY-MM-DD HH:mm 返回。"
+  "mentioned_time": "提取用户话语中提及的时间，尽量直接返回 YYYY-MM-DD HH:mm。"
 }
 严禁输出任何多余的解释性纯文本。`;
 
@@ -77,6 +77,14 @@ export function processMentionedTime(mentionedTime) {
 
     if (!mentionedTime) return fmtBJ(now);
 
+    // 清理 AI 可能返回的冗余文字 (如 "提取的时间：2026-01-31")
+    mentionedTime = mentionedTime.replace(/.*?(\d{2,4}[-年\/].*)/, '$1').trim();
+
+    // 如果只有日期 YYYY-MM-DD，补全时间
+    if (/^\d{4}-\d{2}-\d{2}$/.test(mentionedTime)) {
+        return mentionedTime + " 00:00";
+    }
+
     // 已经符合标准格式
     if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(mentionedTime)) {
         return mentionedTime;
@@ -88,19 +96,17 @@ export function processMentionedTime(mentionedTime) {
     }
 
     // 处理 YYYY年MM月DD日 或 YY年MM月DD日 或 MM月DD日
-    // 支持可选的时间 "HH点" 或 "HH:mm"
     const dateMatch = mentionedTime.match(/(?:(\d{2,4})年)?(\d{1,2})月(\d{1,2})[日号]?/);
     if (dateMatch) {
-        const targetDate = new Date(now); // 从当前北京时间对象克隆
+        const targetDate = new Date(now);
 
         let year = dateMatch[1] ? parseInt(dateMatch[1]) : now.getFullYear();
-        if (year < 100) year += 2000; // 处理 "26年" -> 2026
+        if (year < 100) year += 2000;
 
         targetDate.setFullYear(year);
         targetDate.setMonth(parseInt(dateMatch[2]) - 1);
         targetDate.setDate(parseInt(dateMatch[3]));
 
-        // 尝试匹配时间部分
         const timeMatch = mentionedTime.match(/(\d{1,2})[:点](\d{1,2})?/);
         if (timeMatch) {
             targetDate.setHours(parseInt(timeMatch[1]), parseInt(timeMatch[2] || 0), 0, 0);
@@ -113,8 +119,7 @@ export function processMentionedTime(mentionedTime) {
         } else if (mentionedTime.includes('晚上')) {
             targetDate.setHours(20, 0, 0, 0);
         } else {
-            // 如果只有日期没有时间，保留当前的时分
-            targetDate.setSeconds(0, 0);
+            targetDate.setHours(0, 0, 0, 0);
         }
         return fmtBJ(targetDate);
     }
@@ -131,7 +136,7 @@ export function processMentionedTime(mentionedTime) {
         } else if (mentionedTime.includes('晚上')) {
             d.setHours(20, 0, 0, 0);
         } else {
-            d.setSeconds(0, 0);
+            d.setHours(0, 0, 0, 0);
         }
         return fmtBJ(d);
     }
@@ -139,9 +144,9 @@ export function processMentionedTime(mentionedTime) {
     if (mentionedTime.includes('前天')) {
         const d = new Date(now);
         d.setDate(now.getDate() - 2);
+        d.setHours(0, 0, 0, 0);
         return fmtBJ(d);
     }
 
-    // 兜底返回当前时间
     return fmtBJ(now);
 }
