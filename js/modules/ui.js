@@ -161,7 +161,7 @@ function renderHome() {
                 <div class="overview-item">
                     <span class="ov-icon">✨</span>
                     <div class="ov-text">
-                        <span class="ov-value">V2.1.8</span>
+                        <span class="ov-value">V2.1.9</span>
                         <span class="ov-label">系统版本</span>
                     </div>
                 </div>
@@ -348,14 +348,14 @@ function renderRecords() {
         return;
     }
 
-    let html = '<div class="content-wrapper fade-up delay-1">';
+    let html = '<div class="content-wrapper fade-in delay-1">';
     let lastMonth = '';
 
     all.forEach((r, idx) => {
         const month = r.timestamp.slice(0, 7);
         if (month !== lastMonth) {
             lastMonth = month;
-            html += `<h2 class="sticky-month fade-up delay-1">${month.replace('-', '年')}月</h2>`;
+            html += `<h2 class="sticky-month fade-in delay-1">${month.replace('-', '年')}月</h2>`;
         }
 
         const icons = { routine: '🧹', food: '🍴', weight: '⚖️', medical: '🏥' };
@@ -788,7 +788,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.1.8 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.1.9 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;

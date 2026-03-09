@@ -402,6 +402,17 @@ body {
   }
 }
 
+.fade-in {
+  opacity: 0;
+  animation: fade-in-ani 0.5s ease forwards;
+}
+
+@keyframes fade-in-ani {
+  to {
+    opacity: 1;
+  }
+}
+
 .delay-1 {
   animation-delay: 0.05s;
 }
