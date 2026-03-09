@@ -1,6 +1,6 @@
 /* ======== 圆角卡片 ======== */
 .card {
-  background-color: var(--color-white);
+  background-color: var(--color-card-bg);
   border-radius: var(--radius-card);
   padding: var(--spacing-l);
   box-shadow: var(--shadow-md);
@@ -141,7 +141,7 @@ input[type="date"].form-input {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(90, 70, 55, 0.35);
+  background: var(--color-overlay-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   z-index: 2000;
@@ -162,13 +162,13 @@ input[type="date"].form-input {
 }
 
 .drawer-panel {
-  background: var(--color-white);
+  background: var(--color-card-bg);
   border-radius: var(--r-xl) var(--r-xl) 0 0;
   padding: 20px 24px 40px;
   max-height: 85vh;
   overflow-y: auto;
   animation: drawer-up 0.4s var(--transition-out);
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -8px 32px var(--color-drawer-shadow);
 }
 
 @keyframes drawer-up {
@@ -378,7 +378,7 @@ input[type="date"].form-input {
   gap: 6px;
   padding: 10px 24px;
   border-radius: var(--radius-max);
-  background: var(--color-white);
+  background: var(--color-card-bg);
   border: 2px solid var(--color-divider);
   font-size: 14px;
   font-weight: 800;
@@ -411,7 +411,7 @@ input[type="date"].form-input {
   height: 48px;
   border-radius: var(--radius-16);
   background: var(--color-yellow-light);
-  color: #D97706;
+  color: var(--color-milestone-fg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -457,12 +457,12 @@ input[type="date"].form-input {
   align-items: center;
   gap: 12px;
   padding: 14px 18px;
-  background: #F3EFFF;
+  background: var(--color-health-tip-bg);
   border-radius: var(--radius-16);
-  border-left: 4px solid #8B5CF6;
+  border-left: 4px solid var(--color-health-tip-border);
   font-size: 13px;
   font-weight: 700;
-  color: #5B21B6;
+  color: var(--color-health-tip-fg);
   line-height: 1.4;
 }
 
@@ -479,7 +479,7 @@ input[type="date"].form-input {
 }
 
 .overview-item {
-  background: var(--color-white);
+  background: var(--color-card-bg);
   border-radius: var(--radius-16);
   padding: 12px 14px;
   display: flex;

@@ -8,6 +8,7 @@
 
 html {
   background-color: var(--color-primary);
+  color-scheme: light dark;
   /* 彻底阻断 iOS 露白：让根节点颜色为品牌蓝 */
   overflow-x: hidden;
   width: 100%;
@@ -100,6 +101,15 @@ body {
   pointer-events: none;
   z-index: 0;
   filter: blur(30px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .app-container::before {
+    background:
+      radial-gradient(ellipse 50% 50% at 15% 30%, rgba(107, 138, 255, 0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 45% at 80% 20%, rgba(167, 139, 250, 0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 50% 60%, rgba(250, 204, 21, 0.05) 0%, transparent 70%);
+  }
 }
 
 /* Banner 区域 */
@@ -313,7 +323,7 @@ body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  background-color: var(--color-white);
+  background-color: var(--color-card-bg);
   padding: 20px 16px;
   border-radius: var(--radius-24);
   box-shadow: var(--shadow-md);
@@ -352,23 +362,23 @@ body {
 
 /* 遵循纯色块设计，暖色辅助 */
 .action-item[data-type="routine"] .action-icon {
-  background: #EBF0FF;
-  color: #4066E0;
+  background: var(--color-routine-bg);
+  color: var(--color-routine-fg);
 }
 
 .action-item[data-type="food"] .action-icon {
-  background: #FEF4EB;
-  color: #F28C38;
+  background: var(--color-food-bg);
+  color: var(--color-food-fg);
 }
 
 .action-item[data-type="weight"] .action-icon {
-  background: #F5F3FF;
-  color: #7C3AED;
+  background: var(--color-weight-bg);
+  color: var(--color-weight-fg);
 }
 
 .action-item[data-type="medical"] .action-icon {
-  background: #FDF2F8;
-  color: #DB2777;
+  background: var(--color-medical-bg);
+  color: var(--color-medical-fg);
 }
 
 .action-label {
@@ -385,12 +395,12 @@ body {
   right: 0;
   height: 76px;
   padding-bottom: env(safe-area-inset-bottom, 0);
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--color-tabbar-bg);
   backdrop-filter: blur(20px) saturate(1.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
   display: flex;
   z-index: 1500;
-  border-top: 1px solid rgba(240, 235, 228, 0.6);
+  border-top: 1px solid var(--color-tabbar-border);
 }
 
 .tab-item {

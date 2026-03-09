@@ -161,7 +161,7 @@ function renderHome() {
                 <div class="overview-item">
                     <span class="ov-icon">✨</span>
                     <div class="ov-text">
-                        <span class="ov-value">V2.2.1</span>
+                        <span class="ov-value">V2.3.0</span>
                         <span class="ov-label">系统版本</span>
                     </div>
                 </div>
@@ -169,7 +169,7 @@ function renderHome() {
 
             ${healthTipHtml}
 
-            <div class="card fade-up delay-4" style="border-left: 6px solid var(--color-yellow); background: #FFFDF5; padding-left: 20px;">
+            <div class="card fade-up delay-4" style="border-left: 6px solid var(--color-yellow); background: var(--color-reminder-bg); padding-left: 20px;">
                 <h3 style="font-size:15px; font-weight:800; color:var(--color-text-title); margin-bottom:12px;">提醒事项</h3>
                 <div style="display:flex; flex-direction:column; gap:16px;">
                     ${reminders.length === 0 ?
@@ -256,6 +256,13 @@ function showWeightChartDrawer(weightRecords) {
     overlay.querySelector('#close-chart').onclick = close;
     overlay.onclick = (e) => { if (e.target === overlay) close(); };
 
+    // 获取当前计算后的颜色 (适配暗黑模式)
+    const style = getComputedStyle(document.documentElement);
+    const colorPrimary = style.getPropertyValue('--color-primary').trim() || '#4066E0';
+    const colorDivider = style.getPropertyValue('--color-divider').trim() || '#E5E7EB';
+    const colorTextHint = style.getPropertyValue('--color-text-hint').trim() || '#9CA3AF';
+    const colorBg = style.getPropertyValue('--color-bg').trim() || '#FBF8F4';
+
     // 绘制图表
     const canvas = overlay.querySelector('#weight-chart-canvas');
     if (!canvas) return;
@@ -271,10 +278,10 @@ function showWeightChartDrawer(weightRecords) {
     ctx.clearRect(0, 0, cw, ch);
 
     // 背景网格线与Y轴文字
-    ctx.strokeStyle = '#E5E7EB';
+    ctx.strokeStyle = colorDivider;
     ctx.lineWidth = 1;
     ctx.font = '10px sans-serif';
-    ctx.fillStyle = '#9CA3AF';
+    ctx.fillStyle = colorTextHint;
     ctx.textAlign = 'right';
 
     const steps = 4;
@@ -292,7 +299,7 @@ function showWeightChartDrawer(weightRecords) {
     // 数据折线
     if (weights.length > 0) {
         ctx.beginPath();
-        ctx.strokeStyle = '#4066E0';
+        ctx.strokeStyle = colorPrimary;
         ctx.lineWidth = 3;
         ctx.lineJoin = 'round';
 
@@ -311,7 +318,7 @@ function showWeightChartDrawer(weightRecords) {
 
             ctx.beginPath();
             ctx.arc(x, y, 4, 0, Math.PI * 2);
-            ctx.fillStyle = '#FFFFFF';
+            ctx.fillStyle = colorBg;
             ctx.fill();
             ctx.stroke();
         });
@@ -787,7 +794,7 @@ function renderSettings() {
                 </div>
             </div>
             
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.2.1 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.3.0 "SuiSui" Dark Mode Build</p>
         </div>
     `;
 

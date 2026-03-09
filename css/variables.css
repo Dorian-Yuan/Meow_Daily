@@ -21,10 +21,45 @@
   --color-text-sub: #8B7E74;
   --color-divider: #F0EBE4;
 
+  /* 卡片/容器背景 (语义化) */
+  --color-card-bg: #FFFFFF;
+
   /* 功能色 */
   --color-success: #10B981;
   --color-danger: #EF4444;
   --color-danger-light: #FEF2F2;
+
+  /* 快速入口色块 */
+  --color-routine-bg: #EBF0FF;
+  --color-routine-fg: #4066E0;
+  --color-food-bg: #FEF4EB;
+  --color-food-fg: #F28C38;
+  --color-weight-bg: #F5F3FF;
+  --color-weight-fg: #7C3AED;
+  --color-medical-bg: #FDF2F8;
+  --color-medical-fg: #DB2777;
+
+  /* 健康提醒色 */
+  --color-health-tip-bg: #F3EFFF;
+  --color-health-tip-border: #8B5CF6;
+  --color-health-tip-fg: #5B21B6;
+
+  /* 里程碑图标色 */
+  --color-milestone-fg: #D97706;
+
+  /* 底部 Tabbar 背景 */
+  --color-tabbar-bg: rgba(255, 255, 255, 0.85);
+  --color-tabbar-border: rgba(240, 235, 228, 0.6);
+
+  /* 抽屉遮罩 */
+  --color-overlay-bg: rgba(90, 70, 55, 0.35);
+  --color-drawer-shadow: rgba(0, 0, 0, 0.1);
+
+  /* 提醒卡片 */
+  --color-reminder-bg: #FFFDF5;
+
+  /* 已完成标签 */
+  --color-routine-done-bg: #EEF2FF;
 
   /* 严格 8pt 网格系统 */
   --spacing-4: 4px;
@@ -73,4 +108,75 @@
   --spacing-xl: var(--spacing-24);
 
   --shadow-soft: var(--shadow-md);
+}
+
+/* ======== iOS 暗黑模式适配 ======== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 品牌主色系 - 暗色适配 */
+    --color-primary: #6B8AFF;
+    --color-primary-active: #5371E0;
+    --color-primary-light: #1E2A4A;
+
+    /* 辅助色系 */
+    --color-orange: #F5A05C;
+    --color-orange-light: #2A2018;
+    --color-yellow: #FACC15;
+    --color-yellow-light: #2A2616;
+
+    /* 暖深色中性色系 */
+    --color-bg: #1A1614;
+    --color-bg-warm: #211D1A;
+    --color-text-title: #F5F0EB;
+    --color-text-main: #D6CFC7;
+    --color-text-hint: #78716C;
+    --color-text-sub: #A8A09A;
+    --color-divider: #2E2925;
+
+    /* 卡片/容器背景 */
+    --color-card-bg: #252120;
+
+    /* 功能色 - 暗色微调 */
+    --color-success: #34D399;
+    --color-danger: #F87171;
+    --color-danger-light: #3B1C1C;
+
+    /* 快速入口色块 - 暗色 */
+    --color-routine-bg: #1E2A4A;
+    --color-routine-fg: #93AAFF;
+    --color-food-bg: #2A2018;
+    --color-food-fg: #F5A05C;
+    --color-weight-bg: #221B35;
+    --color-weight-fg: #A78BFA;
+    --color-medical-bg: #2D1726;
+    --color-medical-fg: #F472B6;
+
+    /* 健康提醒色 - 暗色 */
+    --color-health-tip-bg: #221B35;
+    --color-health-tip-border: #A78BFA;
+    --color-health-tip-fg: #C4B5FD;
+
+    /* 里程碑图标色 */
+    --color-milestone-fg: #FBBF24;
+
+    /* 底部 Tabbar 背景 - 暗色 */
+    --color-tabbar-bg: rgba(26, 22, 20, 0.88);
+    --color-tabbar-border: rgba(46, 41, 37, 0.6);
+
+    /* 抽屉遮罩 - 暗色 */
+    --color-overlay-bg: rgba(0, 0, 0, 0.55);
+    --color-drawer-shadow: rgba(0, 0, 0, 0.3);
+
+    /* 提醒卡片 - 暗色 */
+    --color-reminder-bg: #282420;
+
+    /* 已完成标签 - 暗色 */
+    --color-routine-done-bg: #1E2A4A;
+
+    /* 投影 - 暗色模式适配 */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.35);
+    --shadow-hover: 0 8px 24px rgba(107, 138, 255, 0.2);
+  }
 }
