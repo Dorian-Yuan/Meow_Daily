@@ -163,7 +163,7 @@ function renderHome() {
                 <div class="overview-item">
                     <span class="ov-icon">✨</span>
                     <div class="ov-text">
-                        <span class="ov-value">V2.4.5</span>
+                        <span class="ov-value">V2.4.6</span>
                         <span class="ov-label">系统版本</span>
                     </div>
                 </div>
@@ -829,7 +829,7 @@ function renderSettings() {
                 </div>
             </div>
             
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.4.5 "SuiSui" UI Polishing Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600; text-align:center;">Meow_Daily V2.4.6 "SuiSui" PWA Logo Update Build</p>
         </div>
     `;
 

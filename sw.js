@@ -1,4 +1,4 @@
-const CACHE_NAME = 'meow-daily-v13'; // 升级到 V13 以强制清除旧缓存
+const CACHE_NAME = 'meow-daily-v14'; // 升级到 V14 以强制清除旧缓存
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -10,7 +10,8 @@ const ASSETS_TO_CACHE = [
   './js/modules/ui.js',
   './js/api/ai.js',
   './js/api/github.js',
-  './assets/icons/meow-ip.png'
+  './assets/icons/meow-ip.png',
+  './assets/icons/pwa-logo.jpg'
 ];
 
 self.addEventListener('install', (event) => {

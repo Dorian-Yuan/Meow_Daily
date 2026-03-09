@@ -1,6 +1,6 @@
 {
-  "name": "MeowDaily 岁岁日记",
-  "short_name": "岁岁日记",
+  "name": "MeowDaily 喵喵日记",
+  "short_name": "喵喵日记",
   "description": "多猫家庭健康与生活记录工具 (AI 赋能)",
   "start_url": "./index.html",
   "display": "standalone",
@@ -8,9 +8,9 @@
   "theme_color": "#4066E0",
   "icons": [
     {
-      "src": "assets/icons/meow-ip.png",
+      "src": "assets/icons/pwa-logo.jpg",
       "sizes": "192x192 512x512",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     }
   ]
