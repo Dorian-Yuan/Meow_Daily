@@ -102,14 +102,16 @@ body {
 /* Banner 区域 */
 .header-banner {
   background-color: var(--color-primary);
-  padding: 48px 24px 32px;
+  padding: 40px 24px 24px;
+  /* 调整 padding 以使内容更居中 */
   border-bottom-left-radius: 24px;
   border-bottom-right-radius: 24px;
   color: var(--color-white);
   text-align: center;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
+  /* 提高 z-index 确保盖过所有内容 */
   box-shadow: 0 4px 16px rgba(64, 102, 224, 0.1);
   transition: all 0.3s var(--transition-smooth);
 }
@@ -164,17 +166,14 @@ body {
   font-family: 'Nunito', 'Noto Sans SC', sans-serif;
   font-size: 24px;
   font-weight: 900;
-  margin-top: 16px;
+  margin-top: 12px;
   letter-spacing: -0.5px;
   text-shadow: 0 2px 8px rgba(42, 71, 168, 0.3);
 }
 
+/* 移除 subtitle 样式，因为它将被删除 */
 .header-banner .logo-subtitle {
-  font-size: 12px;
-  font-weight: 500;
-  opacity: 0.85;
-  letter-spacing: 1px;
-  margin-top: 4px;
+  display: none;
 }
 
 .sync-indicator {

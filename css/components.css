@@ -481,13 +481,15 @@ input[type="date"].form-input {
 .overview-item {
   background: var(--color-white);
   border-radius: var(--radius-16);
-  padding: 16px;
+  padding: 12px 14px;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--color-divider);
   transition: transform 0.2s ease;
+  min-height: 56px;
 }
 
 .overview-item:active {
@@ -495,19 +497,60 @@ input[type="date"].form-input {
 }
 
 .overview-item .ov-icon {
-  font-size: 22px;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.overview-item .ov-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .overview-item .ov-value {
-  font-size: 26px;
+  font-size: 18px;
   font-weight: 900;
   color: var(--color-text-title);
-  line-height: 1;
+  line-height: 1.1;
 }
 
 .overview-item .ov-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
+  color: var(--color-text-hint);
+  margin-top: 2px;
+}
+
+/* ======== 吸顶标题支持 ======== */
+.sticky-nav-header {
+  position: sticky;
+  top: 76px;
+  /* banner 底部 */
+  z-index: 900;
+  background: var(--color-bg);
+  padding: 12px 20px;
+  margin: 0 -20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s;
+}
+
+.sticky-nav-header.is-stuck {
+  border-bottom-color: var(--color-divider);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.sticky-month {
+  position: sticky;
+  top: 76px;
+  z-index: 800;
+  background: var(--color-bg);
+  margin: 0 -8px 0;
+  padding: 16px 8px 8px;
+  font-size: 14px;
+  font-weight: 900;
   color: var(--color-text-hint);
 }
 

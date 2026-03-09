@@ -75,10 +75,6 @@ function renderHome() {
     const companionDays = Math.floor((todayDate - adoptionDate) / (1000 * 60 * 60 * 24)) + 1;
     // 本月饮食记录数
     const monthFoodCount = (catRecs.food || []).filter(r => r.timestamp.startsWith(currentMonth)).length;
-    // 本月就诊花费
-    const monthMedicalCost = (catRecs.medical || [])
-        .filter(r => r.timestamp.startsWith(currentMonth))
-        .reduce((sum, r) => sum + (parseFloat(r.cost) || 0), 0);
 
     // 2. 提醒引擎
     const reminders = [];
@@ -122,94 +118,58 @@ function renderHome() {
 
     if (urgentCount > 0) {
         healthTipHtml = `
-            <div class="health-tip fade-up delay-2">
+            <div class="health-tip fade-up delay-3">
                 <span class="tip-icon">💜</span>
                 <span>主子提醒：喵！有 ${urgentCount} 项待办已经过期或需要关注啦，快去看看！</span>
             </div>
         `;
     }
 
-    // 3. SVG 体重趋势图生成
-    let svgChartHtml = '';
-    if (sortedWeights.length >= 2) {
-        const last7 = [...weightRecords]
-            .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
-            .slice(-7);
-        const ws = last7.map(r => r.weight_kg);
-        const maxW = Math.max(...ws) + 0.2;
-        const minW = Math.max(0, Math.min(...ws) - 0.2);
-        const range = maxW - minW || 1;
-
-        const pts = last7.map((r, i) => {
-            const x = (i / (last7.length - 1)) * 100;
-            const y = 100 - ((r.weight_kg - minW) / range) * 80 - 10; // 留白 10%
-            return `${x},${y}`;
-        }).join(' ');
-
-        svgChartHtml = `
-            <div class="mini-chart">
-                <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <path d="M ${pts}" fill="none" stroke="var(--color-primary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-                    ${last7.map((r, i) => {
-            const x = (i / (last7.length - 1)) * 100;
-            const y = 100 - ((r.weight_kg - minW) / range) * 80 - 10;
-            return `<circle cx="${x}" cy="${y}" r="3" fill="var(--color-white)" stroke="var(--color-primary)" stroke-width="2" />`;
-        }).join('')}
-                </svg>
-            </div>
-        `;
-    }
-
     mainContent.innerHTML = `
         <div class="content-wrapper">
-            <!-- 2x2 概览仪表盘 -->
-            <section class="overview-grid fade-up delay-1">
-                <div class="overview-item">
-                    <span class="ov-icon">🏠</span>
-                    <span class="ov-value">${companionDays}</span>
-                    <span class="ov-label">陪伴天数</span>
-                </div>
-                <div class="overview-item">
-                    <span class="ov-icon">🍴</span>
-                    <span class="ov-value">${monthFoodCount}</span>
-                    <span class="ov-label">本月开饭</span>
-                </div>
-                <div class="overview-item">
-                    <span class="ov-icon">🪙</span>
-                    <span class="ov-value">${monthMedicalCost.toFixed(0)}</span>
-                    <span class="ov-label">本月花费</span>
-                </div>
-                <div class="overview-item">
-                    <span class="ov-icon">✨</span>
-                    <span class="ov-value">V2.1</span>
-                    <span class="ov-label">系统版本</span>
-                </div>
-            </section>
-
-            ${healthTipHtml}
-
-            <section class="quick-actions fade-up delay-3">
+            <!-- 快速入口置顶 -->
+            <section class="quick-actions fade-up delay-1">
                 <div class="action-item" data-type="routine"><div class="action-icon">🧹</div><div class="action-label">日常</div></div>
                 <div class="action-item" data-type="food"><div class="action-icon">🍴</div><div class="action-label">饮食</div></div>
                 <div class="action-item" data-type="weight"><div class="action-icon">⚖️</div><div class="action-label">体重</div></div>
                 <div class="action-item" data-type="medical"><div class="action-icon">🏥</div><div class="action-label">就诊</div></div>
             </section>
 
-            <div class="card fade-up delay-4" id="home-weight-card" style="cursor:pointer; padding:var(--spacing-l);">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="display:flex; flex-direction:column; gap:var(--spacing-s);">
-                        <div style="font-size:16px; font-weight:800; color:var(--color-text-title);">⚖️ 体重监测</div>
-                        <div style="font-size:12px; color:var(--color-text-hint); font-weight:600;">✨ 最近记录：${latestWeightDate}</div>
-                    </div>
-                    <div style="text-align:right;">
-                        <span style="font-size:32px; font-weight:900; color:var(--color-primary);">${latestWeight}</span>
-                        <span style="font-size:14px; color:var(--color-text-hint); font-weight:700;">kg</span>
+            <!-- 2x2 概览仪表盘 - 紧凑型横向布局 -->
+            <section class="overview-grid fade-up delay-2">
+                <div class="overview-item">
+                    <span class="ov-icon">🏠</span>
+                    <div class="ov-text">
+                        <span class="ov-value">${companionDays}</span>
+                        <span class="ov-label">陪伴天数</span>
                     </div>
                 </div>
-                ${svgChartHtml}
-            </div>
+                <div class="overview-item">
+                    <span class="ov-icon">🍴</span>
+                    <div class="ov-text">
+                        <span class="ov-value">${monthFoodCount}</span>
+                        <span class="ov-label">本月开饭</span>
+                    </div>
+                </div>
+                <div class="overview-item" id="nav-weight-grid" style="cursor:pointer;">
+                    <span class="ov-icon">⚖️</span>
+                    <div class="ov-text">
+                        <span class="ov-value">${latestWeight}<small style="font-size:9px; margin-left:1px; opacity:0.6;">kg</small></span>
+                        <span class="ov-label">当前体重</span>
+                    </div>
+                </div>
+                <div class="overview-item">
+                    <span class="ov-icon">✨</span>
+                    <div class="ov-text">
+                        <span class="ov-value">V2.1.3</span>
+                        <span class="ov-label">系统版本</span>
+                    </div>
+                </div>
+            </section>
 
-            <div class="card fade-up delay-5" style="border-left: 6px solid var(--color-yellow); background: #FFFDF5; padding-left: 20px;">
+            ${healthTipHtml}
+
+            <div class="card fade-up delay-4" style="border-left: 6px solid var(--color-yellow); background: #FFFDF5; padding-left: 20px;">
                 <h3 style="font-size:15px; font-weight:800; color:var(--color-text-title); margin-bottom:12px;">提醒事项</h3>
                 <div style="display:flex; flex-direction:column; gap:16px;">
                     ${reminders.length === 0 ?
@@ -394,7 +354,7 @@ function renderRecords() {
         const month = r.timestamp.slice(0, 7);
         if (month !== lastMonth) {
             lastMonth = month;
-            html += `<h2 class="fade-up delay-1" style="font-size:14px; font-weight:900; margin: var(--spacing-16) var(--spacing-8) 8px; color:var(--color-text-hint);">${month.replace('-', '年')}月</h2>`;
+            html += `<h2 class="sticky-month fade-up delay-1">${month.replace('-', '年')}月</h2>`;
         }
 
         const icons = { routine: '🧹', food: '🍴', weight: '⚖️', medical: '🏥' };
@@ -782,7 +742,7 @@ function renderSettings() {
 
     mainContent.innerHTML = `
         <div class="content-wrapper fade-up delay-1">
-            <div style="display:flex; align-items:center; margin-bottom:12px; gap:8px;">
+            <div class="sticky-nav-header">
                 <span id="btn-back" style="cursor:pointer; font-size:24px; padding:4px;">←</span>
                 <h2 style="font-size:18px; font-weight:900;">系统设置</h2>
             </div>
@@ -827,7 +787,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.1.2 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.1.3 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
@@ -888,7 +848,7 @@ function renderAISettings() {
 
     mainContent.innerHTML = `
         <div class="content-wrapper fade-up delay-1">
-            <div style="display:flex; align-items:center; margin-bottom:12px; gap:8px;">
+            <div class="sticky-nav-header">
                 <span id="btn-back-ai" style="cursor:pointer; font-size:24px; padding:4px;">←</span>
                 <h2 style="font-size:18px; font-weight:900;">AI 设置</h2>
             </div>
