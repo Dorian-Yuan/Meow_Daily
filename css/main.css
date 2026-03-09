@@ -83,7 +83,6 @@ body {
   /* 为固定 banner 留出空间 */
   position: relative;
   z-index: 1;
-  overflow: hidden;
 }
 
 /* 多彩渐变光晕背景装饰 */

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'meow-daily-v9'; // 升级到 V9 以强制清除旧缓存
+const CACHE_NAME = 'meow-daily-v10'; // 升级到 V10 以强制清除旧缓存
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
