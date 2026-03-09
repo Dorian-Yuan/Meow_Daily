@@ -161,7 +161,7 @@ function renderHome() {
                 <div class="overview-item">
                     <span class="ov-icon">✨</span>
                     <div class="ov-text">
-                        <span class="ov-value">V2.1.9</span>
+                        <span class="ov-value">V2.1.10</span>
                         <span class="ov-label">系统版本</span>
                     </div>
                 </div>
@@ -339,7 +339,7 @@ function renderRecords() {
 
     if (all.length === 0) {
         mainContent.innerHTML = `
-            <div class="content-wrapper fade-up delay-1">
+            <div class="content-wrapper fade-in delay-1">
                 <div class="card" style="text-align:center; padding:60px 24px;">
                     <p style="color:var(--color-text-hint); font-size:14px; font-weight:600;">还没有记过${suiSui.name}的生活呢喵~ 🐾</p>
                 </div>
@@ -742,7 +742,7 @@ function renderSettings() {
     const reminders = db.settings.reminders || [];
 
     mainContent.innerHTML = `
-        <div class="content-wrapper fade-up delay-1">
+        <div class="content-wrapper fade-in delay-1">
             <div class="sticky-nav-header">
                 <span id="btn-back" style="cursor:pointer; font-size:24px; padding:4px;">←</span>
                 <h2 style="font-size:18px; font-weight:900;">系统设置</h2>
@@ -788,7 +788,7 @@ function renderSettings() {
             </div>
             
             <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.1.9 "SuiSui" Premium Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.1.10 "SuiSui" Premium Build</p>
             </div>
         </div>
     `;
@@ -848,7 +848,7 @@ function renderAISettings() {
     const prompts = config.prompts || db.settings?.prompts || {};
 
     mainContent.innerHTML = `
-        <div class="content-wrapper fade-up delay-1">
+        <div class="content-wrapper fade-in delay-1">
             <div class="sticky-nav-header">
                 <span id="btn-back-ai" style="cursor:pointer; font-size:24px; padding:4px;">←</span>
                 <h2 style="font-size:18px; font-weight:900;">AI 设置</h2>
