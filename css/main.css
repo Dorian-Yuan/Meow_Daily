@@ -79,7 +79,7 @@ body {
 .app-container {
   background-color: var(--color-bg);
   min-height: 100vh;
-  padding-top: 164px;
+  padding-top: 196px;
   padding-bottom: 120px;
   /* 为固定 banner 留出空间 */
   position: relative;
