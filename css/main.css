@@ -86,31 +86,6 @@ body {
   z-index: 1;
 }
 
-/* 多彩渐变光晕背景装饰 */
-.app-container::before {
-  content: '';
-  position: absolute;
-  top: -100px;
-  left: -60px;
-  right: -60px;
-  height: 600px;
-  background:
-    radial-gradient(ellipse 50% 50% at 15% 30%, rgba(255, 214, 224, 0.25) 0%, transparent 70%),
-    radial-gradient(ellipse 45% 45% at 80% 20%, rgba(201, 177, 255, 0.2) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 40% at 50% 60%, rgba(255, 243, 196, 0.2) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-  filter: blur(30px);
-}
-
-@media (prefers-color-scheme: dark) {
-  .app-container::before {
-    background:
-      radial-gradient(ellipse 50% 50% at 15% 30%, rgba(107, 138, 255, 0.08) 0%, transparent 70%),
-      radial-gradient(ellipse 45% 45% at 80% 20%, rgba(167, 139, 250, 0.06) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 40% at 50% 60%, rgba(250, 204, 21, 0.05) 0%, transparent 70%);
-  }
-}
 
 /* Banner 区域 */
 .header-banner {
