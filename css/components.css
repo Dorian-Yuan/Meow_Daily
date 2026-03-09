@@ -524,8 +524,8 @@ input[type="date"].form-input {
 /* ======== 吸顶标题支持 ======== */
 .sticky-nav-header {
   position: sticky;
-  top: 76px;
-  /* banner 底部 */
+  top: 196px;
+  /* banner 底部大约 196px */
   z-index: 900;
   background: var(--color-bg);
   padding: 12px 20px;
@@ -544,7 +544,7 @@ input[type="date"].form-input {
 
 .sticky-month {
   position: sticky;
-  top: 76px;
+  top: 196px;
   z-index: 800;
   background: var(--color-bg);
   margin: 0 -8px 0;
