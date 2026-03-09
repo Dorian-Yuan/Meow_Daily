@@ -787,9 +787,7 @@ function renderSettings() {
                 </div>
             </div>
             
-            <div style="text-align:center; padding:20px;">
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.1.11 "SuiSui" Premium Build</p>
-            </div>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600;">Meow_Daily V2.1.12 "SuiSui" Premium Build</p>
         </div>
     `;
 
