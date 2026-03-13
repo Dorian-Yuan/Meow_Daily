@@ -97,7 +97,17 @@
           "type": "剪指甲"
         }
       ],
-      "food": [],
+      "food": [
+        {
+          "record_id": "r_1773412014683",
+          "timestamp": "2026-03-13 22:26",
+          "note": "给他吃了鸡胸肉",
+          "brand": "",
+          "type": "自制",
+          "price_per_kg": 0,
+          "daily_intake_g": 30
+        }
+      ],
       "weight": [
         {
           "record_id": "r_1772852193144",
