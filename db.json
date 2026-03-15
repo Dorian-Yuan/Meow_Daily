@@ -106,6 +106,15 @@
           "type": "自制",
           "price_per_kg": 0,
           "daily_intake_g": 30
+        },
+        {
+          "record_id": "r_1773579957883",
+          "timestamp": "2026-03-15 21:05",
+          "note": "岁岁狼吞虎咽地吃鸡胸肉中",
+          "brand": "",
+          "type": "自制",
+          "price_per_kg": 0,
+          "daily_intake_g": 0
         }
       ],
       "weight": [
