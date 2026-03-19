@@ -830,7 +830,7 @@ function renderSettings() {
                 <span style="color:var(--color-text-hint); font-size:12px;">❯</span>
             </div>
             
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600; text-align:center;">Meow_Daily V2.4.11 "SuiSui" PWA Logo Update Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600; text-align:center;">Meow_Daily V2.5.0 "SuiSui" PWA Logo Update Build</p>
         </div>
     `;
 
