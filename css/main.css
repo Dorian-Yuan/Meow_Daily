@@ -103,7 +103,7 @@ body {
   z-index: 1100;
   /* 高于 sticky headers (900/800) */
   box-shadow: 0 4px 16px rgba(64, 102, 224, 0.1);
-  transition: transform 0.3s var(--transition-smooth), box-shadow 0.3s var(--transition-smooth);
+  transition: all 0.3s var(--transition-smooth);
   overflow: hidden;
 }
 
@@ -443,7 +443,7 @@ body {
   box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
   z-index: 1500;
   cursor: pointer;
-  transition: transform 0.2s var(--transition-spring), box-shadow 0.2s var(--transition-spring), opacity 0.2s var(--transition-spring);
+  transition: all 0.2s var(--transition-spring);
   animation: fab-pulse 3s ease-in-out infinite;
 }
 

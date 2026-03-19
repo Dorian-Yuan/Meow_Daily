@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="color-scheme" content="light dark">
     <meta name="theme-color" content="#4066E0" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#1A1614" media="(prefers-color-scheme: dark)">
@@ -13,7 +13,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="assets/icons/pwa-logo.jpg">
     <link
-        href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Noto+Sans+SC:wght@400;500;600;700;800;900&display=swap&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Noto+Sans+SC:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/main.css">
@@ -36,22 +36,22 @@
             <!-- 装饰性光球 -->
             <span class="header-orb header-orb-yellow"></span>
             <div class="ip-container">
-                <img src="assets/icons/meow-ip.png" alt="岁岁 IP" width="64" height="64">
+                <img src="assets/icons/meow-ip.png" alt="岁岁 IP">
             </div>
             <h1 class="logo-text">Meow Daily</h1>
 
             <!-- 极简同步指示 -->
-            <button id="sync-btn" class="sync-indicator" style="cursor:pointer; border:none; outline:none;" aria-label="保存并同步数据">
+            <div id="sync-btn" class="sync-indicator" style="cursor:pointer;">
                 <span class="dot"></span>
                 <span class="sync-text">保存并同步</span>
-            </button>
+            </div>
         </header>
 
         <!-- 主内容区 (由 JS 注入 content-wrapper) -->
         <main id="main-content"></main>
 
         <!-- AI 悬浮球 -->
-        <button id="ai-entry" class="ai-fab-button" style="border:none; outline:none;" aria-label="打开 AI 智能记事">🐾</button>
+        <div id="ai-entry" class="ai-fab-button">🐾</div>
 
         <!-- 底部 Tabbar -->
         <nav class="bottom-tabbar">
