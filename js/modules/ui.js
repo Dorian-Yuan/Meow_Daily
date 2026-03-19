@@ -111,11 +111,16 @@ function renderHome() {
                 statusHtml = `<div style="font-size:11px; color:#EF4444; font-weight:700;">⚠️ 已逾期 ${Math.abs(daysLeft)} 天</div>`;
                 urgentCount++;
             }
+
+            // 只显示 5 天内需要做的事情 (或者已逾期)
+            if (daysLeft <= 5) {
+                reminders.push({ label: rm.label, icon: rm.icon || '🐾', statusHtml });
+            }
         } else {
             statusHtml = `<div style="font-size:11px; color:var(--color-text-hint);">❓ 尚未记录过</div>`;
             urgentCount++;
+            reminders.push({ label: rm.label, icon: rm.icon || '🐾', statusHtml });
         }
-        reminders.push({ label: rm.label, icon: rm.icon || '🐾', statusHtml });
     });
 
     if (urgentCount > 0) {
@@ -160,11 +165,11 @@ function renderHome() {
                         <span class="ov-label">当前体重 <span style="font-size:8px; opacity:0.6; font-weight:500;">(${latestWeightDate})</span></span>
                     </div>
                 </div>
-                <div class="overview-item">
+                <div class="overview-item" onclick="location.reload(true)" style="cursor:pointer;">
                     <span class="ov-icon">✨</span>
                     <div class="ov-text">
-                        <span class="ov-value">V2.4.11</span>
-                        <span class="ov-label">系统版本</span>
+                        <span class="ov-value">V2.5.0</span>
+                        <span class="ov-label">系统版本 (点击刷新)</span>
                     </div>
                 </div>
             </section>
