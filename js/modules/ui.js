@@ -169,7 +169,7 @@ function renderHome() {
                     <span class="ov-icon">✨</span>
                     <div class="ov-text">
                         <span class="ov-value">V2.5.0</span>
-                        <span class="ov-label">系统版本 (点击刷新)</span>
+                        <span class="ov-label">系统版本</span>
                     </div>
                 </div>
             </section>
@@ -237,7 +237,7 @@ function showWeightChartDrawer(weightRecords) {
                 <span id="close-chart" class="drawer-close">×</span>
             </div>
             <div style="padding: 10px 0;">
-                <canvas id="weight-chart-canvas" width="320" height="200" style="width: 100%; height: auto; border-radius: 12px; background: var(--color-bg);"></canvas>
+                <canvas id="weight-chart-canvas" width="320" height="200" style="width: 100%; height: auto; border-radius: 12px; background: var(--color-bg);" aria-label="体重变化趋势图"></canvas>
             </div>
             <div style="margin-top: 16px;">
                 <h3 style="font-size: 14px; margin-bottom: 12px; color: var(--color-text-title);">近期记录</h3>
@@ -566,7 +566,7 @@ function showEntryDrawer(category, recordId = null, presetSubtype = null, prefil
             ${dynamicHTML}
             <div class="form-group">
                 <label>备注说明</label>
-                <textarea id="f-note" class="form-input" rows="3" placeholder="写点什么吧...">${oldData?.note || ''}</textarea>
+                <textarea id="f-note" class="form-input" rows="3" placeholder="写点什么吧…">${oldData?.note || ''}</textarea>
             </div>
             <div class="drawer-actions">
                 ${isEditing ? `<button id="btn-del" class="btn-drawer-delete">删除记录</button>` : ''}
@@ -980,7 +980,7 @@ export function initAIEntry() {
                 </button>
                 <div id="ai-status" style="display:none; text-align:center; margin-top:20px; font-size:14px; font-weight:700; color:var(--color-primary);">
                     <div class="syncing" style="display:inline-block; margin-right:8px;"><span class="dot"></span></div>
-                    喵喵正在思考中... 🧠
+                    喵喵正在思考中… 🧠
                 </div>
             </div>
         `;
@@ -1050,10 +1050,10 @@ export function initSyncButton() {
         if (btn.classList.contains('syncing')) return; // 防止重复点击
 
         btn.classList.add('syncing');
-        btn.querySelector('.sync-text').textContent = '同步中...';
+        btn.querySelector('.sync-text').textContent = '同步中…';
 
         try {
-            console.log('🐾 开始云端同步...');
+            console.log('🐾 开始云端同步…');
 
             // 1. 获取云端数据 (Pull)
             const remote = await fetchCloudDB(config);

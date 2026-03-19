@@ -49,7 +49,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s var(--transition-spring);
+  transition: transform 0.2s var(--transition-spring), background-color 0.2s var(--transition-spring), box-shadow 0.2s var(--transition-spring);
   letter-spacing: 0.5px;
 }
 
@@ -112,9 +112,10 @@
   background: var(--color-bg);
   color: var(--color-text-title);
   outline: none;
-  transition: all 0.3s var(--transition-spring);
+  transition: border-color 0.3s var(--transition-spring), background-color 0.3s var(--transition-spring), box-shadow 0.3s var(--transition-spring);
   font-family: inherit;
   -webkit-appearance: none;
+  appearance: none;
   min-height: 52px;
 }
 
@@ -128,10 +129,12 @@ input[type="date"].form-input {
   line-height: 1.2;
 }
 
-.form-input:focus {
+.form-input:focus,
+.form-input:focus-visible {
   border-color: var(--color-primary);
   background: var(--color-white);
   box-shadow: 0 0 0 4px var(--color-primary-light);
+  outline: none;
 }
 
 /* ======== 抽屉弹窗 - 治愈系重绘 ======== */
