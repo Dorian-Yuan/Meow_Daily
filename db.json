@@ -157,6 +157,15 @@
           "type": "罐罐",
           "price_per_kg": 0,
           "daily_intake_g": 78
+        },
+        {
+          "record_id": "r_1775065193873",
+          "timestamp": "2026-04-02 01:39",
+          "note": "给他吃了半个煮鸡蛋",
+          "brand": "",
+          "type": "自制",
+          "price_per_kg": 0,
+          "daily_intake_g": 25
         }
       ],
       "weight": [
