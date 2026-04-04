@@ -172,6 +172,15 @@
           "type": "自制",
           "price_per_kg": 0,
           "daily_intake_g": 25
+        },
+        {
+          "record_id": "r_1775319827105",
+          "timestamp": "2026-04-05 00:23",
+          "note": "",
+          "brand": "鲜朗",
+          "type": "罐罐",
+          "price_per_kg": 0,
+          "daily_intake_g": 30
         }
       ],
       "weight": [
@@ -192,6 +201,12 @@
           "timestamp": "2025-11-20 08:29",
           "note": "",
           "weight_kg": 1.4
+        },
+        {
+          "record_id": "r_1775306949849",
+          "timestamp": "2026-04-04 20:49",
+          "note": "",
+          "weight_kg": 3.56
         }
       ],
       "medical": [
