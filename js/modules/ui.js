@@ -1276,6 +1276,12 @@ export function showHeatmapDrawer(catRecs) {
     for (let i = 0; i < firstDayOfWeek; i++) {
         daysData.unshift(null);
     }
+
+    // 补齐末尾端空格（让最后一周补齐到 Saturday, 保证每列总是7个）
+    const lastDayOfWeek = daysData[daysData.length - 1].dayOfWeek;
+    for (let i = lastDayOfWeek + 1; i <= 6; i++) {
+        daysData.push(null);
+    }
     
     let gridHtml = '<div id="heatmap-scroll-container" style="display:flex; gap:4px; overflow-x:auto; padding-bottom:12px; height:100%; align-items:center;">';
     
@@ -1285,16 +1291,17 @@ export function showHeatmapDrawer(catRecs) {
         currentWeekCols += '<div style="display:flex; flex-direction:column; gap:4px;">';
         week.forEach(d => {
             if (!d) {
-                currentWeekCols += `<div style="width:12px; height:12px; border-radius:3px; background:transparent;"></div>`;
+                // 不在140天窗口内的日期（对齐用），直接显示浅灰色占位符
+                currentWeekCols += `<div style="width:12px; height:12px; border-radius:3px; background:var(--color-divider); opacity:0.4; flex-shrink:0;"></div>`;
             } else {
-                let opacity = '0.1';
                 let colorRule = `background:var(--color-divider);`;
                 
-                if (d.count > 0) {
-                    if (d.count <= 2) opacity = '0.3';
-                    else if (d.count <= 4) opacity = '0.6';
-                    else opacity = '1.0';
-                    colorRule = `background:var(--color-primary); opacity:${opacity};`;
+                if (d.count === 1) {
+                    colorRule = `background:var(--color-primary); opacity:0.4;`;
+                } else if (d.count === 2) {
+                    colorRule = `background:var(--color-primary); opacity:0.7;`;
+                } else if (d.count >= 3) {
+                    colorRule = `background:var(--color-primary); opacity:1.0;`;
                 }
 
                 currentWeekCols += `<div title="${d.date}: ${d.count} 次记录" style="width:12px; height:12px; border-radius:3px; ${colorRule} flex-shrink:0;"></div>`;
@@ -1316,7 +1323,6 @@ export function showHeatmapDrawer(catRecs) {
             <div style="margin-top:20px;">
                 <p style="font-size:12px; color:var(--color-text-hint); margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-end;">
                     <span>最近约 20 周的数据一览</span>
-                    <span style="font-size:10px;">📉少 - 📈多</span>
                 </p>
                 <div style="padding:16px 16px 8px 16px; background:var(--color-bg); border-radius:12px;">
                     ${gridHtml}
