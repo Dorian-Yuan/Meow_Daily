@@ -75,8 +75,8 @@ function renderHome() {
     // 陪伴天数
     const adoptionDate = new Date(suiSui.adoption_date.replace(/-/g, '/'));
     const companionDays = Math.floor((todayDate - adoptionDate) / (1000 * 60 * 60 * 24)) + 1;
-    // 本月饮食记录数
-    const monthFoodCount = (catRecs.food || []).filter(r => r.timestamp.startsWith(currentMonth)).length;
+    // 累计打卡记录数
+    const totalRecordCount = Object.values(catRecs).reduce((acc, arr) => acc + (arr ? arr.length : 0), 0);
 
     // 2. 提醒引擎
     const reminders = [];
@@ -151,11 +151,11 @@ function renderHome() {
                         <span class="ov-label">陪伴天数</span>
                     </div>
                 </div>
-                <div class="overview-item">
-                    <span class="ov-icon">🍴</span>
+                <div class="overview-item" id="nav-records-grid" style="cursor:pointer;">
+                    <span class="ov-icon">📝</span>
                     <div class="ov-text">
-                        <span class="ov-value">${monthFoodCount}</span>
-                        <span class="ov-label">本月开饭</span>
+                        <span class="ov-value">${totalRecordCount}</span>
+                        <span class="ov-label">累计记录</span>
                     </div>
                 </div>
                 <div class="overview-item" id="nav-weight-grid" style="cursor:pointer;">
@@ -168,7 +168,7 @@ function renderHome() {
                 <div class="overview-item" onclick="location.reload(true)" style="cursor:pointer;">
                     <span class="ov-icon">✨</span>
                     <div class="ov-text">
-                        <span class="ov-value">V2.5.0</span>
+                        <span class="ov-value">V${db.settings?.version || '2.6.0'}</span>
                         <span class="ov-label">系统版本</span>
                     </div>
                 </div>
@@ -212,6 +212,11 @@ function renderHome() {
     if (weightBtn) {
         weightBtn.onclick = () => showWeightChartDrawer(weightRecords);
     }
+
+    const recordsBtn = document.getElementById('nav-records-grid');
+    if (recordsBtn) {
+        recordsBtn.onclick = () => switchTab('records');
+    }
 }
 
 /**
@@ -237,7 +242,7 @@ function showWeightChartDrawer(weightRecords) {
                 <span id="close-chart" class="drawer-close">×</span>
             </div>
             <div style="padding: 10px 0;">
-                <canvas id="weight-chart-canvas" width="320" height="200" style="width: 100%; height: auto; border-radius: 12px; background: var(--color-bg);"></canvas>
+                <canvas id="weight-chart-canvas" style="width: 100%; aspect-ratio: 1.6; border-radius: 12px; background: var(--color-bg);"></canvas>
             </div>
             <div style="margin-top: 16px;">
                 <h3 style="font-size: 14px; margin-bottom: 12px; color: var(--color-text-title);">近期记录</h3>
@@ -270,12 +275,18 @@ function showWeightChartDrawer(weightRecords) {
     const colorTextHint = style.getPropertyValue('--color-text-hint').trim() || '#9CA3AF';
     const colorBg = style.getPropertyValue('--color-bg').trim() || '#FBF8F4';
 
-    // 绘制图表
+    // 解决高分屏模糊问题
     const canvas = overlay.querySelector('#weight-chart-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const cw = canvas.width;
-    const ch = canvas.height;
+    
+    const dpr = window.devicePixelRatio || 2;
+    const cw = canvas.clientWidth || 320;
+    const ch = canvas.clientHeight || 200;
+    
+    canvas.width = cw * dpr;
+    canvas.height = ch * dpr;
+    ctx.scale(dpr, dpr);
 
     const padding = 30;
     const weights = displayRecords.map(r => r.weight_kg);
@@ -483,13 +494,21 @@ function showEntryDrawer(category, recordId = null, presetSubtype = null, prefil
 
     let dynamicHTML = '';
     if (category === 'routine') {
-        const types = ['剪指甲', '换猫砂', '驱虫', '洗澡', '梳毛', '刷牙'];
-        const currentType = presetSubtype || oldData?.type || '剪指甲';
+        const types = db.settings.routine_tags || ['剪指甲', '换猫砂', '驱虫', '洗澡', '梳毛', '刷牙'];
+        const currentType = presetSubtype || oldData?.type || (types.length > 0 ? types[0] : '');
+        const optionsHtml = types.map(t => `<option value="${t}" ${currentType === t ? 'selected' : ''}>${t}</option>`).join('');
+        const finalOptionsHtml = (!types.includes(currentType) && currentType) 
+            ? `<option value="${currentType}" selected>${currentType} (未保存标签)</option>` + optionsHtml 
+            : optionsHtml;
+            
         dynamicHTML = `
             <div class="form-group">
-                <label>事项类型</label>
+                <label style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>事项类型</span>
+                    <span id="btn-manage-tags" style="color:var(--color-primary); font-size:12px; font-weight:700; cursor:pointer;">管理标签</span>
+                </label>
                 <select id="f-type" class="form-input">
-                    ${types.map(t => `<option value="${t}" ${currentType === t ? 'selected' : ''}>${t}</option>`).join('')}
+                    ${finalOptionsHtml}
                 </select>
             </div>`;
     } else if (category === 'food') {
@@ -586,6 +605,16 @@ function showEntryDrawer(category, recordId = null, presetSubtype = null, prefil
     overlay.querySelector('#close-drawer').onclick = close;
     overlay.onclick = (e) => { if (e.target === overlay) close(); };
 
+    if (category === 'routine') {
+        const btnManage = overlay.querySelector('#btn-manage-tags');
+        if (btnManage) {
+            btnManage.onclick = () => {
+                close();
+                setTimeout(() => showTagManagerDrawer(), 300);
+            };
+        }
+    }
+
     // 饮食预设点击逻辑
     if (category === 'food') {
         overlay.querySelectorAll('.preset-tag').forEach(tag => {
@@ -650,6 +679,23 @@ function renderProfile() {
     const now = new Date(getBJNow().split(' ')[0].replace(/-/g, '/'));
     const companionDays = Math.floor((now - adoptionDate) / (1000 * 60 * 60 * 24)) + 1;
 
+    // 计算年龄显示
+    const birthDate = new Date(suiSui.birth_date.replace(/-/g, '/'));
+    const ageDays = Math.floor((now - birthDate) / (1000 * 60 * 60 * 24));
+    let ageStr = ageDays > 365 
+        ? Math.floor(ageDays / 365) + '<span style="font-size:12px; margin-left:2px; font-weight:700;">岁</span>'
+        : Math.floor(ageDays / 30) + '<span style="font-size:12px; margin-left:2px; font-weight:700;">个月</span>';
+    
+    // 计算绝育天数
+    let neuStr = '';
+    if (suiSui.neutering_date) {
+        const nd = new Date(suiSui.neutering_date.replace(/-/g, '/'));
+        const ndDiff = Math.floor((now - nd) / (1000 * 60 * 60 * 24));
+        if (ndDiff >= 0) {
+            neuStr = ndDiff + '<span style="font-size:12px; margin-left:2px; font-weight:700;">天</span>';
+        }
+    }
+
     let genderIcon = suiSui.gender.includes('female')
         ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><circle cx="12" cy="10" r="7"></circle><line x1="12" y1="17" x2="12" y2="23"></line><line x1="9" y1="20" x2="15" y2="20"></line></svg>`
         : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><circle cx="10" cy="14" r="7"></circle><line x1="15" y1="9" x2="21" y2="3"></line><polyline points="15 3 21 3 21 9"></polyline></svg>`;
@@ -682,12 +728,18 @@ function renderProfile() {
                         <div style="font-size:14px; font-weight:800;">出生日期</div>
                         <div style="font-size:12px; color:var(--color-text-hint);">${suiSui.birth_date}</div>
                     </div>
+                    <div style="text-align:right; font-size:18px; font-weight:900; color:var(--color-primary);">
+                        ${ageStr}
+                    </div>
                 </div>
                 <div class="milestone-item">
                     <div class="milestone-icon">🏠</div>
                     <div style="flex:1;">
                         <div style="font-size:14px; font-weight:800;">来到家里</div>
                         <div style="font-size:12px; color:var(--color-text-hint);">${suiSui.adoption_date}</div>
+                    </div>
+                    <div style="text-align:right; font-size:18px; font-weight:900; color:var(--color-primary);">
+                        ${companionDays}<span style="font-size:12px; margin-left:2px; font-weight:700;">天</span>
                     </div>
                 </div>
                 <div class="milestone-item">
@@ -696,6 +748,7 @@ function renderProfile() {
                         <div style="font-size:14px; font-weight:800;">绝育时间</div>
                         <div style="font-size:12px; color:var(--color-text-hint);">${suiSui.neutering_date || '尚未填写'}</div>
                     </div>
+                    ${neuStr ? `<div style="text-align:right; font-size:18px; font-weight:900; color:var(--color-primary);">${neuStr}</div>` : ''}
                 </div>
             </div>
 
@@ -830,7 +883,7 @@ function renderSettings() {
                 <span style="color:var(--color-text-hint); font-size:12px;">❯</span>
             </div>
             
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600; text-align:center;">Meow_Daily V2.5.0 "SuiSui" PWA Logo Update Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600; text-align:center;">Meow_Daily V${db.settings?.version || '2.6.0'} "SuiSui" PWA Logo Update Build</p>
         </div>
     `;
 
@@ -847,16 +900,7 @@ function renderSettings() {
     });
 
     document.getElementById('btn-add-rm').onclick = () => {
-        const label = prompt('请输入提醒事项名称 (如: 梳毛)');
-        if (!label) return;
-        const daysStr = prompt('请输入提醒间隔天数 (如: 7)');
-        const days = parseInt(daysStr);
-        if (isNaN(days) || days <= 0) return alert('请输入有效的天数！');
-        const icon = prompt('请输入一个 Emoji 图标 (如: 🛁)', '🐾') || '🐾';
-
-        db.settings.reminders.push({ id: 'rm_' + Date.now(), label, days, icon });
-        setDB(db);
-        renderSettings();
+        showReminderDrawer();
     };
 
     document.getElementById('i-save').onclick = () => {
@@ -872,6 +916,160 @@ function renderSettings() {
     };
 
     document.getElementById('btn-ai-settings').onclick = () => renderAISettings();
+}
+
+/**
+ * 管理 routine tags 的抽屉
+ */
+function showTagManagerDrawer() {
+    const db = getDB();
+    const tags = db.settings.routine_tags || [];
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'drawer-overlay';
+    
+    const renderTags = () => {
+        return tags.map((t, i) => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--color-bg); border-radius:12px; margin-bottom:8px;">
+                <span style="font-size:14px; font-weight:800; color:var(--color-text-title);">${t}</span>
+                <span class="btn-del-tag" data-idx="${i}" style="color:#EF4444; font-size:16px; cursor:pointer; font-weight:900;">×</span>
+            </div>
+        `).join('');
+    };
+
+    overlay.innerHTML = `
+        <div class="drawer-panel" style="min-height:60vh;">
+            <div class="drawer-handle"></div>
+            <div class="drawer-header">
+                <h2 class="drawer-title">🏷️ 管理日常标签</h2>
+                <span id="close-tag-drawer" class="drawer-close">×</span>
+            </div>
+            
+            <div class="form-group" style="display:flex; gap:12px;">
+                <input type="text" id="new-tag-input" class="form-input" style="flex:1;" placeholder="输入新标签名">
+                <button id="btn-add-tag" class="btn btn-primary" style="padding:0 20px; border-radius:var(--radius-16);">添加</button>
+            </div>
+            
+            <div style="margin-top:20px;">
+                <h3 style="font-size:13px; color:var(--color-text-hint); margin-bottom:12px;">已存在的标签</h3>
+                <div id="tags-container">
+                    ${renderTags()}
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const close = () => {
+        overlay.querySelector('.drawer-panel').style.transform = 'translateY(100%)';
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.remove();
+            const activeTab = document.querySelector('.tab-item.active');
+            if (activeTab) switchTab(activeTab.dataset.tab);
+        }, 300);
+    };
+
+    const attachEvents = () => {
+        overlay.querySelectorAll('.btn-del-tag').forEach(btn => {
+            btn.onclick = () => {
+                if(confirm('删除此标签不会删除已有的历史记录，但后续无法再选择此提醒标签，确定删除吗？')) {
+                    tags.splice(btn.dataset.idx, 1);
+                    db.settings.routine_tags = tags;
+                    setDB(db);
+                    overlay.querySelector('#tags-container').innerHTML = renderTags();
+                    attachEvents();
+                }
+            };
+        });
+    };
+
+    overlay.querySelector('#close-tag-drawer').onclick = close;
+    overlay.onclick = (e) => { if (e.target === overlay) close(); };
+    
+    overlay.querySelector('#btn-add-tag').onclick = () => {
+        const val = overlay.querySelector('#new-tag-input').value.trim();
+        if (val) {
+            if (tags.includes(val)) {
+                return showToast('该标签已存在', 'error');
+            }
+            tags.push(val);
+            db.settings.routine_tags = tags;
+            setDB(db);
+            overlay.querySelector('#new-tag-input').value = '';
+            overlay.querySelector('#tags-container').innerHTML = renderTags();
+            attachEvents();
+        }
+    };
+    attachEvents();
+}
+
+/**
+ * 添加提醒的抽屉
+ */
+function showReminderDrawer() {
+    const db = getDB();
+    const tags = db.settings.routine_tags || [];
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'drawer-overlay';
+    overlay.innerHTML = `
+        <div class="drawer-panel">
+            <div class="drawer-handle"></div>
+            <div class="drawer-header">
+                <h2 class="drawer-title">⏰ 新建提醒事项</h2>
+                <span id="close-rm-drawer" class="drawer-close">×</span>
+            </div>
+            
+            <div class="form-group">
+                <label>绑定日常标签（强制）</label>
+                <select id="rm-label" class="form-input">
+                    ${tags.map(t => `<option value="${t}">${t}</option>`).join('')}
+                </select>
+                <p style="font-size:11px; color:var(--color-text-hint); margin-top:6px;">提醒必须与一个活动标签绑定。如需新标签请先在日常录入页面管理添加。</p>
+            </div>
+            
+            <div class="form-group">
+                <label>提醒周期 / 天</label>
+                <input type="number" id="rm-days" class="form-input" placeholder="如：30">
+            </div>
+            
+            <div class="form-group">
+                <label>个性化图标 / Emoji</label>
+                <input type="text" id="rm-icon" class="form-input" value="🐾" placeholder="如：🛁 / ✂️">
+            </div>
+            
+            <button id="btn-save-rm" class="btn-drawer-save" style="margin-top:20px;">保存提醒</button>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const close = () => {
+        overlay.querySelector('.drawer-panel').style.transform = 'translateY(100%)';
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 300);
+    };
+
+    overlay.querySelector('#close-rm-drawer').onclick = close;
+    overlay.onclick = (e) => { if (e.target === overlay) close(); };
+    
+    overlay.querySelector('#btn-save-rm').onclick = () => {
+        const label = overlay.querySelector('#rm-label').value;
+        const days = parseInt(overlay.querySelector('#rm-days').value);
+        const icon = overlay.querySelector('#rm-icon').value.trim() || '🐾';
+        
+        if (!label) return showToast('必须选择一个标签', 'error');
+        if (isNaN(days) || days <= 0) return showToast('请输入有效的周期天数', 'error');
+        
+        db.settings.reminders = db.settings.reminders || [];
+        db.settings.reminders.push({ id: 'rm_' + Date.now(), label, days, icon });
+        setDB(db);
+        showToast('已添加新提醒 🐾', 'success');
+        close();
+        renderSettings();
+    };
 }
 
 /**

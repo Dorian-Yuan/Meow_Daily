@@ -35,7 +35,9 @@ const DEFAULT_DB = {
             { id: "rm_1", label: "剪指甲", days: 14, icon: "✂️" },
             { id: "rm_2", label: "换猫砂", days: 30, icon: "🧹" },
             { id: "rm_3", label: "驱虫", days: 90, icon: "💊" }
-        ]
+        ],
+        routine_tags: ['剪指甲', '换猫砂', '驱虫', '洗澡', '梳毛', '刷牙'],
+        version: "2.6.1"
     }
 };
 
@@ -57,6 +59,11 @@ export async function initStore() {
                     { id: "rm_" + Date.now() + 3, label: "驱虫", days: dbState.settings.reminder_cycles.deworming || 90, icon: "💊" }
                 ];
                 delete dbState.settings.reminder_cycles;
+                saveToLocal();
+            }
+            // 兼容性迁移: 初始化 routine_tags
+            if (dbState.settings && !dbState.settings.routine_tags) {
+                dbState.settings.routine_tags = ['剪指甲', '换猫砂', '驱虫', '洗澡', '梳毛', '刷牙'];
                 saveToLocal();
             }
         } catch (e) {

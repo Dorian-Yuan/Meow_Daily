@@ -115,6 +115,7 @@
   transition: all 0.3s var(--transition-spring);
   font-family: inherit;
   -webkit-appearance: none;
+  appearance: none;
   min-height: 52px;
 }
 
@@ -130,7 +131,7 @@ input[type="date"].form-input {
 
 .form-input:focus {
   border-color: var(--color-primary);
-  background: var(--color-white);
+  background: var(--color-card-bg);
   box-shadow: 0 0 0 4px var(--color-primary-light);
 }
 
