@@ -37,7 +37,7 @@ const DEFAULT_DB = {
             { id: "rm_3", label: "驱虫", days: 90, icon: "💊" }
         ],
         routine_tags: ['剪指甲', '换猫砂', '驱虫', '洗澡', '梳毛', '刷牙'],
-        version: "2.6.1"
+        version: "2.6.2"
     }
 };
 
