@@ -215,7 +215,7 @@ function renderHome() {
 
     const recordsBtn = document.getElementById('nav-records-grid');
     if (recordsBtn) {
-        recordsBtn.onclick = () => switchTab('records');
+        recordsBtn.onclick = () => showHeatmapDrawer(catRecs);
     }
 }
 

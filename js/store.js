@@ -66,6 +66,10 @@ export async function initStore() {
                 dbState.settings.routine_tags = ['剪指甲', '换猫砂', '驱虫', '洗澡', '梳毛', '刷牙'];
                 saveToLocal();
             }
+            // 强制覆盖最新版本号，避免 localStorage 缓存的旧版本号带来展示错误
+            if (dbState.settings) {
+                dbState.settings.version = DEFAULT_DB.settings.version;
+            }
         } catch (e) {
             console.error('解析本地数据失败:', e);
             dbState = { ...DEFAULT_DB };
