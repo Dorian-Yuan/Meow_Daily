@@ -125,6 +125,12 @@
           "timestamp": "2026-04-02 22:02",
           "note": "前爪部分指甲",
           "type": "剪指甲"
+        },
+        {
+          "record_id": "r_1775533471679",
+          "timestamp": "2026-04-05 00:44",
+          "note": "加猫砂，不是换",
+          "type": "换猫砂"
         }
       ],
       "food": [
@@ -181,6 +187,15 @@
           "type": "罐罐",
           "price_per_kg": 0,
           "daily_intake_g": 30
+        },
+        {
+          "record_id": "r_1775533444694",
+          "timestamp": "2026-04-07 00:43",
+          "note": "",
+          "brand": "鲜朗",
+          "type": "罐罐",
+          "price_per_kg": 0,
+          "daily_intake_g": 55
         }
       ],
       "weight": [
