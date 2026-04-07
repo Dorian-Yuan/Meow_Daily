@@ -1231,6 +1231,126 @@ export function initAIEntry() {
     };
 }
 
+/**
+ * 渲染 Github 风格热力图抽屉
+ */
+export function showHeatmapDrawer(catRecs) {
+    if (!catRecs) return;
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'drawer-overlay';
+    
+    // 统计过去近20周（140天）的活跃度
+    const totalDays = 140;
+    const now = new Date(getBJNow().split(' ')[0].replace(/-/g, '/'));
+    
+    const countMap = {};
+    const extractDate = (ts) => ts.split(' ')[0];
+    
+    // 聚合所有记录的日期
+    ['routine', 'food', 'weight', 'medical'].forEach(cat => {
+        if (catRecs[cat]) {
+            catRecs[cat].forEach(r => {
+                const d = extractDate(r.timestamp);
+                countMap[d] = (countMap[d] || 0) + 1;
+            });
+        }
+    });
+
+    // 提前计算过去140天矩阵，Github风格（列=周，行=当前天）
+    // 为了从周日(0)排到周六(6)，需要根据今天往前推齐
+    const todayIndex = now.getDay(); // 0(Sun) - 6(Sat)
+    
+    const daysData = [];
+    for (let i = totalDays - 1; i >= 0; i--) {
+        const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const dateStr = `${y}-${m}-${day}`;
+        daysData.push({ date: dateStr, count: countMap[dateStr] || 0, dayOfWeek: d.getDay() });
+    }
+    
+    // 补齐开始端空格（让第一周的第一格对齐 Sunday, 不然排版错乱）
+    const firstDayOfWeek = daysData[0].dayOfWeek;
+    for (let i = 0; i < firstDayOfWeek; i++) {
+        daysData.unshift(null);
+    }
+    
+    let gridHtml = '<div id="heatmap-scroll-container" style="display:flex; gap:4px; overflow-x:auto; padding-bottom:12px; height:100%; align-items:center;">';
+    
+    let currentWeekCols = '';
+    for (let i = 0; i < daysData.length; i += 7) {
+        const week = daysData.slice(i, i + 7);
+        currentWeekCols += '<div style="display:flex; flex-direction:column; gap:4px;">';
+        week.forEach(d => {
+            if (!d) {
+                currentWeekCols += `<div style="width:12px; height:12px; border-radius:3px; background:transparent;"></div>`;
+            } else {
+                let opacity = '0.1';
+                let colorRule = `background:var(--color-divider);`;
+                
+                if (d.count > 0) {
+                    if (d.count <= 2) opacity = '0.3';
+                    else if (d.count <= 4) opacity = '0.6';
+                    else opacity = '1.0';
+                    colorRule = `background:var(--color-primary); opacity:${opacity};`;
+                }
+
+                currentWeekCols += `<div title="${d.date}: ${d.count} 次记录" style="width:12px; height:12px; border-radius:3px; ${colorRule} flex-shrink:0;"></div>`;
+            }
+        });
+        currentWeekCols += '</div>';
+    }
+    gridHtml += currentWeekCols;
+    gridHtml += '</div>';
+
+    overlay.innerHTML = `
+        <div class="drawer-panel" style="min-height:35vh;">
+            <div class="drawer-handle"></div>
+            <div class="drawer-header">
+                <h2 class="drawer-title">🔥 活跃度热力图</h2>
+                <span id="close-heatmap" class="drawer-close">×</span>
+            </div>
+            
+            <div style="margin-top:20px;">
+                <p style="font-size:12px; color:var(--color-text-hint); margin-bottom:12px; display:flex; justify-content:space-between; align-items:flex-end;">
+                    <span>最近约 20 周的数据一览</span>
+                    <span style="font-size:10px;">📉少 - 📈多</span>
+                </p>
+                <div style="padding:16px 16px 8px 16px; background:var(--color-bg); border-radius:12px;">
+                    ${gridHtml}
+                </div>
+            </div>
+            
+            <button id="btn-go-records" class="btn btn-primary" style="margin-top:24px; width:100%; border-radius:12px;">深入查看近期动态记录</button>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // 默认滚动至最右边 (最新的日期)
+    const scrollContainer = overlay.querySelector('#heatmap-scroll-container');
+    if (scrollContainer) {
+        setTimeout(() => {
+            scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+        }, 100);
+    }
+
+    const close = () => {
+        overlay.querySelector('.drawer-panel').style.transform = 'translateY(100%)';
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 300);
+    };
+
+    overlay.querySelector('#close-heatmap').onclick = close;
+    overlay.onclick = (e) => { if (e.target === overlay) close(); };
+    overlay.querySelector('#btn-go-records').onclick = () => {
+        close();
+        setTimeout(() => switchTab('records'), 150);
+    };
+}
+
 // ---- 云端同步引擎 (Pull-Merge-Push) ----
 
 export function initSyncButton() {
