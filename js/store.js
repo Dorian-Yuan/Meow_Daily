@@ -57,63 +57,79 @@ let dbState = null;
  */
 export async function initStore() {
     const localData = localStorage.getItem(STORAGE_KEY);
-    if (localData) {
-        try {
-            dbState = JSON.parse(localData);
-            // 兼容性迁移: 升级旧版的 reminder_cycles 到 reminders
-            if (dbState.settings && dbState.settings.reminder_cycles && !dbState.settings.reminders) {
-                dbState.settings.reminders = [
-                    { id: "rm_" + Date.now() + 1, label: "剪指甲", days: dbState.settings.reminder_cycles.nail_clipping || 14, icon: "✂️" },
-                    { id: "rm_" + Date.now() + 2, label: "换猫砂", days: dbState.settings.reminder_cycles.litter_change || 30, icon: "🧹" },
-                    { id: "rm_" + Date.now() + 3, label: "驱虫", days: dbState.settings.reminder_cycles.deworming || 90, icon: "💊" }
-                ];
-                delete dbState.settings.reminder_cycles;
-                saveToLocal();
-            }
-            // 兼容性迁移: 初始化 routine_tags
-            if (dbState.settings && !dbState.settings.routine_tags) {
-                dbState.settings.routine_tags = ['剪指甲', '换猫砂', '驱虫', '洗澡', '梳毛', '刷牙'];
-                saveToLocal();
-            }
-            // 兼容性迁移: 初始化 anniversaries
-            if (dbState.settings && !dbState.settings.anniversaries) {
-                const adoptDate = (dbState.cats && dbState.cats[0]?.adoption_date) ? dbState.cats[0].adoption_date : "2023-04-03";
-                dbState.settings.anniversaries = [
-                    { id: 'av_' + Date.now(), label: '陪伴天数', date: adoptDate, isPrimary: true }
-                ];
-                saveToLocal();
-            }
-            // 兼容性迁移: 初始化 game_prefs
-            if (dbState.settings && !dbState.settings.game_prefs) {
-                dbState.settings.game_prefs = {
-                    cat_sweep: { difficulty: "easy", custom: { rows: 8, cols: 8, mice: 10 } }
-                };
-                saveToLocal();
-            }
-            // 强制覆盖最新版本号，避免 localStorage 缓存的旧版本号带来展示错误
-            if (dbState.settings) {
-                dbState.settings.version = DEFAULT_DB.settings.version;
-            }
-        } catch (e) {
-            console.error('解析本地数据失败:', e);
-            dbState = { ...DEFAULT_DB };
-        }
-    } else {
-        // 首次使用或换新浏览器，尝试拉取静态托管的 db.json
-        try {
-            const res = await fetch('./db.json?t=' + Date.now());
-            if (res.ok) {
-                const cloudData = await res.json();
+    // 无论是否有本地数据，都尝试拉取最新的 db.json 来获取版本号
+    try {
+        const res = await fetch('./db.json?t=' + Date.now());
+        if (res.ok) {
+            const cloudData = await res.json();
+            
+            if (localData) {
+                // 有本地数据，只更新版本号
+                try {
+                    dbState = JSON.parse(localData);
+                    // 兼容性迁移: 升级旧版的 reminder_cycles 到 reminders
+                    if (dbState.settings && dbState.settings.reminder_cycles && !dbState.settings.reminders) {
+                        dbState.settings.reminders = [
+                            { id: "rm_" + Date.now() + 1, label: "剪指甲", days: dbState.settings.reminder_cycles.nail_clipping || 14, icon: "✂️" },
+                            { id: "rm_" + Date.now() + 2, label: "换猫砂", days: dbState.settings.reminder_cycles.litter_change || 30, icon: "🧹" },
+                            { id: "rm_" + Date.now() + 3, label: "驱虫", days: dbState.settings.reminder_cycles.deworming || 90, icon: "💊" }
+                        ];
+                        delete dbState.settings.reminder_cycles;
+                        saveToLocal();
+                    }
+                    // 兼容性迁移: 初始化 routine_tags
+                    if (dbState.settings && !dbState.settings.routine_tags) {
+                        dbState.settings.routine_tags = ['剪指甲', '换猫砂', '驱虫', '洗澡', '梳毛', '刷牙'];
+                        saveToLocal();
+                    }
+                    // 兼容性迁移: 初始化 anniversaries
+                    if (dbState.settings && !dbState.settings.anniversaries) {
+                        const adoptDate = (dbState.cats && dbState.cats[0]?.adoption_date) ? dbState.cats[0].adoption_date : "2023-04-03";
+                        dbState.settings.anniversaries = [
+                            { id: 'av_' + Date.now(), label: '陪伴天数', date: adoptDate, isPrimary: true }
+                        ];
+                        saveToLocal();
+                    }
+                    // 兼容性迁移: 初始化 game_prefs
+                    if (dbState.settings && !dbState.settings.game_prefs) {
+                        dbState.settings.game_prefs = {
+                            cat_sweep: { difficulty: "easy", custom: { rows: 8, cols: 8, mice: 10 } }
+                        };
+                        saveToLocal();
+                    }
+                    // 更新版本号为最新的
+                    if (cloudData.settings && cloudData.settings.version) {
+                        dbState.settings.version = cloudData.settings.version;
+                        saveToLocal();
+                    }
+                } catch (e) {
+                    console.error('解析本地数据失败:', e);
+                    dbState = cloudData;
+                    saveToLocal();
+                }
+            } else {
+                // 首次使用或换新浏览器，使用拉取的数据
                 dbState = cloudData;
                 console.log('🐾 成功从公开环境拉取基础数据');
-            } else {
-                throw new Error('db.json 返回非 200 状态');
+                saveToLocal();
             }
-        } catch (e) {
-            console.log('🐾 无法拉取公开数据，使用默认模板初始化', e);
-            dbState = { ...DEFAULT_DB };
+        } else {
+            throw new Error('db.json 返回非 200 状态');
         }
-        saveToLocal();
+    } catch (e) {
+        console.log('🐾 无法拉取公开数据，使用本地数据或默认模板初始化', e);
+        if (localData) {
+            try {
+                dbState = JSON.parse(localData);
+            } catch (e) {
+                console.error('解析本地数据失败:', e);
+                dbState = { ...DEFAULT_DB };
+                saveToLocal();
+            }
+        } else {
+            dbState = { ...DEFAULT_DB };
+            saveToLocal();
+        }
     }
     return dbState;
 }

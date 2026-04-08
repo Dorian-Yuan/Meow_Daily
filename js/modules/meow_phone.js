@@ -6,6 +6,7 @@
  */
 import { getDB, setDB } from '../store.js';
 import { createCatSweepGame } from './games/cat_sweep.js';
+import { createPixelArtApp } from './games/pixel_art.js';
 
 // ---- 游戏注册表 ----
 const APP_REGISTRY = [
@@ -15,6 +16,13 @@ const APP_REGISTRY = [
         icon: '🐭',
         description: '经典扫雷改版',
         launch: launchCatSweep
+    },
+    {
+        id: 'pixel_art',
+        name: '像素画板',
+        icon: '🎨',
+        description: '创建像素艺术',
+        launch: launchPixelArt
     },
     {
         id: 'settings',
@@ -225,7 +233,8 @@ function launchSettings() {
     if (!phoneOverlay) return;
 
     const db = getDB();
-    const prefs = db.settings.game_prefs?.cat_sweep || { difficulty: 'easy', custom: { rows: 8, cols: 8, mice: 10 } };
+    const catSweepPrefs = db.settings.game_prefs?.cat_sweep || { difficulty: 'easy', custom: { rows: 8, cols: 8, mice: 10 } };
+    const pixelArtPrefs = db.settings.game_prefs?.pixel_art || { canvasSize: 10 };
 
     phoneOverlay.innerHTML = `
         <div class="phone-screen">
@@ -241,31 +250,57 @@ function launchSettings() {
                     <div class="settings-group">
                         <label class="settings-label">游戏难度</label>
                         <div class="settings-radio-group">
-                            <label class="settings-radio ${prefs.difficulty === 'easy' ? 'active' : ''}">
-                                <input type="radio" name="difficulty" value="easy" ${prefs.difficulty === 'easy' ? 'checked' : ''}>
+                            <label class="settings-radio ${catSweepPrefs.difficulty === 'easy' ? 'active' : ''}">
+                                <input type="radio" name="difficulty" value="easy" ${catSweepPrefs.difficulty === 'easy' ? 'checked' : ''}>
                                 <span>🟢 简单</span>
                                 <small>8×8 · 10只鼠</small>
                             </label>
-                            <label class="settings-radio ${prefs.difficulty === 'medium' ? 'active' : ''}">
-                                <input type="radio" name="difficulty" value="medium" ${prefs.difficulty === 'medium' ? 'checked' : ''}>
+                            <label class="settings-radio ${catSweepPrefs.difficulty === 'medium' ? 'active' : ''}">
+                                <input type="radio" name="difficulty" value="medium" ${catSweepPrefs.difficulty === 'medium' ? 'checked' : ''}>
                                 <span>🟡 中等</span>
                                 <small>12×12 · 25只鼠</small>
                             </label>
-                            <label class="settings-radio ${prefs.difficulty === 'hard' ? 'active' : ''}">
-                                <input type="radio" name="difficulty" value="hard" ${prefs.difficulty === 'hard' ? 'checked' : ''}>
+                            <label class="settings-radio ${catSweepPrefs.difficulty === 'hard' ? 'active' : ''}">
+                                <input type="radio" name="difficulty" value="hard" ${catSweepPrefs.difficulty === 'hard' ? 'checked' : ''}>
                                 <span>🔴 困难</span>
                                 <small>16×12 · 40只鼠</small>
                             </label>
                         </div>
                     </div>
-
-
-
+                </div>
+                
+                <div class="settings-section">
+                    <h3 class="settings-section-title">🎨 像素画板</h3>
+                    
+                    <div class="settings-group">
+                        <label class="settings-label">画布尺寸</label>
+                        <div class="settings-radio-group">
+                            <label class="settings-radio ${pixelArtPrefs.canvasSize === 8 ? 'active' : ''}">
+                                <input type="radio" name="canvasSize" value="8" ${pixelArtPrefs.canvasSize === 8 ? 'checked' : ''}>
+                                <span>8×8</span>
+                            </label>
+                            <label class="settings-radio ${pixelArtPrefs.canvasSize === 10 ? 'active' : ''}">
+                                <input type="radio" name="canvasSize" value="10" ${pixelArtPrefs.canvasSize === 10 ? 'checked' : ''}>
+                                <span>10×10</span>
+                            </label>
+                            <label class="settings-radio ${pixelArtPrefs.canvasSize === 12 ? 'active' : ''}">
+                                <input type="radio" name="canvasSize" value="12" ${pixelArtPrefs.canvasSize === 12 ? 'checked' : ''}>
+                                <span>12×12</span>
+                            </label>
+                            <label class="settings-radio ${pixelArtPrefs.canvasSize === 16 ? 'active' : ''}">
+                                <input type="radio" name="canvasSize" value="16" ${pixelArtPrefs.canvasSize === 16 ? 'checked' : ''}>
+                                <span>16×16</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
                     <button id="settings-save" class="settings-save-btn">💾 保存设置</button>
                 </div>
                 
                 <div class="settings-section">
-                    <p class="settings-about">Meow Phone V3.0.5<br>一个隐藏的彩蛋系统 🐾</p>
+                    <p class="settings-about">Meow Phone V${getDB().settings.version || '3.1.0'}<br>一个隐藏的彩蛋系统 🐾</p>
                 </div>
             </div>
         </div>
@@ -275,11 +310,19 @@ function launchSettings() {
     phoneOverlay.querySelector('#settings-back').addEventListener('click', renderHomeScreen);
 
     // 难度 radio 切换
-    const customPanel = phoneOverlay.querySelector('#custom-settings');
     phoneOverlay.querySelectorAll('input[name="difficulty"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
             // 更新 active 样式
-            phoneOverlay.querySelectorAll('.settings-radio').forEach(r => r.classList.remove('active'));
+            phoneOverlay.querySelectorAll('input[name="difficulty"]').forEach(r => r.closest('.settings-radio').classList.remove('active'));
+            e.target.closest('.settings-radio').classList.add('active');
+        });
+    });
+
+    // 画布尺寸 radio 切换
+    phoneOverlay.querySelectorAll('input[name="canvasSize"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            // 更新 active 样式
+            phoneOverlay.querySelectorAll('input[name="canvasSize"]').forEach(r => r.closest('.settings-radio').classList.remove('active'));
             e.target.closest('.settings-radio').classList.add('active');
         });
     });
@@ -287,9 +330,11 @@ function launchSettings() {
     // 保存
     phoneOverlay.querySelector('#settings-save').addEventListener('click', () => {
         const difficulty = phoneOverlay.querySelector('input[name="difficulty"]:checked').value;
+        const canvasSize = parseInt(phoneOverlay.querySelector('input[name="canvasSize"]:checked').value);
         
         db.settings.game_prefs = db.settings.game_prefs || {};
         db.settings.game_prefs.cat_sweep = { difficulty };
+        db.settings.game_prefs.pixel_art = { canvasSize };
         setDB(db);
 
         // 显示保存成功反馈
@@ -301,4 +346,37 @@ function launchSettings() {
             saveBtn.style.background = '';
         }, 1500);
     });
+}
+
+// ---- 像素画板启动器 ----
+
+function launchPixelArt() {
+    if (!phoneOverlay) return;
+
+    const db = getDB();
+    const pixelArtPrefs = db.settings.game_prefs?.pixel_art || { canvasSize: 10 };
+
+    phoneOverlay.innerHTML = `
+        <div class="phone-screen">
+            <div class="phone-status-bar">
+                <span class="phone-back-btn" id="pixel-back">← 返回</span>
+                <span></span>
+                <span></span>
+            </div>
+            <div id="pixel-art-container" class="pixel-art-app-container"></div>
+        </div>
+    `;
+
+    const container = phoneOverlay.querySelector('#pixel-art-container');
+    const app = createPixelArtApp(container);
+    
+    // 从设置中加载画布尺寸
+    app.canvasSize = pixelArtPrefs.canvasSize;
+    app.pixels = Array(app.canvasSize * app.canvasSize).fill('#FFFFFF');
+    app.history = [];
+    app.historyIndex = -1;
+    app.renderCanvas();
+
+    // 返回主屏
+    phoneOverlay.querySelector('#pixel-back').addEventListener('click', renderHomeScreen);
 }
