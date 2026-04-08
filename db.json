@@ -298,6 +298,12 @@
         "label": "岁岁生日",
         "date": "2025-07-27",
         "isPrimary": true
+      },
+      {
+        "id": "av_1775607881857",
+        "label": "第一根猫胡子",
+        "date": "2026-04-08",
+        "isPrimary": false
       }
     ],
     "version": "2.7.0"
