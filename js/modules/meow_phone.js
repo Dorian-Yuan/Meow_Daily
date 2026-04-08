@@ -146,8 +146,8 @@ function launchCatSweep() {
         <div class="phone-screen">
             <div class="phone-status-bar">
                 <span class="phone-back-btn" id="sweep-back">← 返回</span>
-                <span class="phone-app-title">🐭 猫抓老鼠</span>
-                <span class="phone-battery">🔋</span>
+                <span></span>
+                <span></span>
             </div>
             <div class="sweep-info-bar">
                 <div class="sweep-stat">
@@ -251,38 +251,21 @@ function launchSettings() {
                                 <span>🟡 中等</span>
                                 <small>12×12 · 25只鼠</small>
                             </label>
-                            <label class="settings-radio ${prefs.difficulty === 'custom' ? 'active' : ''}">
-                                <input type="radio" name="difficulty" value="custom" ${prefs.difficulty === 'custom' ? 'checked' : ''}>
-                                <span>🔧 自定义</span>
-                                <small>自由设置</small>
+                            <label class="settings-radio ${prefs.difficulty === 'hard' ? 'active' : ''}">
+                                <input type="radio" name="difficulty" value="hard" ${prefs.difficulty === 'hard' ? 'checked' : ''}>
+                                <span>🔴 困难</span>
+                                <small>16×12 · 40只鼠</small>
                             </label>
                         </div>
                     </div>
 
-                    <div id="custom-settings" class="settings-group" style="display:${prefs.difficulty === 'custom' ? 'block' : 'none'};">
-                        <label class="settings-label">自定义参数</label>
-                        <div class="settings-custom-inputs">
-                            <div class="settings-input-row">
-                                <span>行数</span>
-                                <input type="number" id="custom-rows" class="settings-input" value="${prefs.custom?.rows || 8}" min="5" max="20">
-                            </div>
-                            <div class="settings-input-row">
-                                <span>列数</span>
-                                <input type="number" id="custom-cols" class="settings-input" value="${prefs.custom?.cols || 8}" min="5" max="20">
-                            </div>
-                            <div class="settings-input-row">
-                                <span>老鼠数</span>
-                                <input type="number" id="custom-mice" class="settings-input" value="${prefs.custom?.mice || 10}" min="1" max="99">
-                            </div>
-                        </div>
-                    </div>
+
 
                     <button id="settings-save" class="settings-save-btn">💾 保存设置</button>
                 </div>
                 
                 <div class="settings-section">
-                    <h3 class="settings-section-title">ℹ️ 关于</h3>
-                    <p class="settings-about">Meow Phone V3.0.3<br>一个隐藏的彩蛋系统 🐾</p>
+                    <p class="settings-about">Meow Phone V3.0.4<br>一个隐藏的彩蛋系统 🐾</p>
                 </div>
             </div>
         </div>
@@ -298,8 +281,6 @@ function launchSettings() {
             // 更新 active 样式
             phoneOverlay.querySelectorAll('.settings-radio').forEach(r => r.classList.remove('active'));
             e.target.closest('.settings-radio').classList.add('active');
-            
-            customPanel.style.display = e.target.value === 'custom' ? 'block' : 'none';
         });
     });
 

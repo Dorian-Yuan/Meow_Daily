@@ -11,7 +11,8 @@
 // 难度预设
 const PRESETS = {
     easy:   { rows: 8,  cols: 8,  mice: 10 },
-    medium: { rows: 12, cols: 12, mice: 25 }
+    medium: { rows: 12, cols: 12, mice: 25 },
+    hard:   { rows: 16, cols: 12, mice: 40 }
 };
 
 /**
