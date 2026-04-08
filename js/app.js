@@ -3,6 +3,7 @@
  */
 import { initStore } from './store.js';
 import { switchTab, initAIEntry, initSyncButton } from './modules/ui.js';
+import { initMeowPhoneTrigger } from './modules/meow_phone.js';
 
 window.addEventListener('DOMContentLoaded', async () => {
     // 初始化数据
@@ -15,6 +16,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     switchTab('home');
     initAIEntry();
     initSyncButton();
+    initMeowPhoneTrigger();
 
     // 绑定底部导航 (使用事件委派确保可靠性)
     document.querySelector('.bottom-tabbar').addEventListener('click', (e) => {

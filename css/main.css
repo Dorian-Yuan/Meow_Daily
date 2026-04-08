@@ -130,6 +130,9 @@ body {
   justify-content: center;
   position: relative;
   z-index: 2;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
   /* 双层阴影：蓝色辉光 + 白色光环 */
   box-shadow:
     0 4px 20px rgba(64, 102, 224, 0.25),

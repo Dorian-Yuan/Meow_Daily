@@ -40,7 +40,13 @@ const DEFAULT_DB = {
         anniversaries: [
             { id: "av_1", label: "陪伴天数", date: "2023-04-03", isPrimary: true }
         ],
-        version: "2.7.0"
+        game_prefs: {
+            cat_sweep: {
+                difficulty: "easy",
+                custom: { rows: 8, cols: 8, mice: 10 }
+            }
+        },
+        version: "3.0.2"
     }
 };
 
@@ -75,6 +81,13 @@ export async function initStore() {
                 dbState.settings.anniversaries = [
                     { id: 'av_' + Date.now(), label: '陪伴天数', date: adoptDate, isPrimary: true }
                 ];
+                saveToLocal();
+            }
+            // 兼容性迁移: 初始化 game_prefs
+            if (dbState.settings && !dbState.settings.game_prefs) {
+                dbState.settings.game_prefs = {
+                    cat_sweep: { difficulty: "easy", custom: { rows: 8, cols: 8, mice: 10 } }
+                };
                 saveToLocal();
             }
             // 强制覆盖最新版本号，避免 localStorage 缓存的旧版本号带来展示错误

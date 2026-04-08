@@ -628,3 +628,427 @@ input[type="date"].form-input {
 .filter-chip:active {
   transform: scale(0.95);
 }
+
+/* ======== Meow Phone 系统 ======== */
+.meow-phone-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--color-bg);
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.meow-phone-overlay.active {
+  transform: translateY(0);
+}
+
+.meow-phone-overlay.closing {
+  transform: translateY(100%);
+}
+
+.phone-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--color-bg);
+  height: 100%;
+}
+
+.phone-status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-text-title);
+  background: rgba(251, 248, 244, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+.phone-wallpaper-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 60px;
+}
+
+.phone-clock {
+  font-size: 64px;
+  font-weight: 900;
+  color: var(--color-text-title);
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.phone-date {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-hint);
+  margin-top: 8px;
+}
+
+.phone-app-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px 16px;
+  padding: 24px;
+  margin-top: auto;
+  margin-bottom: 20px;
+}
+
+.phone-app-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.phone-app-icon:active {
+  transform: scale(0.9);
+}
+
+.app-icon-inner {
+  width: 56px;
+  height: 56px;
+  background: var(--color-card-bg);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  border: 1px solid var(--color-divider);
+}
+
+.app-icon-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.phone-dock {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 16px 24px 32px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  border-top-left-radius: 32px;
+  border-top-right-radius: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+@media (prefers-color-scheme: dark) {
+  .phone-dock {
+    background: rgba(40, 36, 32, 0.6);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+.dock-btn {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  font-size: 24px;
+}
+
+.dock-btn:active {
+  transform: scale(0.9);
+}
+
+.dock-home-indicator {
+  width: 40%;
+  height: 5px;
+  background: var(--color-text-title);
+  border-radius: 10px;
+  opacity: 0.8;
+  margin: auto;
+}
+
+.phone-back-btn {
+  color: var(--color-primary);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.phone-app-title {
+  font-weight: 900;
+  font-size: 16px;
+}
+
+/* ======== 猫抓老鼠游戏样式 ======== */
+.sweep-info-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--color-card-bg);
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.sweep-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--color-text-main);
+}
+
+.sweep-hint {
+  text-align: center;
+  padding: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--color-text-hint);
+}
+
+.sweep-board-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow: auto;
+}
+
+.sweep-grid {
+  display: grid;
+  gap: 2px;
+  background: var(--color-divider);
+  border: 4px solid var(--color-divider);
+  border-radius: 8px;
+  margin: auto;
+}
+
+.sweep-tile {
+  width: 32px;
+  height: 32px;
+  background: var(--color-text-sub);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: inset 2px 2px 0 rgba(255,255,255,0.2), inset -2px -2px 0 rgba(0,0,0,0.1);
+  user-select: none;
+}
+
+.sweep-tile:active {
+  background: var(--color-text-hint);
+}
+
+.sweep-tile.revealed {
+  background: var(--color-bg-warm);
+  box-shadow: none;
+  border: 1px solid var(--color-divider);
+}
+
+.sweep-tile.mouse {
+  background: #FEE2E2;
+}
+
+.sweep-tile.flagged {
+  color: #EF4444;
+}
+
+.sweep-result {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(251, 248, 244, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+}
+
+.sweep-result-content {
+  background: var(--color-card-bg);
+  padding: 32px;
+  border-radius: 24px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  transform: scale(0.9);
+  animation: result-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes result-pop {
+  to { transform: scale(1); }
+}
+
+.sweep-result-content .result-emoji {
+  font-size: 64px;
+  line-height: 1;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.sweep-result-content.win h3 { color: var(--color-success); }
+.sweep-result-content.lose h3 { color: var(--color-danger); }
+
+.sweep-result-content h3 {
+  font-size: 24px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.sweep-result-content p {
+  color: var(--color-text-main);
+  font-weight: 700;
+}
+
+.sweep-restart-btn {
+  margin: 24px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(64, 102, 224, 0.3);
+}
+
+/* ======== Meow Phone 设置样式 ======== */
+.phone-settings-content {
+  padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.settings-section {
+  margin-bottom: 32px;
+}
+
+.settings-section-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-text-hint);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.settings-group {
+  background: var(--color-card-bg);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.settings-label {
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text-title);
+  margin-bottom: 16px;
+}
+
+.settings-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-radio {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border: 2px solid var(--color-divider);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settings-radio.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.settings-radio input[type="radio"] {
+  display: none;
+}
+
+.settings-radio span {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text-main);
+  margin-right: auto;
+}
+
+.settings-radio small {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-hint);
+}
+
+.settings-custom-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-input-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settings-input-row span {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.settings-input {
+  width: 80px;
+  padding: 8px 12px;
+  border: 2px solid var(--color-divider);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-text-title);
+  background: var(--color-bg);
+}
+
+.settings-save-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--color-text-title);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.settings-about {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-hint);
+  text-align: center;
+  line-height: 1.6;
+}
