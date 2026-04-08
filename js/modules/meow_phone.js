@@ -282,7 +282,7 @@ function launchSettings() {
                 
                 <div class="settings-section">
                     <h3 class="settings-section-title">ℹ️ 关于</h3>
-                    <p class="settings-about">Meow Phone V1.0<br>一个隐藏的彩蛋系统 🐾</p>
+                    <p class="settings-about">Meow Phone V3.0.3<br>一个隐藏的彩蛋系统 🐾</p>
                 </div>
             </div>
         </div>
