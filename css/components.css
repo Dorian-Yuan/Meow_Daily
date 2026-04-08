@@ -987,6 +987,10 @@ input[type="date"].form-input {
   background: var(--color-primary-light);
 }
 
+.settings-radio.active span {
+  color: var(--color-primary);
+}
+
 .settings-radio input[type="radio"] {
   display: none;
 }
@@ -1037,7 +1041,7 @@ input[type="date"].form-input {
 .settings-save-btn {
   width: 100%;
   padding: 16px;
-  background: var(--color-text-title);
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 16px;
@@ -1045,6 +1049,12 @@ input[type="date"].form-input {
   font-weight: 800;
   cursor: pointer;
   margin-top: 8px;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.settings-save-btn:active {
+  background: var(--color-primary-active);
+  transform: scale(0.98);
 }
 
 .settings-about {
