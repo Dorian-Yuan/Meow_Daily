@@ -46,7 +46,7 @@ const DEFAULT_DB = {
                 custom: { rows: 8, cols: 8, mice: 10 }
             }
         },
-        version: "3.0.4"
+        version: "3.0.5"
     }
 };
 

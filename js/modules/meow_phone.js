@@ -152,11 +152,11 @@ function launchCatSweep() {
             <div class="sweep-info-bar">
                 <div class="sweep-stat">
                     <span class="sweep-stat-icon">🚩</span>
-                    <span id="sweep-flags">0/${prefs.difficulty === 'easy' ? 10 : prefs.difficulty === 'medium' ? 25 : prefs.custom?.mice || 10}</span>
+                    <span id="sweep-flags">0/${prefs.difficulty === 'easy' ? 10 : (prefs.difficulty === 'medium' ? 25 : (prefs.difficulty === 'hard' ? 40 : (prefs.custom?.mice || 10)))}</span>
                 </div>
                 <div class="sweep-stat">
                     <span class="sweep-stat-icon">📐</span>
-                    <span id="sweep-difficulty">${prefs.difficulty === 'easy' ? '简单' : prefs.difficulty === 'medium' ? '中等' : '自定义'}</span>
+                    <span id="sweep-difficulty">${prefs.difficulty === 'easy' ? '简单' : (prefs.difficulty === 'medium' ? '中等' : (prefs.difficulty === 'hard' ? '困难' : '自定义'))}</span>
                 </div>
             </div>
             <div class="sweep-hint">
@@ -265,7 +265,7 @@ function launchSettings() {
                 </div>
                 
                 <div class="settings-section">
-                    <p class="settings-about">Meow Phone V3.0.4<br>一个隐藏的彩蛋系统 🐾</p>
+                    <p class="settings-about">Meow Phone V3.0.5<br>一个隐藏的彩蛋系统 🐾</p>
                 </div>
             </div>
         </div>
@@ -287,20 +287,9 @@ function launchSettings() {
     // 保存
     phoneOverlay.querySelector('#settings-save').addEventListener('click', () => {
         const difficulty = phoneOverlay.querySelector('input[name="difficulty"]:checked').value;
-        const custom = {
-            rows: Math.min(20, Math.max(5, parseInt(phoneOverlay.querySelector('#custom-rows')?.value) || 8)),
-            cols: Math.min(20, Math.max(5, parseInt(phoneOverlay.querySelector('#custom-cols')?.value) || 8)),
-            mice: Math.min(99, Math.max(1, parseInt(phoneOverlay.querySelector('#custom-mice')?.value) || 10))
-        };
-
-        // 校验老鼠数不超过总格数-9
-        const maxMice = custom.rows * custom.cols - 9;
-        if (custom.mice > maxMice) {
-            custom.mice = maxMice;
-        }
-
+        
         db.settings.game_prefs = db.settings.game_prefs || {};
-        db.settings.game_prefs.cat_sweep = { difficulty, custom };
+        db.settings.game_prefs.cat_sweep = { difficulty };
         setDB(db);
 
         // 显示保存成功反馈
