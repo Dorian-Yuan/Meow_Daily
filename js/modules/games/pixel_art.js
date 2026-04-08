@@ -607,20 +607,20 @@ class PixelArtApp {
     }
     
     export() {
-        // 创建一个临时画布用于导出
-        const exportSize = 512; // 默认导出大小
-        const pixelSize = exportSize / this.canvasSize;
-        
+        const targetSize = 512;
+        const pixelSize = Math.floor(targetSize / this.canvasSize);
+        const exportSize = pixelSize * this.canvasSize;
+
         const canvas = document.createElement('canvas');
         canvas.width = exportSize;
         canvas.height = exportSize;
         const ctx = canvas.getContext('2d');
-        
-        // 绘制像素
+        ctx.imageSmoothingEnabled = false;
+
         for (let i = 0; i < this.pixels.length; i++) {
             const x = (i % this.canvasSize) * pixelSize;
             const y = Math.floor(i / this.canvasSize) * pixelSize;
-            
+
             ctx.fillStyle = this.pixels[i];
             ctx.fillRect(x, y, pixelSize, pixelSize);
         }
