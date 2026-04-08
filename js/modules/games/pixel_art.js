@@ -305,48 +305,18 @@ class PixelArtApp {
                     const y = Math.floor(index / this.canvasSize);
                     const classes = ['pixel'];
                     if (isTransparent) classes.push('pixel-transparent');
-                    if (x === midIndex || y === midIndex) classes.push('pixel-center-line');
-                    if (x === 0 || x === this.canvasSize - 1 || y === 0 || y === this.canvasSize - 1) classes.push('pixel-border-line');
-                    return `<div class="${classes.join(' ')}" data-index="${index}" ${!isTransparent ? `style="background-color: ${color}"` : ''}></div>`;
+
+                    const shadows = [];
+                    if (x === midIndex) shadows.push('-1px 0 0 0 var(--color-text-hint)');
+                    if (y === midIndex) shadows.push('0 -1px 0 0 var(--color-text-hint)');
+                    const shadowStyle = shadows.length > 0 ? `box-shadow: ${shadows.join(', ')};` : '';
+                    const bgStyle = !isTransparent ? `background-color: ${color};` : '';
+                    const style = (bgStyle || shadowStyle) ? `style="${bgStyle}${shadowStyle}"` : '';
+
+                    return `<div class="${classes.join(' ')}" data-index="${index}" ${style}></div>`;
                 }).join('')}
             </div>
         `;
-
-        this.renderGridOverlay();
-    }
-
-    renderGridOverlay() {
-        requestAnimationFrame(() => {
-            const canvasEl = this.container.querySelector('.pixel-art-canvas');
-            if (!canvasEl) return;
-
-            let overlay = canvasEl.querySelector('.pixel-grid-overlay');
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.className = 'pixel-grid-overlay';
-                canvasEl.appendChild(overlay);
-            }
-
-            const midIndex = Math.floor(this.canvasSize / 2);
-            const gapPx = 1;
-            const totalGaps = this.canvasSize - 1;
-            const canvasRect = canvasEl.getBoundingClientRect();
-            const innerWidth = canvasRect.width - 4;
-            const innerHeight = canvasRect.height - 4;
-            const gapTotalWidth = totalGaps * gapPx;
-            const cellWidth = (innerWidth - gapTotalWidth) / this.canvasSize;
-            const cellHeight = (innerHeight - gapTotalWidth) / this.canvasSize;
-
-            const centerLineX = midIndex * (cellWidth + gapPx);
-            const centerLineY = midIndex * (cellHeight + gapPx);
-
-            overlay.innerHTML = `
-                <svg width="100%" height="100%" viewBox="0 0 ${canvasRect.width} ${canvasRect.height}" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:-2px;left:-2px;">
-                    <line x1="${centerLineX}" y1="0" x2="${centerLineX}" y2="${innerHeight}" stroke="var(--color-text-hint)" stroke-width="1" opacity="0.6"/>
-                    <line x1="0" y1="${centerLineY}" x2="${innerWidth}" y2="${centerLineY}" stroke="var(--color-text-hint)" stroke-width="1" opacity="0.6"/>
-                </svg>
-            `;
-        });
     }
     
     bindEvents() {
