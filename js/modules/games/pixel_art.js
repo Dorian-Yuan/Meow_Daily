@@ -79,7 +79,7 @@ class ClearCanvasCommand extends PixelArtCommand {
     }
     
     execute() {
-        this.app.pixels.fill('#FFFFFF');
+        this.app.pixels.fill('transparent');
     }
     
     undo() {
@@ -176,7 +176,7 @@ class PixelArtApp {
     constructor(container) {
         this.container = container;
         this.canvasSize = 10; // 默认 10x10
-        this.pixels = Array(this.canvasSize * this.canvasSize).fill('#FFFFFF');
+        this.pixels = Array(this.canvasSize * this.canvasSize).fill('transparent');
         this.currentColor = '#000000';
         this.tool = 'pen'; // pen, eraser, eyedropper, bucket
         this.colorPalette = [...CLASSIC_PALETTE.slice(0, 8)]; // 默认颜色槽位
@@ -295,13 +295,58 @@ class PixelArtApp {
     
     renderCanvas() {
         const canvasContainer = this.container.querySelector('#pixel-canvas-container');
+        const midIndex = Math.floor(this.canvasSize / 2);
+
         canvasContainer.innerHTML = `
             <div class="pixel-art-canvas" style="grid-template-columns: repeat(${this.canvasSize}, 1fr);">
-                ${this.pixels.map((color, index) => `
-                    <div class="pixel" data-index="${index}" style="background-color: ${color}"></div>
-                `).join('')}
+                ${this.pixels.map((color, index) => {
+                    const isTransparent = color === 'transparent';
+                    const x = index % this.canvasSize;
+                    const y = Math.floor(index / this.canvasSize);
+                    const classes = ['pixel'];
+                    if (isTransparent) classes.push('pixel-transparent');
+                    if (x === midIndex || y === midIndex) classes.push('pixel-center-line');
+                    if (x === 0 || x === this.canvasSize - 1 || y === 0 || y === this.canvasSize - 1) classes.push('pixel-border-line');
+                    return `<div class="${classes.join(' ')}" data-index="${index}" ${!isTransparent ? `style="background-color: ${color}"` : ''}></div>`;
+                }).join('')}
             </div>
         `;
+
+        this.renderGridOverlay();
+    }
+
+    renderGridOverlay() {
+        requestAnimationFrame(() => {
+            const canvasEl = this.container.querySelector('.pixel-art-canvas');
+            if (!canvasEl) return;
+
+            let overlay = canvasEl.querySelector('.pixel-grid-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'pixel-grid-overlay';
+                canvasEl.appendChild(overlay);
+            }
+
+            const midIndex = Math.floor(this.canvasSize / 2);
+            const gapPx = 1;
+            const totalGaps = this.canvasSize - 1;
+            const canvasRect = canvasEl.getBoundingClientRect();
+            const innerWidth = canvasRect.width - 4;
+            const innerHeight = canvasRect.height - 4;
+            const gapTotalWidth = totalGaps * gapPx;
+            const cellWidth = (innerWidth - gapTotalWidth) / this.canvasSize;
+            const cellHeight = (innerHeight - gapTotalWidth) / this.canvasSize;
+
+            const centerLineX = midIndex * (cellWidth + gapPx) + cellWidth / 2;
+            const centerLineY = midIndex * (cellHeight + gapPx) + cellHeight / 2;
+
+            overlay.innerHTML = `
+                <svg width="100%" height="100%" viewBox="0 0 ${canvasRect.width} ${canvasRect.height}" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:-2px;left:-2px;">
+                    <line x1="${centerLineX}" y1="0" x2="${centerLineX}" y2="${innerHeight}" stroke="var(--color-text-hint)" stroke-width="1" opacity="0.6"/>
+                    <line x1="0" y1="${centerLineY}" x2="${innerWidth}" y2="${centerLineY}" stroke="var(--color-text-hint)" stroke-width="1" opacity="0.6"/>
+                </svg>
+            `;
+        });
     }
     
     bindEvents() {
@@ -510,8 +555,8 @@ class PixelArtApp {
             }
             case 'eraser': {
                 const oldColor = this.pixels[index];
-                if (oldColor !== '#FFFFFF') {
-                    const command = new DrawPixelCommand(this, index, oldColor, '#FFFFFF');
+                if (oldColor !== 'transparent') {
+                    const command = new DrawPixelCommand(this, index, oldColor, 'transparent');
                     this.historyManager.execute(command);
                     this.renderCanvas();
                     this.updateUndoRedoButtons();
@@ -520,7 +565,9 @@ class PixelArtApp {
                 break;
             }
             case 'eyedropper': {
-                this.currentColor = this.pixels[index];
+                const pickedColor = this.pixels[index];
+                if (pickedColor === 'transparent') break;
+                this.currentColor = pickedColor;
                 this.container.querySelector('#color-picker').value = this.currentColor;
                 this.container.querySelector('#rgb-input').value = this.currentColor;
                 
@@ -586,7 +633,7 @@ class PixelArtApp {
     
     resizeCanvas(size) {
         this.canvasSize = size;
-        this.pixels = Array(size * size).fill('#FFFFFF');
+        this.pixels = Array(size * size).fill('transparent');
         this.historyManager.clear();
         this.renderCanvas();
         this.updateUndoRedoButtons();
@@ -618,6 +665,7 @@ class PixelArtApp {
         ctx.imageSmoothingEnabled = false;
 
         for (let i = 0; i < this.pixels.length; i++) {
+            if (this.pixels[i] === 'transparent') continue;
             const x = (i % this.canvasSize) * pixelSize;
             const y = Math.floor(i / this.canvasSize) * pixelSize;
 

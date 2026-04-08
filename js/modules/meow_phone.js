@@ -407,7 +407,7 @@ function launchPixelArt() {
     
     // 从设置中加载画布尺寸
     app.canvasSize = pixelArtPrefs.canvasSize;
-    app.pixels = Array(app.canvasSize * app.canvasSize).fill('#FFFFFF');
+    app.pixels = Array(app.canvasSize * app.canvasSize).fill('transparent');
     app.history = [];
     app.historyIndex = -1;
     app.renderCanvas();
