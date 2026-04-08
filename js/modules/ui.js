@@ -72,9 +72,15 @@ function renderHome() {
     const currentMonth = todayStr.slice(0, 7);
 
     // 1. 统计数据计算
-    // 陪伴天数
-    const adoptionDate = new Date(suiSui.adoption_date.replace(/-/g, '/'));
-    const companionDays = Math.floor((todayDate - adoptionDate) / (1000 * 60 * 60 * 24)) + 1;
+    // 动态纪念日 (陪伴天数等)
+    const anniversaries = db.settings.anniversaries || [];
+    const activeAnniv = anniversaries.find(a => a.isPrimary) || { label: '陪伴天数', date: suiSui.adoption_date };
+    const annivDate = new Date(activeAnniv.date.replace(/-/g, '/'));
+    // 计算天数差（今天起）
+    const diffTime = todayDate - annivDate;
+    const isFuture = diffTime < 0;
+    const annivDaysCount = Math.floor(Math.abs(diffTime) / (1000 * 60 * 60 * 24)) + (isFuture ? 0 : 1);
+    const annivPrefix = isFuture ? '还差 ' : '';
     // 累计打卡记录数
     const totalRecordCount = Object.values(catRecs).reduce((acc, arr) => acc + (arr ? arr.length : 0), 0);
 
@@ -144,11 +150,11 @@ function renderHome() {
 
             <!-- 2x2 概览仪表盘 - 紧凑型横向布局 -->
             <section class="overview-grid fade-up delay-2">
-                <div class="overview-item">
-                    <span class="ov-icon">🏠</span>
+                <div class="overview-item" id="nav-anniv-grid" style="cursor:pointer;">
+                    <span class="ov-icon">💖</span>
                     <div class="ov-text">
-                        <span class="ov-value">${companionDays}</span>
-                        <span class="ov-label">陪伴天数</span>
+                        <span class="ov-value" style="font-size:16px;">${annivPrefix}${annivDaysCount}</span>
+                        <span class="ov-label">${activeAnniv.label}</span>
                     </div>
                 </div>
                 <div class="overview-item" id="nav-records-grid" style="cursor:pointer;">
@@ -216,6 +222,11 @@ function renderHome() {
     const recordsBtn = document.getElementById('nav-records-grid');
     if (recordsBtn) {
         recordsBtn.onclick = () => showHeatmapDrawer(catRecs);
+    }
+
+    const annivBtn = document.getElementById('nav-anniv-grid');
+    if (annivBtn) {
+        annivBtn.onclick = () => showAnniversaryDrawer();
     }
 }
 
@@ -1355,6 +1366,132 @@ export function showHeatmapDrawer(catRecs) {
         close();
         setTimeout(() => switchTab('records'), 150);
     };
+}
+
+/**
+ * 渲染纪念日管理抽屉
+ */
+export function showAnniversaryDrawer() {
+    const db = getDB();
+    const anniversaries = db.settings.anniversaries || [];
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'drawer-overlay';
+    
+    const renderList = () => {
+        return anniversaries.map((av, idx) => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--color-bg); border-radius:12px; margin-bottom:8px;">
+                <label style="display:flex; align-items:center; gap:12px; flex:1; cursor:pointer; margin:0;">
+                    <input type="radio" name="primary_anniv" class="radio-primary" value="${av.id}" ${av.isPrimary ? 'checked' : ''} style="width:16px; height:16px; accent-color:var(--color-primary);">
+                    <div style="flex:1;">
+                        <div style="font-size:14px; font-weight:800; color:var(--color-text-title); margin-bottom:4px;">${av.label}</div>
+                        <div style="font-size:12px; color:var(--color-text-hint);">${av.date}</div>
+                    </div>
+                </label>
+                <span class="btn-del-av" data-idx="${idx}" style="color:#EF4444; font-size:16px; cursor:pointer; font-weight:900; padding-left:12px; border-left:1px solid var(--color-divider);">×</span>
+            </div>
+        `).join('');
+    };
+
+    overlay.innerHTML = `
+        <div class="drawer-panel" style="min-height:55vh;">
+            <div class="drawer-handle"></div>
+            <div class="drawer-header">
+                <h2 class="drawer-title">💖 纪念日/里程碑追踪</h2>
+                <span id="close-av-drawer" class="drawer-close">×</span>
+            </div>
+            
+            <p style="font-size:12px; color:var(--color-text-hint); margin-bottom:16px;">打勾选择要固定展示在首页的纪念日。系统会自动计算正向追踪（已经过了多少天）或倒数（还有多少天）。</p>
+            
+            <div id="av-list-container" style="max-height: 35vh; overflow-y: auto; margin-bottom: 20px;">
+                ${renderList()}
+            </div>
+            
+            <div style="background: rgba(var(--color-primary-rgb), 0.05); padding: 16px; border-radius: 12px; border:1px dashed var(--color-primary);">
+                <h3 style="font-size:13px; margin-bottom:12px; color:var(--color-primary);">➕ 新增纪念事件</h3>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <input type="text" id="new-av-label" class="form-input" placeholder="如：第一次抓老鼠、开始换牙">
+                </div>
+                <div class="form-group" style="margin-bottom:16px;">
+                    <input type="date" id="new-av-date" class="form-input" value="${getBJNow().split(' ')[0]}">
+                </div>
+                <button id="btn-add-av" class="btn btn-primary" style="width:100%; border-radius:var(--radius-12);">添加记录</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+
+    const bindEvents = () => {
+        // 单击 radio 变更 Primary
+        overlay.querySelectorAll('.radio-primary').forEach(radio => {
+            radio.onchange = (e) => {
+                const checkedId = e.target.value;
+                anniversaries.forEach(a => a.isPrimary = (a.id === checkedId));
+                db.settings.anniversaries = anniversaries;
+                setDB(db);
+                renderHome(); // 重新渲染首页卡片数字与标题
+            };
+        });
+
+        // 绑定删除
+        overlay.querySelectorAll('.btn-del-av').forEach(btn => {
+            btn.onclick = () => {
+                if (anniversaries.length <= 1) {
+                    return showToast('至少需要保留一个纪念日哦', 'error');
+                }
+                if (confirm('确定删除这个纪念日吗？')) {
+                    const deletedWasPrimary = anniversaries[btn.dataset.idx].isPrimary;
+                    anniversaries.splice(btn.dataset.idx, 1);
+                    if (deletedWasPrimary && anniversaries.length > 0) {
+                        anniversaries[0].isPrimary = true; // 删除的是主项，自动顶替第一个为主项
+                        renderHome();
+                    }
+                    db.settings.anniversaries = anniversaries;
+                    setDB(db);
+                    
+                    overlay.querySelector('#av-list-container').innerHTML = renderList();
+                    bindEvents(); // 重新绑定事件
+                }
+            };
+        });
+    };
+    
+    bindEvents();
+    
+    // 添加
+    overlay.querySelector('#btn-add-av').onclick = () => {
+        const label = overlay.querySelector('#new-av-label').value.trim();
+        const date = overlay.querySelector('#new-av-date').value;
+        if (!label) return showToast('请输入纪念日内容', 'error');
+        if (!date) return showToast('请选择日期', 'error');
+        
+        // 当添加一项新内容时，可默认将其作为主要项体验
+        anniversaries.forEach(a => a.isPrimary = false);
+        anniversaries.push({
+            id: 'av_' + Date.now(),
+            label: label,
+            date: date,
+            isPrimary: true
+        });
+        
+        db.settings.anniversaries = anniversaries;
+        setDB(db);
+        renderHome();
+        
+        overlay.querySelector('#av-list-container').innerHTML = renderList();
+        overlay.querySelector('#new-av-label').value = '';
+        bindEvents();
+    };
+
+    const close = () => {
+        overlay.querySelector('.drawer-panel').style.transform = 'translateY(100%)';
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 300);
+    };
+
+    overlay.querySelector('#close-av-drawer').onclick = close;
+    overlay.onclick = (e) => { if (e.target === overlay) close(); };
 }
 
 // ---- 云端同步引擎 (Pull-Merge-Push) ----

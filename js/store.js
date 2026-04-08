@@ -37,7 +37,10 @@ const DEFAULT_DB = {
             { id: "rm_3", label: "驱虫", days: 90, icon: "💊" }
         ],
         routine_tags: ['剪指甲', '换猫砂', '驱虫', '洗澡', '梳毛', '刷牙'],
-        version: "2.6.3"
+        anniversaries: [
+            { id: "av_1", label: "陪伴天数", date: "2023-04-03", isPrimary: true }
+        ],
+        version: "2.7.0"
     }
 };
 
@@ -64,6 +67,14 @@ export async function initStore() {
             // 兼容性迁移: 初始化 routine_tags
             if (dbState.settings && !dbState.settings.routine_tags) {
                 dbState.settings.routine_tags = ['剪指甲', '换猫砂', '驱虫', '洗澡', '梳毛', '刷牙'];
+                saveToLocal();
+            }
+            // 兼容性迁移: 初始化 anniversaries
+            if (dbState.settings && !dbState.settings.anniversaries) {
+                const adoptDate = (dbState.cats && dbState.cats[0]?.adoption_date) ? dbState.cats[0].adoption_date : "2023-04-03";
+                dbState.settings.anniversaries = [
+                    { id: 'av_' + Date.now(), label: '陪伴天数', date: adoptDate, isPrimary: true }
+                ];
                 saveToLocal();
             }
             // 强制覆盖最新版本号，避免 localStorage 缓存的旧版本号带来展示错误
