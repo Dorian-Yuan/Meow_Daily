@@ -4,6 +4,154 @@
  * 功能：简单的像素画板，支持多种画布尺寸、颜色选择和导出功能
  */
 
+// ==================== Command Pattern Classes ====================
+
+/**
+ * 命令基类
+ */
+class PixelArtCommand {
+    constructor(name) {
+        this.name = name;
+        this.timestamp = Date.now();
+    }
+    
+    execute() {
+        throw new Error('execute() must be implemented');
+    }
+    
+    undo() {
+        throw new Error('undo() must be implemented');
+    }
+}
+
+/**
+ * 单像素绘制/擦除命令
+ */
+class DrawPixelCommand extends PixelArtCommand {
+    constructor(app, index, oldColor, newColor) {
+        super('draw');
+        this.app = app;
+        this.index = index;
+        this.oldColor = oldColor;
+        this.newColor = newColor;
+    }
+    
+    execute() {
+        this.app.pixels[this.index] = this.newColor;
+    }
+    
+    undo() {
+        this.app.pixels[this.index] = this.oldColor;
+    }
+}
+
+/**
+ * 填充命令（油漆桶）
+ */
+class FillCommand extends PixelArtCommand {
+    constructor(app, changedPixels) {
+        super('fill');
+        this.app = app;
+        this.changedPixels = changedPixels;
+    }
+    
+    execute() {
+        this.changedPixels.forEach(({index, newColor}) => {
+            this.app.pixels[index] = newColor;
+        });
+    }
+    
+    undo() {
+        this.changedPixels.forEach(({index, oldColor}) => {
+            this.app.pixels[index] = oldColor;
+        });
+    }
+}
+
+/**
+ * 清空画布命令
+ */
+class ClearCanvasCommand extends PixelArtCommand {
+    constructor(app, oldPixels) {
+        super('clear');
+        this.app = app;
+        this.oldPixels = oldPixels;
+    }
+    
+    execute() {
+        this.app.pixels.fill('#FFFFFF');
+    }
+    
+    undo() {
+        this.app.pixels = [...this.oldPixels];
+    }
+}
+
+/**
+ * 历史记录管理器
+ */
+class HistoryManager {
+    constructor(limit = 50) {
+        this.commands = [];
+        this.currentIndex = -1;
+        this.limit = limit;
+    }
+    
+    execute(command) {
+        this.commands = this.commands.slice(0, this.currentIndex + 1);
+        command.execute();
+        this.commands.push(command);
+        this.currentIndex++;
+        
+        if (this.commands.length > this.limit) {
+            this.commands.shift();
+            this.currentIndex--;
+        }
+        
+        return this.getState();
+    }
+    
+    undo() {
+        if (this.currentIndex >= 0) {
+            this.commands[this.currentIndex].undo();
+            this.currentIndex--;
+        }
+        return this.getState();
+    }
+    
+    redo() {
+        if (this.currentIndex < this.commands.length - 1) {
+            this.currentIndex++;
+            this.commands[this.currentIndex].execute();
+        }
+        return this.getState();
+    }
+    
+    canUndo() {
+        return this.currentIndex >= 0;
+    }
+    
+    canRedo() {
+        return this.currentIndex < this.commands.length - 1;
+    }
+    
+    getState() {
+        return {
+            canUndo: this.canUndo(),
+            canRedo: this.canRedo(),
+            commandCount: this.commands.length,
+            currentIndex: this.currentIndex
+        };
+    }
+    
+    clear() {
+        this.commands = [];
+        this.currentIndex = -1;
+    }
+}
+
+// ==================== Pixel Art Application ====================
+
 // 经典调色板
 const CLASSIC_PALETTE = [
     '#000000', // 黑色
@@ -31,17 +179,13 @@ class PixelArtApp {
         this.pixels = Array(this.canvasSize * this.canvasSize).fill('#FFFFFF');
         this.currentColor = '#000000';
         this.tool = 'pen'; // pen, eraser, eyedropper, bucket
-        this.history = [];
-        this.historyIndex = -1;
-        this.historyLimit = 20; // 历史记录上限
         this.colorPalette = [...CLASSIC_PALETTE.slice(0, 8)]; // 默认颜色槽位
+        
+        // 使用 HistoryManager 替代旧的 history 数组
+        this.historyManager = new HistoryManager(50);
         
         // 加载缓存数据
         this.loadFromCache();
-        
-        // 初始化历史记录，将当前状态作为初始状态
-        this.history = [[...this.pixels]];
-        this.historyIndex = 0;
         
         this.init();
     }
@@ -58,6 +202,24 @@ class PixelArtApp {
         // 初始化颜色按钮状态
         console.log('Initializing color buttons, currentColor:', this.currentColor);
         this.updateColorButtons();
+        
+        // 初始化撤销/重做按钮状态
+        this.updateUndoRedoButtons();
+    }
+    
+    updateUndoRedoButtons() {
+        const undoBtn = this.container.querySelector('#undo-btn');
+        const redoBtn = this.container.querySelector('#redo-btn');
+        
+        if (undoBtn) {
+            undoBtn.disabled = !this.historyManager.canUndo();
+            undoBtn.style.opacity = this.historyManager.canUndo() ? '1' : '0.5';
+        }
+        
+        if (redoBtn) {
+            redoBtn.disabled = !this.historyManager.canRedo();
+            redoBtn.style.opacity = this.historyManager.canRedo() ? '1' : '0.5';
+        }
     }
     
     updateColorButtons() {
@@ -273,12 +435,34 @@ class PixelArtApp {
         this.container.querySelector('#export-btn').addEventListener('click', () => {
             this.export();
         });
+        
+        // 键盘快捷键
+        this.keydownHandler = (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'z' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.undo();
+                } else if ((e.key === 'y') || (e.key === 'z' && e.shiftKey)) {
+                    e.preventDefault();
+                    this.redo();
+                }
+            }
+        };
+        document.addEventListener('keydown', this.keydownHandler);
+    }
+    
+    destroy() {
+        if (this.keydownHandler) {
+            document.removeEventListener('keydown', this.keydownHandler);
+        }
     }
     
     clearCanvas() {
-        this.pixels = Array(this.canvasSize * this.canvasSize).fill('#FFFFFF');
-        this.saveState();
+        const oldPixels = [...this.pixels];
+        const command = new ClearCanvasCommand(this, oldPixels);
+        this.historyManager.execute(command);
         this.renderCanvas();
+        this.updateUndoRedoButtons();
         this.saveToCache();
     }
     
@@ -312,22 +496,30 @@ class PixelArtApp {
     }
     
     handlePixelClick(index) {
-        let stateChanged = false;
-        
         switch (this.tool) {
-            case 'pen':
-                if (this.pixels[index] !== this.currentColor) {
-                    this.pixels[index] = this.currentColor;
-                    stateChanged = true;
+            case 'pen': {
+                const oldColor = this.pixels[index];
+                if (oldColor !== this.currentColor) {
+                    const command = new DrawPixelCommand(this, index, oldColor, this.currentColor);
+                    this.historyManager.execute(command);
+                    this.renderCanvas();
+                    this.updateUndoRedoButtons();
+                    this.saveToCache();
                 }
                 break;
-            case 'eraser':
-                if (this.pixels[index] !== '#FFFFFF') {
-                    this.pixels[index] = '#FFFFFF';
-                    stateChanged = true;
+            }
+            case 'eraser': {
+                const oldColor = this.pixels[index];
+                if (oldColor !== '#FFFFFF') {
+                    const command = new DrawPixelCommand(this, index, oldColor, '#FFFFFF');
+                    this.historyManager.execute(command);
+                    this.renderCanvas();
+                    this.updateUndoRedoButtons();
+                    this.saveToCache();
                 }
                 break;
-            case 'eyedropper':
+            }
+            case 'eyedropper': {
                 this.currentColor = this.pixels[index];
                 this.container.querySelector('#color-picker').value = this.currentColor;
                 this.container.querySelector('#rgb-input').value = this.currentColor;
@@ -341,26 +533,28 @@ class PixelArtApp {
                 this.updateColorButtons();
                 this.saveToCache();
                 break;
-            case 'bucket':
-                if (this.pixels[index] !== this.currentColor) {
-                    // 为油漆桶操作创建一个新的数组副本，避免修改历史记录中的数据（现在我们在操作后保存，所以原数组也会被覆盖，但保证 floodFill 逻辑干净）
-                    const newPixels = [...this.pixels];
-                    this.floodFill(index, this.pixels[index], this.currentColor, newPixels);
-                    this.pixels = newPixels;
-                    stateChanged = true;
+            }
+            case 'bucket': {
+                const targetColor = this.pixels[index];
+                if (targetColor !== this.currentColor) {
+                    const changedPixels = this.floodFill(index, targetColor, this.currentColor);
+                    if (changedPixels.length > 0) {
+                        const command = new FillCommand(this, changedPixels);
+                        this.historyManager.execute(command);
+                        this.renderCanvas();
+                        this.updateUndoRedoButtons();
+                        this.saveToCache();
+                    }
                 }
                 break;
-        }
-        
-        if (stateChanged) {
-            this.saveState();
-            this.renderCanvas();
+            }
         }
     }
     
-    floodFill(startIndex, targetColor, replacementColor, pixels) {
-        if (targetColor === replacementColor) return;
+    floodFill(startIndex, targetColor, replacementColor) {
+        if (targetColor === replacementColor) return [];
         
+        const changedPixels = [];
         const queue = [startIndex];
         const visited = new Set();
         
@@ -369,57 +563,47 @@ class PixelArtApp {
             if (visited.has(index)) continue;
             
             visited.add(index);
-            if (pixels[index] === targetColor) {
-                pixels[index] = replacementColor;
+            if (this.pixels[index] === targetColor) {
+                changedPixels.push({
+                    index,
+                    oldColor: targetColor,
+                    newColor: replacementColor
+                });
                 
                 // 检查上下左右
                 const x = index % this.canvasSize;
                 const y = Math.floor(index / this.canvasSize);
                 
-                if (x > 0) queue.push(index - 1); // 左
-                if (x < this.canvasSize - 1) queue.push(index + 1); // 右
-                if (y > 0) queue.push(index - this.canvasSize); // 上
-                if (y < this.canvasSize - 1) queue.push(index + this.canvasSize); // 下
+                if (x > 0) queue.push(index - 1);
+                if (x < this.canvasSize - 1) queue.push(index + 1);
+                if (y > 0) queue.push(index - this.canvasSize);
+                if (y < this.canvasSize - 1) queue.push(index + this.canvasSize);
             }
         }
+        
+        return changedPixels;
     }
     
     resizeCanvas(size) {
         this.canvasSize = size;
         this.pixels = Array(size * size).fill('#FFFFFF');
-        this.saveState();
+        this.historyManager.clear();
         this.renderCanvas();
-    }
-    
-    saveState() {
-        // 保存当前状态到历史记录 (修改发生后调用)
-        this.history = this.history.slice(0, this.historyIndex + 1);
-        this.history.push([...this.pixels]);
-        
-        // 限制历史记录长度
-        if (this.history.length > this.historyLimit) {
-            this.history.shift();
-            // 当移除最早的记录时，需要更新历史记录索引
-            this.historyIndex--;
-        }
-        
-        this.historyIndex = this.history.length - 1;
+        this.updateUndoRedoButtons();
     }
     
     undo() {
-        if (this.historyIndex > 0) {
-            this.historyIndex--;
-            this.pixels = [...this.history[this.historyIndex]];
-            this.renderCanvas();
-        }
+        this.historyManager.undo();
+        this.renderCanvas();
+        this.updateUndoRedoButtons();
+        this.saveToCache();
     }
     
     redo() {
-        if (this.historyIndex < this.history.length - 1) {
-            this.historyIndex++;
-            this.pixels = [...this.history[this.historyIndex]];
-            this.renderCanvas();
-        }
+        this.historyManager.redo();
+        this.renderCanvas();
+        this.updateUndoRedoButtons();
+        this.saveToCache();
     }
     
     export() {
