@@ -337,8 +337,8 @@ class PixelArtApp {
             const cellWidth = (innerWidth - gapTotalWidth) / this.canvasSize;
             const cellHeight = (innerHeight - gapTotalWidth) / this.canvasSize;
 
-            const centerLineX = midIndex * (cellWidth + gapPx) + cellWidth / 2;
-            const centerLineY = midIndex * (cellHeight + gapPx) + cellHeight / 2;
+            const centerLineX = midIndex * (cellWidth + gapPx);
+            const centerLineY = midIndex * (cellHeight + gapPx);
 
             overlay.innerHTML = `
                 <svg width="100%" height="100%" viewBox="0 0 ${canvasRect.width} ${canvasRect.height}" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:-2px;left:-2px;">
