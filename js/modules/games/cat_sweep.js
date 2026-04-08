@@ -32,6 +32,9 @@ export function createCatSweepGame(container, options = {}) {
     let flagCount = 0;
     let revealedCount = 0;
     const totalSafe = rows * cols - mice;
+    let startTime = 0;
+    let endTime = 0;
+    let autoCompleted = false;
 
     // 点击定时器（区分单击/双击）
     let clickTimer = null;
@@ -55,6 +58,9 @@ export function createCatSweepGame(container, options = {}) {
         gameOver = false;
         flagCount = 0;
         revealedCount = 0;
+        startTime = 0;
+        endTime = 0;
+        autoCompleted = false;
     }
 
     // 生成老鼠（首次翻开后）
@@ -120,6 +126,7 @@ export function createCatSweepGame(container, options = {}) {
         if (cell.isMouse) {
             // 踩雷
             gameOver = true;
+            endTime = Date.now();
             revealAllMice();
             renderBoard();
             if (options.onLose) options.onLose();
@@ -152,7 +159,8 @@ export function createCatSweepGame(container, options = {}) {
     function checkWin() {
         if (revealedCount >= totalSafe) {
             gameOver = true;
-            if (options.onWin) options.onWin();
+            endTime = Date.now();
+            if (options.onWin) options.onWin(getElapsedTime());
             return true;
         }
         return false;
@@ -206,6 +214,7 @@ export function createCatSweepGame(container, options = {}) {
 
         if (!miceGenerated) {
             generateMice(r, c);
+            startTime = Date.now();
         }
 
         revealCell(r, c);
@@ -229,6 +238,13 @@ export function createCatSweepGame(container, options = {}) {
             8: '#6B7280',  // 灰色
         };
         return colors[n] || '#1F1814';
+    }
+
+    // 获取游戏用时（秒）
+    function getElapsedTime() {
+        if (!startTime) return 0;
+        const currentTime = endTime || Date.now();
+        return Math.floor((currentTime - startTime) / 1000);
     }
 
     // 渲染棋盘
@@ -299,6 +315,201 @@ export function createCatSweepGame(container, options = {}) {
         container.appendChild(grid);
     }
 
+    // 智能猜测算法
+    function getSafeMove() {
+        // 收集所有未翻开且未插旗的格子
+        const unknownCells = [];
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const cell = board[r][c];
+                if (!cell.revealed && !cell.flagged) {
+                    unknownCells.push({ r, c });
+                }
+            }
+        }
+
+        // 基础约束传播
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const cell = board[r][c];
+                if (cell.revealed && !cell.isMouse) {
+                    const neighbors = getNeighbors(r, c);
+                    const coveredNeighbors = neighbors.filter(n => !board[n.r][n.c].revealed);
+                    const flaggedNeighbors = neighbors.filter(n => board[n.r][n.c].flagged);
+                    const remainingMines = cell.adjacentMice - flaggedNeighbors.length;
+
+                    // All Mines 规则：如果剩余地雷数等于未翻开邻居数，则所有未翻开邻居都是地雷
+                    if (remainingMines === coveredNeighbors.length && remainingMines > 0) {
+                        return null; // 这里我们只找安全格子，不是找地雷
+                    }
+
+                    // All Safe 规则：如果剩余地雷数为0，则所有未翻开邻居都是安全的
+                    if (remainingMines === 0 && coveredNeighbors.length > 0) {
+                        return coveredNeighbors[0]; // 返回第一个安全格子
+                    }
+                }
+            }
+        }
+
+        // 子集逻辑
+        for (let r1 = 0; r1 < rows; r1++) {
+            for (let c1 = 0; c1 < cols; c1++) {
+                const cell1 = board[r1][c1];
+                if (cell1.revealed && !cell1.isMouse) {
+                    const neighbors1 = getNeighbors(r1, c1);
+                    const coveredNeighbors1 = neighbors1.filter(n => !board[n.r][n.c].revealed);
+                    const flaggedNeighbors1 = neighbors1.filter(n => board[n.r][n.c].flagged);
+                    const remainingMines1 = cell1.adjacentMice - flaggedNeighbors1.length;
+
+                    for (let r2 = 0; r2 < rows; r2++) {
+                        for (let c2 = 0; c2 < cols; c2++) {
+                            if (r1 === r2 && c1 === c2) continue;
+                            const cell2 = board[r2][c2];
+                            if (cell2.revealed && !cell2.isMouse) {
+                                const neighbors2 = getNeighbors(r2, c2);
+                                const coveredNeighbors2 = neighbors2.filter(n => !board[n.r][n.c].revealed);
+                                const flaggedNeighbors2 = neighbors2.filter(n => board[n.r][n.c].flagged);
+                                const remainingMines2 = cell2.adjacentMice - flaggedNeighbors2.length;
+
+                                // 检查coveredNeighbors1是否是coveredNeighbors2的子集
+                                const isSubset = coveredNeighbors1.every(n1 => 
+                                    coveredNeighbors2.some(n2 => n1.r === n2.r && n1.c === n2.c)
+                                );
+
+                                if (isSubset) {
+                                    const extraCells = coveredNeighbors2.filter(n2 => 
+                                        !coveredNeighbors1.some(n1 => n1.r === n2.r && n1.c === n2.c)
+                                    );
+                                    const mineDiff = remainingMines2 - remainingMines1;
+
+                                    // 如果差值为0，则额外的格子都是安全的
+                                    if (mineDiff === 0 && extraCells.length > 0) {
+                                        return extraCells[0];
+                                    }
+
+                                    // 如果差值等于额外格子数，则额外的格子都是地雷
+                                    // 这里我们只找安全格子，不是找地雷
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 多解法处理：当只剩下最后几个格子时，检查是否存在多个有效配置
+        if (unknownCells.length <= 6) {
+            const validConfigurations = generateValidConfigurations(unknownCells);
+            if (validConfigurations.length > 1) {
+                // 存在多个有效配置，通知外部
+                if (options.onMultipleSolutions) {
+                    options.onMultipleSolutions();
+                }
+                // 判定所有配置都正确，自动完成游戏
+                completeGameWithMultipleSolutions();
+                return null;
+            }
+        }
+
+        // 没有找到安全格子，返回null
+        return null;
+    }
+
+    // 获取邻居格子
+    function getNeighbors(r, c) {
+        const neighbors = [];
+        for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+                if (dr === 0 && dc === 0) continue;
+                const nr = r + dr;
+                const nc = c + dc;
+                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+                    neighbors.push({ r: nr, c: nc });
+                }
+            }
+        }
+        return neighbors;
+    }
+
+    // 生成所有有效的地雷配置
+    function generateValidConfigurations(unknownCells) {
+        const validConfigs = [];
+        const totalMines = mice - flagCount;
+
+        // 生成所有可能的地雷配置
+        function generateConfigs(index, currentConfig, mineCount) {
+            if (index === unknownCells.length) {
+                if (mineCount === totalMines && isValidConfiguration(currentConfig, unknownCells)) {
+                    validConfigs.push([...currentConfig]);
+                }
+                return;
+            }
+
+            // 尝试将当前格子设为安全
+            currentConfig[index] = 0;
+            generateConfigs(index + 1, currentConfig, mineCount);
+
+            // 尝试将当前格子设为地雷
+            if (mineCount < totalMines) {
+                currentConfig[index] = 1;
+                generateConfigs(index + 1, currentConfig, mineCount + 1);
+            }
+        }
+
+        generateConfigs(0, new Array(unknownCells.length), 0);
+        return validConfigs;
+    }
+
+    // 验证配置是否有效
+    function isValidConfiguration(config, unknownCells) {
+        // 检查所有已揭示的数字是否满足约束
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const cell = board[r][c];
+                if (cell.revealed && !cell.isMouse) {
+                    const neighbors = getNeighbors(r, c);
+                    let mineCount = 0;
+
+                    // 计算邻居中的地雷数（包括已标记的和配置中的）
+                    for (const n of neighbors) {
+                        if (board[n.r][n.c].flagged) {
+                            mineCount++;
+                        } else if (!board[n.r][n.c].revealed) {
+                            // 查找该格子在unknownCells中的索引
+                            for (let i = 0; i < config.length; i++) {
+                                if (n.r === unknownCells[i].r && n.c === unknownCells[i].c) {
+                                    mineCount += config[i];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (mineCount !== cell.adjacentMice) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    // 当存在多个有效配置时，自动完成游戏
+    function completeGameWithMultipleSolutions() {
+        // 揭示所有未翻开的格子
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const cell = board[r][c];
+                if (!cell.revealed && !cell.flagged) {
+                    cell.revealed = true;
+                    revealedCount++;
+                }
+            }
+        }
+        autoCompleted = true;
+        checkWin();
+    }
+
     // 公共API
     const game = {
         start() {
@@ -311,6 +522,15 @@ export function createCatSweepGame(container, options = {}) {
         },
         getState() {
             return { gameOver, flagCount, mice, revealedCount, totalSafe };
+        },
+        getElapsedTime() {
+            return getElapsedTime();
+        },
+        getSafeMove() {
+            return getSafeMove();
+        },
+        isAutoCompleted() {
+            return autoCompleted;
         }
     };
 

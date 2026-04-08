@@ -163,6 +163,10 @@ function launchCatSweep() {
                     <span id="sweep-flags">0/${prefs.difficulty === 'easy' ? 10 : (prefs.difficulty === 'medium' ? 25 : (prefs.difficulty === 'hard' ? 40 : (prefs.custom?.mice || 10)))}</span>
                 </div>
                 <div class="sweep-stat">
+                    <span class="sweep-stat-icon">⏱️</span>
+                    <span id="sweep-timer">00:00</span>
+                </div>
+                <div class="sweep-stat">
                     <span class="sweep-stat-icon">📐</span>
                     <span id="sweep-difficulty">${prefs.difficulty === 'easy' ? '简单' : (prefs.difficulty === 'medium' ? '中等' : (prefs.difficulty === 'hard' ? '困难' : '自定义'))}</span>
                 </div>
@@ -179,21 +183,33 @@ function launchCatSweep() {
     const boardEl = phoneOverlay.querySelector('#sweep-board');
     const resultEl = phoneOverlay.querySelector('#sweep-result');
     const flagsEl = phoneOverlay.querySelector('#sweep-flags');
+    const timerEl = phoneOverlay.querySelector('#sweep-timer');
+    let timerInterval;
+
+    // 格式化时间为 MM:SS 格式
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const secs = (seconds % 60).toString().padStart(2, '0');
+        return `${mins}:${secs}`;
+    }
 
     const game = createCatSweepGame(boardEl, {
         difficulty: prefs.difficulty,
         custom: prefs.custom,
-        onWin: () => {
+        onWin: (time) => {
+            clearInterval(timerInterval);
             resultEl.style.display = 'flex';
             resultEl.innerHTML = `
                 <div class="sweep-result-content win">
                     <span class="result-emoji">🎉</span>
                     <h3>猫咪大获全胜！</h3>
                     <p>所有老鼠都被找到了喵~</p>
+                    <p>用时：${formatTime(time)}</p>
                 </div>
             `;
         },
         onLose: () => {
+            clearInterval(timerInterval);
             resultEl.style.display = 'flex';
             resultEl.innerHTML = `
                 <div class="sweep-result-content lose">
@@ -205,10 +221,21 @@ function launchCatSweep() {
         },
         onFlagChange: (flagged, total) => {
             flagsEl.textContent = `${flagged}/${total}`;
+        },
+        onMultipleSolutions: () => {
+            // 当检测到多解法情况时，更新重新开始按钮的文本
+            const restartBtn = phoneOverlay.querySelector('#sweep-restart');
+            restartBtn.textContent = '🔄 重新开始：已通过';
         }
     });
 
     game.start();
+
+    // 启动计时器更新
+    timerInterval = setInterval(() => {
+        const time = game.getElapsedTime();
+        timerEl.textContent = formatTime(time);
+    }, 1000);
 
     // 点击空白处关闭结果弹窗以查看最终棋盘
     resultEl.addEventListener('click', (e) => {
@@ -224,6 +251,14 @@ function launchCatSweep() {
     phoneOverlay.querySelector('#sweep-restart').addEventListener('click', () => {
         resultEl.style.display = 'none';
         game.reset();
+        // 重置计时器显示
+        timerEl.textContent = '00:00';
+        // 重新启动计时器更新
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            const time = game.getElapsedTime();
+            timerEl.textContent = formatTime(time);
+        }, 1000);
     });
 }
 
