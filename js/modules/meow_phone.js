@@ -299,9 +299,8 @@ function launchCatSweep() {
     phoneOverlay.querySelector('#sweep-restart').addEventListener('click', () => {
         resultEl.style.display = 'none';
         game.reset();
-        // 重置计时器显示
         timerEl.textContent = '00:00';
-        // 重新启动计时器更新
+        phoneOverlay.querySelector('#sweep-restart').textContent = '🔄 重新开始';
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
             const time = game.getElapsedTime();
@@ -447,7 +446,7 @@ function launchSettings() {
                 </div>
                 
                 <div class="settings-section">
-                    <p class="settings-about">Meow Phone V${getDB().settings.version || '3.2.0'}<br>一个隐藏的彩蛋系统 🐾<br>8款小应用等你探索 ✨</p>
+                    <p class="settings-about">Meow Phone V${getDB().settings.version || '3.2.5'}<br>一个隐藏的彩蛋系统 🐾<br>8款小应用等你探索 ✨</p>
                 </div>
             </div>
         </div>

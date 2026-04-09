@@ -176,6 +176,7 @@ export function createCatSweepGame(container, options = {}) {
         flagCount += cell.flagged ? 1 : -1;
         if (options.onFlagChange) options.onFlagChange(flagCount, mice);
         renderBoard();
+        if (!gameOver) getSafeMove();
     }
 
     // 处理双击（翻开）
@@ -339,18 +340,16 @@ export function createCatSweepGame(container, options = {}) {
                 const cell = board[r][c];
                 if (cell.revealed && !cell.isMouse) {
                     const neighbors = getNeighbors(r, c);
-                    const coveredNeighbors = neighbors.filter(n => !board[n.r][n.c].revealed);
+                    const coveredNeighbors = neighbors.filter(n => !board[n.r][n.c].revealed && !board[n.r][n.c].flagged);
                     const flaggedNeighbors = neighbors.filter(n => board[n.r][n.c].flagged);
                     const remainingMines = cell.adjacentMice - flaggedNeighbors.length;
 
-                    // All Mines 规则：如果剩余地雷数等于未翻开邻居数，则所有未翻开邻居都是地雷
                     if (remainingMines === coveredNeighbors.length && remainingMines > 0) {
-                        return null; // 这里我们只找安全格子，不是找地雷
+                        return null;
                     }
 
-                    // All Safe 规则：如果剩余地雷数为0，则所有未翻开邻居都是安全的
                     if (remainingMines === 0 && coveredNeighbors.length > 0) {
-                        return coveredNeighbors[0]; // 返回第一个安全格子
+                        return coveredNeighbors[0];
                     }
                 }
             }
@@ -362,7 +361,7 @@ export function createCatSweepGame(container, options = {}) {
                 const cell1 = board[r1][c1];
                 if (cell1.revealed && !cell1.isMouse) {
                     const neighbors1 = getNeighbors(r1, c1);
-                    const coveredNeighbors1 = neighbors1.filter(n => !board[n.r][n.c].revealed);
+                    const coveredNeighbors1 = neighbors1.filter(n => !board[n.r][n.c].revealed && !board[n.r][n.c].flagged);
                     const flaggedNeighbors1 = neighbors1.filter(n => board[n.r][n.c].flagged);
                     const remainingMines1 = cell1.adjacentMice - flaggedNeighbors1.length;
 
@@ -372,7 +371,7 @@ export function createCatSweepGame(container, options = {}) {
                             const cell2 = board[r2][c2];
                             if (cell2.revealed && !cell2.isMouse) {
                                 const neighbors2 = getNeighbors(r2, c2);
-                                const coveredNeighbors2 = neighbors2.filter(n => !board[n.r][n.c].revealed);
+                                const coveredNeighbors2 = neighbors2.filter(n => !board[n.r][n.c].revealed && !board[n.r][n.c].flagged);
                                 const flaggedNeighbors2 = neighbors2.filter(n => board[n.r][n.c].flagged);
                                 const remainingMines2 = cell2.adjacentMice - flaggedNeighbors2.length;
 

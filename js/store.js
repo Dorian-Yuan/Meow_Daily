@@ -51,7 +51,7 @@ const DEFAULT_DB = {
                 maxFish: 100
             }
         },
-        version: "3.2.4"
+        version: "3.2.5"
     }
 };
 
