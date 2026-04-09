@@ -4,7 +4,7 @@
  * 触发条件：2秒内在顶部 Banner 头像上点击 5 次
  * 功能：模拟极简智能手机 UI，作为小游戏框架
  */
-import { getDB, setDB } from '../store.js';
+import { getDB, setDB, VERSION } from '../store.js';
 import { createCatSweepGame } from './games/cat_sweep.js';
 import { createPixelArtApp } from './games/pixel_art.js';
 import { createYarnBallApp } from './games/yarn_ball.js';
@@ -446,7 +446,7 @@ function launchSettings() {
                 </div>
                 
                 <div class="settings-section">
-                    <p class="settings-about">Meow Phone V${getDB().settings.version || '3.2.5'}<br>一个隐藏的彩蛋系统 🐾<br>8款小应用等你探索 ✨</p>
+                    <p class="settings-about">Meow Phone V${getDB().settings.version || VERSION}<br>一个隐藏的彩蛋系统 🐾<br>8款小应用等你探索 ✨</p>
                 </div>
             </div>
         </div>

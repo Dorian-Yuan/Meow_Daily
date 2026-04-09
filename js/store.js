@@ -10,7 +10,8 @@
 const STORAGE_KEY = 'meow_daily_db';
 const CONFIG_KEY = 'meow_daily_config';
 
-// 默认空数据库结构 (基于 Spec)
+export const VERSION = "3.2.5";
+
 const DEFAULT_DB = {
     cats: [
         {
@@ -51,7 +52,7 @@ const DEFAULT_DB = {
                 maxFish: 100
             }
         },
-        version: "3.2.5"
+        version: VERSION
     }
 };
 

@@ -4,7 +4,7 @@
  */
 import {
     getDB, getConfig, saveConfig, addOrUpdateRecord, deleteRecord,
-    updateCatProfile, mergeDB, setDB
+    updateCatProfile, mergeDB, setDB, VERSION
 } from '../store.js';
 import { parseTextWithAI, processMentionedTime } from '../api/ai.js';
 import { fetchCloudDB, pushCloudDB } from '../api/github.js';
@@ -174,7 +174,7 @@ function renderHome() {
                 <div class="overview-item" onclick="location.reload(true)" style="cursor:pointer;">
                     <span class="ov-icon">✨</span>
                     <div class="ov-text">
-                        <span class="ov-value">V${db.settings?.version || '3.2.5'}</span>
+                        <span class="ov-value">V${db.settings?.version || VERSION}</span>
                         <span class="ov-label">系统版本</span>
                     </div>
                 </div>
@@ -894,7 +894,7 @@ function renderSettings() {
                 <span style="color:var(--color-text-hint); font-size:12px;">❯</span>
             </div>
             
-                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600; text-align:center;">Meow_Daily V${db.settings?.version || '3.2.5'} "SuiSui" PWA Logo Update Build</p>
+                <p style="font-size:11px; color:var(--color-text-hint); font-weight:600; text-align:center;">Meow_Daily V${db.settings?.version || VERSION} "SuiSui" PWA Logo Update Build</p>
         </div>
     `;
 
