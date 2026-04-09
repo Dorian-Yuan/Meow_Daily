@@ -206,6 +206,7 @@ export function createCatSweepGame(container, options = {}) {
                 }
                 renderBoard();
                 if (!gameOver) checkWin();
+                if (!gameOver) getSafeMove();
             }
             return;
         }
@@ -222,6 +223,10 @@ export function createCatSweepGame(container, options = {}) {
 
         if (!gameOver) {
             checkWin();
+        }
+
+        if (!gameOver) {
+            getSafeMove();
         }
     }
 
@@ -507,7 +512,6 @@ export function createCatSweepGame(container, options = {}) {
 
     // 当存在多个有效配置时，自动完成游戏
     function completeGameWithMultipleSolutions() {
-        // 揭示所有未翻开的格子
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
                 const cell = board[r][c];
@@ -518,6 +522,7 @@ export function createCatSweepGame(container, options = {}) {
             }
         }
         autoCompleted = true;
+        renderBoard();
         checkWin();
     }
 
