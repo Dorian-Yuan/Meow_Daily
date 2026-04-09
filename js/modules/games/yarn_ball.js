@@ -4,7 +4,7 @@ const BALL_SIZE = 48;
 const FISH_SIZE = 32;
 const FRICTION = 0.985;
 const BOUNCE = 0.7;
-const MAX_FISH = 3;
+const MAX_FISH = 100;
 
 export function createYarnBallApp(container, prefs = {}) {
     let colorIndex = 0;
@@ -111,8 +111,6 @@ export function createYarnBallApp(container, prefs = {}) {
         });
     }
 
-    let fishSpawnInterval = null;
-
     function spawnFish() {
         if (!gameRunning) return;
         const aliveCount = fishes.filter(f => f.alive).length;
@@ -138,7 +136,11 @@ export function createYarnBallApp(container, prefs = {}) {
                 fish.el.style.opacity = '0.3';
                 setTimeout(() => { if (fish.el.parentNode) fish.el.remove(); }, 300);
                 fishes = fishes.filter(f => f !== fish);
+                if (gameRunning) {
+                    setTimeout(() => { if (gameRunning) spawnFish(); }, 800);
+                }
             }
+            if (gameRunning) spawnFish();
         }, lifetime);
     }
 
@@ -218,9 +220,6 @@ export function createYarnBallApp(container, prefs = {}) {
         vy = 0;
 
         spawnFish();
-        fishSpawnInterval = setInterval(() => {
-            if (gameRunning) spawnFish();
-        }, 2000);
 
         timerInterval = setInterval(() => {
             timeLeft--;
@@ -255,7 +254,6 @@ export function createYarnBallApp(container, prefs = {}) {
         gameHud.style.display = mode === 'challenge' ? 'flex' : 'none';
 
         if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-        if (fishSpawnInterval) { clearInterval(fishSpawnInterval); fishSpawnInterval = null; }
         gameRunning = false;
         fishes.forEach(f => { if (f.el.parentNode) f.el.remove(); });
         fishes = [];
@@ -378,7 +376,6 @@ export function createYarnBallApp(container, prefs = {}) {
         destroy() {
             if (animId) cancelAnimationFrame(animId);
             if (timerInterval) clearInterval(timerInterval);
-            if (fishSpawnInterval) clearInterval(fishSpawnInterval);
             window.removeEventListener('mousemove', onPointerMove);
             window.removeEventListener('mouseup', onPointerUp);
             window.removeEventListener('touchmove', onPointerMove);
