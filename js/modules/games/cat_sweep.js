@@ -398,16 +398,30 @@ export function createCatSweepGame(container, options = {}) {
         }
 
         // 多解法处理：当只剩下最后几个格子时，检查是否存在多个有效配置
-        if (unknownCells.length <= 6) {
+        if (unknownCells.length <= 10) {
             const validConfigurations = generateValidConfigurations(unknownCells);
             if (validConfigurations.length > 1) {
-                // 存在多个有效配置，通知外部
-                if (options.onMultipleSolutions) {
-                    options.onMultipleSolutions();
+                // 检查是否存在某个格子在所有配置中状态一致（可以确定）
+                let canDetermine = false;
+                for (let i = 0; i < unknownCells.length; i++) {
+                    const allSafe = validConfigurations.every(config => config[i] === 0);
+                    const allMine = validConfigurations.every(config => config[i] === 1);
+                    if (allSafe || allMine) {
+                        canDetermine = true;
+                        break;
+                    }
                 }
-                // 判定所有配置都正确，自动完成游戏
-                completeGameWithMultipleSolutions();
-                return null;
+
+                // 如果没有任何格子能确定状态，说明需要猜测
+                if (!canDetermine) {
+                    // 存在多个有效配置，通知外部
+                    if (options.onMultipleSolutions) {
+                        options.onMultipleSolutions();
+                    }
+                    // 判定所有配置都正确，自动完成游戏
+                    completeGameWithMultipleSolutions();
+                    return null;
+                }
             }
         }
 
@@ -431,15 +445,14 @@ export function createCatSweepGame(container, options = {}) {
         return neighbors;
     }
 
-    // 生成所有有效的地雷配置
+    // 生成所有有效的地雷配置（不考虑全局地雷总数，只考虑局部约束）
     function generateValidConfigurations(unknownCells) {
         const validConfigs = [];
-        const totalMines = mice - flagCount;
 
-        // 生成所有可能的地雷配置
-        function generateConfigs(index, currentConfig, mineCount) {
+        // 生成所有可能的地雷配置（2^n 种可能）
+        function generateConfigs(index, currentConfig) {
             if (index === unknownCells.length) {
-                if (mineCount === totalMines && isValidConfiguration(currentConfig, unknownCells)) {
+                if (isValidConfiguration(currentConfig, unknownCells)) {
                     validConfigs.push([...currentConfig]);
                 }
                 return;
@@ -447,16 +460,14 @@ export function createCatSweepGame(container, options = {}) {
 
             // 尝试将当前格子设为安全
             currentConfig[index] = 0;
-            generateConfigs(index + 1, currentConfig, mineCount);
+            generateConfigs(index + 1, currentConfig);
 
             // 尝试将当前格子设为地雷
-            if (mineCount < totalMines) {
-                currentConfig[index] = 1;
-                generateConfigs(index + 1, currentConfig, mineCount + 1);
-            }
+            currentConfig[index] = 1;
+            generateConfigs(index + 1, currentConfig);
         }
 
-        generateConfigs(0, new Array(unknownCells.length), 0);
+        generateConfigs(0, new Array(unknownCells.length));
         return validConfigs;
     }
 
