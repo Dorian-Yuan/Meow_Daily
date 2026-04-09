@@ -318,6 +318,7 @@ function launchSettings() {
     const db = getDB();
     const catSweepPrefs = db.settings.game_prefs?.cat_sweep || { difficulty: 'easy', custom: { rows: 8, cols: 8, mice: 10 } };
     const pixelArtPrefs = db.settings.game_prefs?.pixel_art || { canvasSize: 10 };
+    const yarnBallPrefs = db.settings.game_prefs?.yarn_ball || { mode: 'challenge', challengeTime: 30 };
 
     phoneOverlay.innerHTML = `
         <div class="phone-screen">
@@ -379,6 +380,42 @@ function launchSettings() {
                 </div>
                 
                 <div class="settings-section">
+                    <h3 class="settings-section-title">🧶 毛线球</h3>
+                    
+                    <div class="settings-group">
+                        <label class="settings-label">默认模式</label>
+                        <div class="settings-radio-group">
+                            <label class="settings-radio ${yarnBallPrefs.mode === 'free' ? 'active' : ''}">
+                                <input type="radio" name="yarnMode" value="free" ${yarnBallPrefs.mode === 'free' ? 'checked' : ''}>
+                                <span>🧶 自由模式</span>
+                                <small>纯解压弹跳</small>
+                            </label>
+                            <label class="settings-radio ${yarnBallPrefs.mode === 'challenge' ? 'active' : ''}">
+                                <input type="radio" name="yarnMode" value="challenge" ${yarnBallPrefs.mode === 'challenge' ? 'checked' : ''}>
+                                <span>🐟 挑战模式</span>
+                                <small>收集小鱼干</small>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <label class="settings-label">挑战时长</label>
+                        <div class="settings-radio-group">
+                            <label class="settings-radio ${yarnBallPrefs.challengeTime === 30 ? 'active' : ''}">
+                                <input type="radio" name="yarnTime" value="30" ${yarnBallPrefs.challengeTime === 30 ? 'checked' : ''}>
+                                <span>30 秒</span>
+                                <small>快速挑战</small>
+                            </label>
+                            <label class="settings-radio ${yarnBallPrefs.challengeTime === 60 ? 'active' : ''}">
+                                <input type="radio" name="yarnTime" value="60" ${yarnBallPrefs.challengeTime === 60 ? 'checked' : ''}>
+                                <span>60 秒</span>
+                                <small>持久战</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
                     <button id="settings-save" class="settings-save-btn">💾 保存设置</button>
                 </div>
                 
@@ -404,8 +441,23 @@ function launchSettings() {
     // 画布尺寸 radio 切换
     phoneOverlay.querySelectorAll('input[name="canvasSize"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
-            // 更新 active 样式
             phoneOverlay.querySelectorAll('input[name="canvasSize"]').forEach(r => r.closest('.settings-radio').classList.remove('active'));
+            e.target.closest('.settings-radio').classList.add('active');
+        });
+    });
+
+    // 毛线球模式 radio 切换
+    phoneOverlay.querySelectorAll('input[name="yarnMode"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            phoneOverlay.querySelectorAll('input[name="yarnMode"]').forEach(r => r.closest('.settings-radio').classList.remove('active'));
+            e.target.closest('.settings-radio').classList.add('active');
+        });
+    });
+
+    // 毛线球时长 radio 切换
+    phoneOverlay.querySelectorAll('input[name="yarnTime"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            phoneOverlay.querySelectorAll('input[name="yarnTime"]').forEach(r => r.closest('.settings-radio').classList.remove('active'));
             e.target.closest('.settings-radio').classList.add('active');
         });
     });
@@ -418,6 +470,10 @@ function launchSettings() {
         db.settings.game_prefs = db.settings.game_prefs || {};
         db.settings.game_prefs.cat_sweep = { difficulty };
         db.settings.game_prefs.pixel_art = { canvasSize };
+        db.settings.game_prefs.yarn_ball = {
+            mode: phoneOverlay.querySelector('input[name="yarnMode"]:checked').value,
+            challengeTime: parseInt(phoneOverlay.querySelector('input[name="yarnTime"]:checked').value)
+        };
         setDB(db);
 
         // 显示保存成功反馈
@@ -469,6 +525,9 @@ function launchPixelArt() {
 function launchYarnBall() {
     if (!phoneOverlay) return;
 
+    const db = getDB();
+    const yarnBallPrefs = db.settings.game_prefs?.yarn_ball || { mode: 'challenge', challengeTime: 30 };
+
     phoneOverlay.innerHTML = `
         <div class="phone-screen">
             <div class="phone-status-bar">
@@ -481,7 +540,7 @@ function launchYarnBall() {
     `;
 
     const container = phoneOverlay.querySelector('#yarn-ball-container');
-    const yarnApp = createYarnBallApp(container);
+    const yarnApp = createYarnBallApp(container, yarnBallPrefs);
 
     phoneOverlay.querySelector('#yarn-back').addEventListener('click', () => {
         if (yarnApp && yarnApp.destroy) yarnApp.destroy();

@@ -44,9 +44,13 @@ const DEFAULT_DB = {
             cat_sweep: {
                 difficulty: "easy",
                 custom: { rows: 8, cols: 8, mice: 10 }
+            },
+            yarn_ball: {
+                mode: "challenge",
+                challengeTime: 30
             }
         },
-        version: "3.2.0"
+        version: "3.2.1"
     }
 };
 
