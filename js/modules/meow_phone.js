@@ -328,9 +328,10 @@ function launchSettings() {
                 <span></span>
             </div>
             <div class="phone-settings-content">
-                <div class="settings-section">
-                    <h3 class="settings-section-title">🐭 猫抓老鼠</h3>
+                <div class="settings-section" data-collapsible>
+                    <h3 class="settings-section-title" data-toggle>🐭 猫抓老鼠 <span class="settings-arrow">›</span></h3>
                     
+                    <div class="settings-collapsible">
                     <div class="settings-group">
                         <label class="settings-label">游戏难度</label>
                         <div class="settings-radio-group">
@@ -351,11 +352,13 @@ function launchSettings() {
                             </label>
                         </div>
                     </div>
+                    </div>
                 </div>
                 
-                <div class="settings-section">
-                    <h3 class="settings-section-title">🎨 像素画板</h3>
+                <div class="settings-section" data-collapsible>
+                    <h3 class="settings-section-title" data-toggle>🎨 像素画板 <span class="settings-arrow">›</span></h3>
                     
+                    <div class="settings-collapsible">
                     <div class="settings-group">
                         <label class="settings-label">画布尺寸</label>
                         <div class="settings-radio-group">
@@ -377,11 +380,13 @@ function launchSettings() {
                             </label>
                         </div>
                     </div>
+                    </div>
                 </div>
                 
-                <div class="settings-section">
-                    <h3 class="settings-section-title">🧶 毛线球</h3>
+                <div class="settings-section" data-collapsible>
+                    <h3 class="settings-section-title" data-toggle>🧶 毛线球 <span class="settings-arrow">›</span></h3>
                     
+                    <div class="settings-collapsible">
                     <div class="settings-group">
                         <label class="settings-label">默认模式</label>
                         <div class="settings-radio-group">
@@ -413,6 +418,7 @@ function launchSettings() {
                             </label>
                         </div>
                     </div>
+                    </div>
                 </div>
                 
                 <div class="settings-section">
@@ -428,6 +434,25 @@ function launchSettings() {
 
     // 返回
     phoneOverlay.querySelector('#settings-back').addEventListener('click', renderHomeScreen);
+
+    // 折叠切换
+    phoneOverlay.querySelectorAll('[data-toggle]').forEach(title => {
+        title.addEventListener('click', () => {
+            const section = title.closest('[data-collapsible]');
+            const content = section.querySelector('.settings-collapsible');
+            const arrow = title.querySelector('.settings-arrow');
+            const isOpen = section.classList.contains('settings-open');
+            if (isOpen) {
+                section.classList.remove('settings-open');
+                content.style.maxHeight = '0';
+                arrow.style.transform = 'rotate(0deg)';
+            } else {
+                section.classList.add('settings-open');
+                content.style.maxHeight = content.scrollHeight + 'px';
+                arrow.style.transform = 'rotate(90deg)';
+            }
+        });
+    });
 
     // 难度 radio 切换
     phoneOverlay.querySelectorAll('input[name="difficulty"]').forEach(radio => {
