@@ -1400,5 +1400,346 @@ input[type="date"].form-input {
   transform: scale(0.95);
 }
 
+/* ======== 新应用通用容器 ======== */
+.yarn-ball-app-container,
+.cat-fortune-app-container,
+.cat-memory-app-container,
+.whack-mouse-app-container,
+.meow-piano-app-container,
+.meow-timer-app-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
 
+/* ======== 毛线球样式 ======== */
+.yarn-ball-canvas {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+}
 
+.yarn-ball-item {
+  position: absolute;
+  font-size: 40px;
+  cursor: grab;
+  user-select: none;
+  z-index: 5;
+  transition: filter 0.3s;
+  line-height: 1;
+}
+
+.yarn-ball-item:active {
+  cursor: grabbing;
+}
+
+.yarn-ball-trail {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.yarn-ball-toolbar {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 12px 24px 24px;
+  background: var(--color-card-bg);
+  border-top: 1px solid var(--color-divider);
+}
+
+.yarn-ball-btn {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 16px;
+  background: var(--color-bg);
+  font-size: 22px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-divider);
+}
+
+.yarn-ball-btn:active {
+  transform: scale(0.9);
+  background: var(--color-primary-light);
+}
+
+/* ======== 猫咪占卜样式 ======== */
+.fortune-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 8px;
+}
+
+.fortune-cat {
+  font-size: 80px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  user-select: none;
+  line-height: 1;
+}
+
+.fortune-cat:active {
+  transform: scale(0.9);
+}
+
+.fortune-cat.fortune-thinking {
+  animation: fortune-think 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes fortune-think {
+  0% { transform: rotate(-5deg) scale(1.05); }
+  100% { transform: rotate(5deg) scale(0.95); }
+}
+
+.fortune-result {
+  text-align: center;
+  margin-top: 16px;
+  animation: fortune-reveal 0.5s ease-out;
+}
+
+@keyframes fortune-reveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fortune-level {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--color-text-title);
+  margin-bottom: 12px;
+}
+
+.fortune-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  line-height: 1.6;
+  max-width: 280px;
+}
+
+.fortune-btn {
+  margin-top: 20px;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 20px;
+  background: var(--color-primary);
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(64, 102, 224, 0.3);
+}
+
+.fortune-btn:active {
+  transform: scale(0.95);
+}
+
+.fortune-hint {
+  font-size: 13px;
+  color: var(--color-text-hint);
+  margin-top: 8px;
+}
+
+/* ======== 喵喵计时器样式 ======== */
+.timer-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.timer-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  background: var(--color-card-bg);
+  border-radius: 12px;
+  padding: 4px;
+  border: 1px solid var(--color-divider);
+}
+
+.timer-tab {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--color-text-hint);
+}
+
+.timer-tab.active {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: 0 2px 8px rgba(64, 102, 224, 0.3);
+}
+
+.timer-presets {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.timer-preset-btn {
+  padding: 8px 14px;
+  border: 2px solid var(--color-divider);
+  border-radius: 20px;
+  background: var(--color-card-bg);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--color-text-main);
+}
+
+.timer-preset-btn:active {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.timer-custom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.timer-custom input {
+  width: 60px;
+  padding: 8px;
+  border: 2px solid var(--color-divider);
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  color: var(--color-text-title);
+  background: var(--color-card-bg);
+}
+
+.timer-custom span {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-hint);
+}
+
+.timer-progress {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-progress svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.timer-cat {
+  font-size: 40px;
+  z-index: 2;
+  line-height: 1;
+}
+
+.timer-cat.cat-jump {
+  animation: cat-jump-anim 0.5s ease infinite;
+}
+
+@keyframes cat-jump-anim {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+.timer-display {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--color-text-title);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.timer-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--color-primary);
+  color: white;
+}
+
+.timer-btn:active {
+  transform: scale(0.95);
+}
+
+.timer-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.timer-laps {
+  max-height: 150px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timer-lap-item {
+  padding: 8px 16px;
+  background: var(--color-card-bg);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  border: 1px solid var(--color-divider);
+}
+
+.timer-flash {
+  animation: timer-flash-anim 0.3s ease 2;
+}
+
+@keyframes timer-flash-anim {
+  0%, 100% { background: var(--color-bg); }
+  50% { background: #FEF3C7; }
+}
+
+@media (prefers-color-scheme: dark) {
+  @keyframes timer-flash-anim {
+    0%, 100% { background: var(--color-bg); }
+    50% { background: #422006; }
+  }
+}

@@ -7,6 +7,12 @@
 import { getDB, setDB } from '../store.js';
 import { createCatSweepGame } from './games/cat_sweep.js';
 import { createPixelArtApp } from './games/pixel_art.js';
+import { createYarnBallApp } from './games/yarn_ball.js';
+import { createCatFortuneApp } from './games/cat_fortune.js';
+import { createCatMemoryApp } from './games/cat_memory.js';
+import { createWhackMouseApp } from './games/whack_mouse.js';
+import { createMeowPianoApp } from './games/meow_piano.js';
+import { createMeowTimerApp } from './games/meow_timer.js';
 
 // ---- 游戏注册表 ----
 const APP_REGISTRY = [
@@ -23,6 +29,48 @@ const APP_REGISTRY = [
         icon: '🎨',
         description: '创建像素艺术',
         launch: launchPixelArt
+    },
+    {
+        id: 'yarn_ball',
+        name: '毛线球',
+        icon: '🧶',
+        description: '解压弹跳玩具',
+        launch: launchYarnBall
+    },
+    {
+        id: 'cat_fortune',
+        name: '猫咪占卜',
+        icon: '🎲',
+        description: '今日猫咪运势',
+        launch: launchCatFortune
+    },
+    {
+        id: 'cat_memory',
+        name: '猫咪翻牌',
+        icon: '🧩',
+        description: '记忆配对游戏',
+        launch: launchCatMemory
+    },
+    {
+        id: 'whack_mouse',
+        name: '打地鼠',
+        icon: '🎯',
+        description: '反应力挑战',
+        launch: launchWhackMouse
+    },
+    {
+        id: 'meow_piano',
+        name: '喵喵琴',
+        icon: '🎵',
+        description: '猫咪音乐盒',
+        launch: launchMeowPiano
+    },
+    {
+        id: 'meow_timer',
+        name: '喵喵计时',
+        icon: '⏰',
+        description: '倒计时与秒表',
+        launch: launchMeowTimer
     },
     {
         id: 'settings',
@@ -335,7 +383,7 @@ function launchSettings() {
                 </div>
                 
                 <div class="settings-section">
-                    <p class="settings-about">Meow Phone V${getDB().settings.version || '3.1.0'}<br>一个隐藏的彩蛋系统 🐾</p>
+                    <p class="settings-about">Meow Phone V${getDB().settings.version || '3.2.0'}<br>一个隐藏的彩蛋系统 🐾<br>8款小应用等你探索 ✨</p>
                 </div>
             </div>
         </div>
@@ -414,4 +462,154 @@ function launchPixelArt() {
 
     // 返回主屏
     phoneOverlay.querySelector('#pixel-back').addEventListener('click', renderHomeScreen);
+}
+
+// ---- 毛线球启动器 ----
+
+function launchYarnBall() {
+    if (!phoneOverlay) return;
+
+    phoneOverlay.innerHTML = `
+        <div class="phone-screen">
+            <div class="phone-status-bar">
+                <span class="phone-back-btn" id="yarn-back">← 返回</span>
+                <span></span>
+                <span></span>
+            </div>
+            <div id="yarn-ball-container" class="yarn-ball-app-container"></div>
+        </div>
+    `;
+
+    const container = phoneOverlay.querySelector('#yarn-ball-container');
+    const yarnApp = createYarnBallApp(container);
+
+    phoneOverlay.querySelector('#yarn-back').addEventListener('click', () => {
+        if (yarnApp && yarnApp.destroy) yarnApp.destroy();
+        renderHomeScreen();
+    });
+}
+
+// ---- 猫咪占卜启动器 ----
+
+function launchCatFortune() {
+    if (!phoneOverlay) return;
+
+    phoneOverlay.innerHTML = `
+        <div class="phone-screen">
+            <div class="phone-status-bar">
+                <span class="phone-back-btn" id="fortune-back">← 返回</span>
+                <span></span>
+                <span></span>
+            </div>
+            <div id="cat-fortune-container" class="cat-fortune-app-container"></div>
+        </div>
+    `;
+
+    const container = phoneOverlay.querySelector('#cat-fortune-container');
+    const fortuneApp = createCatFortuneApp(container);
+
+    phoneOverlay.querySelector('#fortune-back').addEventListener('click', () => {
+        if (fortuneApp && fortuneApp.destroy) fortuneApp.destroy();
+        renderHomeScreen();
+    });
+}
+
+// ---- 猫咪翻牌启动器 ----
+
+function launchCatMemory() {
+    if (!phoneOverlay) return;
+
+    phoneOverlay.innerHTML = `
+        <div class="phone-screen">
+            <div class="phone-status-bar">
+                <span class="phone-back-btn" id="memory-back">← 返回</span>
+                <span></span>
+                <span></span>
+            </div>
+            <div id="cat-memory-container" class="cat-memory-app-container"></div>
+        </div>
+    `;
+
+    const container = phoneOverlay.querySelector('#cat-memory-container');
+    const memoryApp = createCatMemoryApp(container);
+
+    phoneOverlay.querySelector('#memory-back').addEventListener('click', () => {
+        if (memoryApp && memoryApp.destroy) memoryApp.destroy();
+        renderHomeScreen();
+    });
+}
+
+// ---- 打地鼠启动器 ----
+
+function launchWhackMouse() {
+    if (!phoneOverlay) return;
+
+    phoneOverlay.innerHTML = `
+        <div class="phone-screen">
+            <div class="phone-status-bar">
+                <span class="phone-back-btn" id="whack-back">← 返回</span>
+                <span></span>
+                <span></span>
+            </div>
+            <div id="whack-mouse-container" class="whack-mouse-app-container"></div>
+        </div>
+    `;
+
+    const container = phoneOverlay.querySelector('#whack-mouse-container');
+    const whackApp = createWhackMouseApp(container);
+
+    phoneOverlay.querySelector('#whack-back').addEventListener('click', () => {
+        if (whackApp && whackApp.destroy) whackApp.destroy();
+        renderHomeScreen();
+    });
+}
+
+// ---- 喵喵琴启动器 ----
+
+function launchMeowPiano() {
+    if (!phoneOverlay) return;
+
+    phoneOverlay.innerHTML = `
+        <div class="phone-screen">
+            <div class="phone-status-bar">
+                <span class="phone-back-btn" id="piano-back">← 返回</span>
+                <span></span>
+                <span></span>
+            </div>
+            <div id="meow-piano-container" class="meow-piano-app-container"></div>
+        </div>
+    `;
+
+    const container = phoneOverlay.querySelector('#meow-piano-container');
+    const pianoApp = createMeowPianoApp(container);
+
+    phoneOverlay.querySelector('#piano-back').addEventListener('click', () => {
+        if (pianoApp && pianoApp.destroy) pianoApp.destroy();
+        renderHomeScreen();
+    });
+}
+
+// ---- 喵喵计时器启动器 ----
+
+function launchMeowTimer() {
+    if (!phoneOverlay) return;
+
+    phoneOverlay.innerHTML = `
+        <div class="phone-screen">
+            <div class="phone-status-bar">
+                <span class="phone-back-btn" id="timer-back">← 返回</span>
+                <span></span>
+                <span></span>
+            </div>
+            <div id="meow-timer-container" class="meow-timer-app-container"></div>
+        </div>
+    `;
+
+    const container = phoneOverlay.querySelector('#meow-timer-container');
+    const timerApp = createMeowTimerApp(container);
+
+    phoneOverlay.querySelector('#timer-back').addEventListener('click', () => {
+        if (timerApp && timerApp.destroy) timerApp.destroy();
+        renderHomeScreen();
+    });
 }
