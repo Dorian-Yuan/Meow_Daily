@@ -318,7 +318,7 @@ function launchSettings() {
     const db = getDB();
     const catSweepPrefs = db.settings.game_prefs?.cat_sweep || { difficulty: 'easy', custom: { rows: 8, cols: 8, mice: 10 } };
     const pixelArtPrefs = db.settings.game_prefs?.pixel_art || { canvasSize: 10 };
-    const yarnBallPrefs = db.settings.game_prefs?.yarn_ball || { mode: 'challenge', challengeTime: 30 };
+    const yarnBallPrefs = db.settings.game_prefs?.yarn_ball || { mode: 'challenge', challengeTime: 30, maxFish: 100 };
 
     phoneOverlay.innerHTML = `
         <div class="phone-screen">
@@ -418,6 +418,27 @@ function launchSettings() {
                             </label>
                         </div>
                     </div>
+                    
+                    <div class="settings-group">
+                        <label class="settings-label">最大鱼数</label>
+                        <div class="settings-radio-group">
+                            <label class="settings-radio ${yarnBallPrefs.maxFish === 50 ? 'active' : ''}">
+                                <input type="radio" name="yarnMaxFish" value="50" ${yarnBallPrefs.maxFish === 50 ? 'checked' : ''}>
+                                <span>50</span>
+                                <small>低性能设备</small>
+                            </label>
+                            <label class="settings-radio ${yarnBallPrefs.maxFish === 100 ? 'active' : ''}">
+                                <input type="radio" name="yarnMaxFish" value="100" ${yarnBallPrefs.maxFish === 100 ? 'checked' : ''}>
+                                <span>100</span>
+                                <small>默认</small>
+                            </label>
+                            <label class="settings-radio ${yarnBallPrefs.maxFish === 200 ? 'active' : ''}">
+                                <input type="radio" name="yarnMaxFish" value="200" ${yarnBallPrefs.maxFish === 200 ? 'checked' : ''}>
+                                <span>200</span>
+                                <small>鱼群风暴</small>
+                            </label>
+                        </div>
+                    </div>
                     </div>
                 </div>
                 
@@ -487,6 +508,14 @@ function launchSettings() {
         });
     });
 
+    // 毛线球最大鱼数 radio 切换
+    phoneOverlay.querySelectorAll('input[name="yarnMaxFish"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            phoneOverlay.querySelectorAll('input[name="yarnMaxFish"]').forEach(r => r.closest('.settings-radio').classList.remove('active'));
+            e.target.closest('.settings-radio').classList.add('active');
+        });
+    });
+
     // 保存
     phoneOverlay.querySelector('#settings-save').addEventListener('click', () => {
         const difficulty = phoneOverlay.querySelector('input[name="difficulty"]:checked').value;
@@ -497,7 +526,8 @@ function launchSettings() {
         db.settings.game_prefs.pixel_art = { canvasSize };
         db.settings.game_prefs.yarn_ball = {
             mode: phoneOverlay.querySelector('input[name="yarnMode"]:checked').value,
-            challengeTime: parseInt(phoneOverlay.querySelector('input[name="yarnTime"]:checked').value)
+            challengeTime: parseInt(phoneOverlay.querySelector('input[name="yarnTime"]:checked').value),
+            maxFish: parseInt(phoneOverlay.querySelector('input[name="yarnMaxFish"]:checked').value)
         };
         setDB(db);
 

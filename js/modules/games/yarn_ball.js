@@ -4,7 +4,6 @@ const BALL_SIZE = 48;
 const FISH_SIZE = 32;
 const FRICTION = 0.985;
 const BOUNCE = 0.7;
-const MAX_FISH = 100;
 
 export function createYarnBallApp(container, prefs = {}) {
     let colorIndex = 0;
@@ -16,6 +15,7 @@ export function createYarnBallApp(container, prefs = {}) {
 
     let mode = prefs.mode || 'challenge';
     let challengeTime = prefs.challengeTime || 30;
+    let maxFish = prefs.maxFish || 100;
     let gameRunning = false;
     let score = 0;
     let timeLeft = challengeTime;
@@ -113,8 +113,7 @@ export function createYarnBallApp(container, prefs = {}) {
 
     function spawnFish() {
         if (!gameRunning) return;
-        const aliveCount = fishes.filter(f => f.alive).length;
-        if (aliveCount >= MAX_FISH) return;
+        if (fishes.filter(f => f.alive).length >= maxFish) return;
         const b = getBounds();
         const padding = 20;
         const fx = padding + Math.random() * (b.w - FISH_SIZE - padding * 2);
@@ -129,16 +128,12 @@ export function createYarnBallApp(container, prefs = {}) {
         fishes.push(fish);
 
         const elapsed = challengeTime - timeLeft;
-        const lifetime = Math.max(2500, 5000 - elapsed * 40);
+        const lifetime = Math.max(2000, 4000 - elapsed * 50);
         setTimeout(() => {
             if (fish.alive) {
                 fish.alive = false;
-                fish.el.style.opacity = '0.3';
-                setTimeout(() => { if (fish.el.parentNode) fish.el.remove(); }, 300);
+                fish.el.remove();
                 fishes = fishes.filter(f => f !== fish);
-                if (gameRunning) {
-                    setTimeout(() => { if (gameRunning) spawnFish(); }, 800);
-                }
             }
             if (gameRunning) spawnFish();
         }, lifetime);
@@ -169,6 +164,9 @@ export function createYarnBallApp(container, prefs = {}) {
                 setTimeout(() => pop.remove(), 600);
 
                 fishes = fishes.filter(f => f !== fish);
+                if (gameRunning) {
+                    setTimeout(() => { if (gameRunning) spawnFish(); }, 500);
+                }
             }
         }
     }
@@ -176,7 +174,6 @@ export function createYarnBallApp(container, prefs = {}) {
     function showResult() {
         gameRunning = false;
         if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-        if (fishSpawnInterval) { clearInterval(fishSpawnInterval); fishSpawnInterval = null; }
         fishes.forEach(f => { if (f.el.parentNode) f.el.remove(); });
         fishes = [];
 

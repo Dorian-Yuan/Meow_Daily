@@ -47,10 +47,11 @@ const DEFAULT_DB = {
             },
             yarn_ball: {
                 mode: "challenge",
-                challengeTime: 30
+                challengeTime: 30,
+                maxFish: 100
             }
         },
-        version: "3.2.3"
+        version: "3.2.4"
     }
 };
 
