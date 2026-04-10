@@ -1,175 +1,248 @@
-function createCatMemoryApp(container) {
-  const emojis = ['🐱', '😺', '😸', '😹', '😻', '😼', '🐟', '🧶'];
-  let cards = [], flipped = [], matched = 0, moves = 0, timer = null, seconds = 0, locked = false;
+const THEMES = {
+    cat: ['🐱', '😺', '😸', '😹', '😻', '😼', '🐟', '🧶', '🐾', '🐭'],
+    food: ['🍣', '🍕', '🍔', '🌮', '🍜', '🍰', '🍩', '🍪', '🧁', '🍿'],
+    nature: ['🌸', '🌺', '🌻', '🌹', '🍀', '🌈', '⭐', '🌙', '☀️', '❄️']
+};
 
-  const style = document.createElement('style');
-  style.textContent = `
-.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:360px;margin:0 auto;padding:10px}
-.memory-card{perspective:600px;cursor:pointer;aspect-ratio:1}
-.memory-card-inner{position:relative;width:100%;height:100%;transition:transform 0.5s;transform-style:preserve-3d}
-.memory-card.flipped .memory-card-inner,.memory-card.matched .memory-card-inner{transform:rotateY(180deg)}
-.memory-card-front,.memory-card-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:2rem}
-.memory-card-front{background:linear-gradient(135deg,#ffb6c1,#ffd1dc);border:2px solid #f8a4b8;transform:rotateY(180deg)}
-.memory-card-back{background:linear-gradient(135deg,#a8e6cf,#dcedc1);border:2px solid #88d8a8;font-size:1.5rem}
-.memory-card.matched .memory-card-front{animation:matchPop 0.4s ease}
-@keyframes matchPop{0%{transform:rotateY(180deg) scale(1)}50%{transform:rotateY(180deg) scale(1.15)}100%{transform:rotateY(180deg) scale(1)}}
-.memory-info{display:flex;justify-content:space-around;max-width:360px;margin:0 auto 10px;padding:8px 0;font-size:0.95rem;color:#555}
-.memory-info span{background:#f0f0f0;padding:4px 12px;border-radius:12px}
-.memory-result{position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:16px;z-index:10}
-.memory-result h3{color:#fff;font-size:1.3rem;margin-bottom:8px}
-.memory-result p{color:#eee;font-size:0.95rem;margin:4px 0}
-.memory-result .stars{font-size:1.8rem;margin:8px 0}
-.memory-btn{margin-top:12px;padding:8px 20px;border:none;border-radius:20px;background:linear-gradient(135deg,#ffb6c1,#ffd1dc);color:#555;font-size:0.95rem;cursor:pointer;transition:transform 0.2s}
-.memory-btn:hover{transform:scale(1.05)}
-`;
-  container.appendChild(style);
+const DIFFICULTIES = {
+    easy: { cols: 3, rows: 4, pairs: 6, starMoves: [8, 12], starTime: [20, 35] },
+    medium: { cols: 4, rows: 4, pairs: 8, starMoves: [12, 18], starTime: [40, 60] },
+    hard: { cols: 5, rows: 4, pairs: 10, starMoves: [16, 24], starTime: [60, 90] }
+};
 
-  function shuffle(arr) {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
+function createCatMemoryApp(container, options = {}) {
+    const defaultDiff = options.difficulty || 'medium';
+    const defaultTheme = options.theme || 'random';
+
+    let cards = [], flipped = [], matched = 0, moves = 0, timer = null, seconds = 0, locked = false;
+    let currentDiff = defaultDiff;
+    let currentTheme = defaultTheme;
+
+    function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
     }
-    return a;
-  }
 
-  function formatTime(s) {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m}:${sec.toString().padStart(2, '0')}`;
-  }
-
-  function getStars(m) {
-    if (m <= 10) return '⭐⭐⭐';
-    if (m <= 16) return '⭐⭐';
-    return '⭐';
-  }
-
-  function startTimer() {
-    if (timer) return;
-    timer = setInterval(() => {
-      seconds++;
-      timeEl.textContent = `⏱ ${formatTime(seconds)}`;
-    }, 1000);
-  }
-
-  function stopTimer() {
-    clearInterval(timer);
-    timer = null;
-  }
-
-  function flipCard(card) {
-    if (locked || card.classList.contains('flipped') || card.classList.contains('matched')) return;
-    if (flipped.length >= 2) return;
-    startTimer();
-    card.classList.add('flipped');
-    flipped.push(card);
-
-    if (flipped.length === 2) {
-      moves++;
-      movesEl.textContent = `🐾 ${moves} 步`;
-      locked = true;
-      const [a, b] = flipped;
-      if (a.dataset.emoji === b.dataset.emoji) {
-        setTimeout(() => {
-          a.classList.add('matched');
-          b.classList.add('matched');
-          matched++;
-          flipped = [];
-          locked = false;
-          if (matched === 8) showResult();
-        }, 300);
-      } else {
-        setTimeout(() => {
-          a.classList.remove('flipped');
-          b.classList.remove('flipped');
-          flipped = [];
-          locked = false;
-        }, 800);
-      }
+    function formatTime(s) {
+        const m = Math.floor(s / 60);
+        const sec = s % 60;
+        return `${m}:${sec.toString().padStart(2, '0')}`;
     }
-  }
 
-  function showResult() {
-    stopTimer();
-    const overlay = document.createElement('div');
-    overlay.className = 'memory-result';
-    overlay.innerHTML = `
-      <h3>🎉 恭喜完成!</h3>
-      <div class="stars">${getStars(moves)}</div>
-      <p>步数: ${moves}</p>
-      <p>用时: ${formatTime(seconds)}</p>
-      <button class="memory-btn" id="memRestart">重新开始</button>
-    `;
-    wrapper.appendChild(overlay);
-    overlay.querySelector('#memRestart').addEventListener('click', restart);
-  }
+    function getStars(m, t) {
+        const d = DIFFICULTIES[currentDiff];
+        if (m <= d.starMoves[0] && t <= d.starTime[0]) return 3;
+        if (m <= d.starMoves[1]) return 2;
+        return 1;
+    }
 
-  function buildGrid() {
-    grid.innerHTML = '';
-    const deck = shuffle([...emojis, ...emojis]);
-    deck.forEach((emoji) => {
-      const card = document.createElement('div');
-      card.className = 'memory-card';
-      card.dataset.emoji = emoji;
-      card.innerHTML = `
-        <div class="memory-card-inner">
-          <div class="memory-card-front">${emoji}</div>
-          <div class="memory-card-back">🐾</div>
-        </div>`;
-      card.addEventListener('click', () => flipCard(card));
-      grid.appendChild(card);
-    });
-  }
+    function getBestKey() {
+        return `meow_memory_best_${currentDiff}`;
+    }
 
-  function restart() {
-    stopTimer();
-    seconds = 0;
-    moves = 0;
-    matched = 0;
-    flipped = [];
-    locked = false;
+    function loadBest() {
+        try { return JSON.parse(localStorage.getItem(getBestKey()) || 'null'); } catch { return null; }
+    }
+
+    function saveBest(movesVal, timeVal) {
+        const best = loadBest();
+        if (!best || movesVal < best.moves || (movesVal === best.moves && timeVal < best.time)) {
+            localStorage.setItem(getBestKey(), JSON.stringify({ moves: movesVal, time: timeVal }));
+            return true;
+        }
+        return false;
+    }
+
+    function startTimer() {
+        if (timer) return;
+        timer = setInterval(() => {
+            seconds++;
+            timeEl.textContent = `⏱ ${formatTime(seconds)}`;
+        }, 1000);
+    }
+
+    function stopTimer() {
+        clearInterval(timer);
+        timer = null;
+    }
+
+    function getEmojis() {
+        const theme = currentTheme === 'random'
+            ? ['cat', 'food', 'nature'][Math.floor(Math.random() * 3)]
+            : currentTheme;
+        return THEMES[theme];
+    }
+
+    function flipCard(card) {
+        if (locked || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+        if (flipped.length >= 2) return;
+        startTimer();
+        card.classList.add('flipped');
+        flipped.push(card);
+
+        if (flipped.length === 2) {
+            moves++;
+            movesEl.textContent = `🐾 ${moves} 步`;
+            locked = true;
+            const [a, b] = flipped;
+            if (a.dataset.emoji === b.dataset.emoji) {
+                setTimeout(() => {
+                    a.classList.add('matched');
+                    b.classList.add('matched');
+                    matched++;
+                    flipped = [];
+                    locked = false;
+                    const diff = DIFFICULTIES[currentDiff];
+                    if (matched === diff.pairs) showResult();
+                }, 300);
+            } else {
+                setTimeout(() => {
+                    a.classList.remove('flipped');
+                    b.classList.remove('flipped');
+                    flipped = [];
+                    locked = false;
+                }, 800);
+            }
+        }
+    }
+
+    function showResult() {
+        stopTimer();
+        const stars = getStars(moves, seconds);
+        const isNewRecord = saveBest(moves, seconds);
+        const best = loadBest();
+        const diff = DIFFICULTIES[currentDiff];
+
+        const overlay = document.createElement('div');
+        overlay.className = 'memory-result';
+        overlay.innerHTML = `
+            <div class="memory-result-content">
+                <h3>🎉 恭喜完成!</h3>
+                <div class="stars">${'⭐'.repeat(stars)}</div>
+                <p>步数: ${moves}</p>
+                <p>用时: ${formatTime(seconds)}</p>
+                ${isNewRecord ? '<p class="new-record">🏆 新纪录！</p>' : ''}
+                ${best ? `<p style="font-size:12px;color:var(--color-text-hint)">最佳: ${best.moves}步 / ${formatTime(best.time)}</p>` : ''}
+                <button class="memory-btn" id="memRestart">重新开始</button>
+            </div>
+        `;
+        wrapper.appendChild(overlay);
+        overlay.querySelector('#memRestart').addEventListener('click', restart);
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) overlay.style.display = 'none';
+        });
+    }
+
+    function buildGrid() {
+        grid.innerHTML = '';
+        const diff = DIFFICULTIES[currentDiff];
+        const emojis = getEmojis();
+        const deck = shuffle([...emojis.slice(0, diff.pairs), ...emojis.slice(0, diff.pairs)]);
+        grid.dataset.cols = diff.cols;
+        grid.style.maxWidth = diff.cols <= 3 ? '280px' : diff.cols <= 4 ? '360px' : '420px';
+
+        deck.forEach((emoji) => {
+            const card = document.createElement('div');
+            card.className = 'memory-card';
+            card.dataset.emoji = emoji;
+            card.innerHTML = `
+                <div class="memory-card-inner">
+                    <div class="memory-card-front">${emoji}</div>
+                    <div class="memory-card-back">🐾</div>
+                </div>`;
+            card.addEventListener('click', () => flipCard(card));
+            grid.appendChild(card);
+        });
+    }
+
+    function restart() {
+        stopTimer();
+        seconds = 0;
+        moves = 0;
+        matched = 0;
+        flipped = [];
+        locked = false;
+        movesEl.textContent = '🐾 0 步';
+        timeEl.textContent = '⏱ 0:00';
+        const result = wrapper.querySelector('.memory-result');
+        if (result) result.remove();
+        buildGrid();
+    }
+
+    function startWithDifficulty(diff) {
+        currentDiff = diff;
+        const startScreen = wrapper.querySelector('.memory-start');
+        if (startScreen) startScreen.remove();
+        restart();
+    }
+
+    function showStartScreen() {
+        const startScreen = document.createElement('div');
+        startScreen.className = 'memory-start';
+        startScreen.innerHTML = `
+            <div style="font-size:64px;line-height:1;margin-bottom:16px">🧩</div>
+            <div style="font-size:20px;font-weight:bold;color:var(--color-text-title);margin-bottom:8px">猫咪翻牌</div>
+            <div style="font-size:13px;color:var(--color-text-hint);margin-bottom:16px">翻开卡片找到配对！</div>
+            <div class="memory-diff-btns">
+                <button class="memory-diff-btn ${currentDiff === 'easy' ? 'active' : ''}" data-diff="easy">🟢 简单</button>
+                <button class="memory-diff-btn ${currentDiff === 'medium' ? 'active' : ''}" data-diff="medium">🟡 中等</button>
+                <button class="memory-diff-btn ${currentDiff === 'hard' ? 'active' : ''}" data-diff="hard">🔴 困难</button>
+            </div>
+            <button class="memory-btn" id="mem-start-btn">开始游戏</button>
+        `;
+        wrapper.appendChild(startScreen);
+
+        startScreen.querySelectorAll('.memory-diff-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                startScreen.querySelectorAll('.memory-diff-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentDiff = btn.dataset.diff;
+            });
+        });
+
+        startScreen.querySelector('#mem-start-btn').addEventListener('click', () => {
+            startWithDifficulty(currentDiff);
+        });
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.style.position = 'relative';
+
+    const info = document.createElement('div');
+    info.className = 'memory-info';
+    const movesEl = document.createElement('span');
     movesEl.textContent = '🐾 0 步';
+    const timeEl = document.createElement('span');
     timeEl.textContent = '⏱ 0:00';
-    const result = wrapper.querySelector('.memory-result');
-    if (result) result.remove();
-    buildGrid();
-  }
+    info.appendChild(movesEl);
+    info.appendChild(timeEl);
 
-  const wrapper = document.createElement('div');
-  wrapper.style.position = 'relative';
+    const grid = document.createElement('div');
+    grid.className = 'memory-grid';
 
-  const info = document.createElement('div');
-  info.className = 'memory-info';
-  const movesEl = document.createElement('span');
-  movesEl.textContent = '🐾 0 步';
-  const timeEl = document.createElement('span');
-  timeEl.textContent = '⏱ 0:00';
-  info.appendChild(movesEl);
-  info.appendChild(timeEl);
+    const restartBtn = document.createElement('button');
+    restartBtn.className = 'memory-btn';
+    restartBtn.textContent = '重新开始';
+    restartBtn.style.display = 'block';
+    restartBtn.style.margin = '12px auto 0';
+    restartBtn.addEventListener('click', restart);
 
-  const grid = document.createElement('div');
-  grid.className = 'memory-grid';
+    wrapper.appendChild(info);
+    wrapper.appendChild(grid);
+    wrapper.appendChild(restartBtn);
+    container.appendChild(wrapper);
 
-  const restartBtn = document.createElement('button');
-  restartBtn.className = 'memory-btn';
-  restartBtn.textContent = '重新开始';
-  restartBtn.style.display = 'block';
-  restartBtn.style.margin = '12px auto 0';
-  restartBtn.addEventListener('click', restart);
+    showStartScreen();
 
-  wrapper.appendChild(info);
-  wrapper.appendChild(grid);
-  wrapper.appendChild(restartBtn);
-  container.appendChild(wrapper);
-
-  buildGrid();
-
-  return {
-    destroy() {
-      stopTimer();
-    }
-  };
+    return {
+        destroy() {
+            stopTimer();
+        }
+    };
 }
 
 export { createCatMemoryApp };

@@ -318,6 +318,9 @@ function launchSettings() {
     const catSweepPrefs = db.settings.game_prefs?.cat_sweep || { difficulty: 'easy', custom: { rows: 8, cols: 8, mice: 10 } };
     const pixelArtPrefs = db.settings.game_prefs?.pixel_art || { canvasSize: 10 };
     const yarnBallPrefs = db.settings.game_prefs?.yarn_ball || { mode: 'challenge', challengeTime: 30, maxFish: 100 };
+    const catMemoryPrefs = db.settings.game_prefs?.cat_memory || { difficulty: 'medium', theme: 'random' };
+    const whackMousePrefs = db.settings.game_prefs?.whack_mouse || { difficulty: 'medium' };
+    const meowPianoPrefs = db.settings.game_prefs?.meow_piano || { tone: 'soft' };
 
     phoneOverlay.innerHTML = `
         <div class="phone-screen">
@@ -441,6 +444,111 @@ function launchSettings() {
                     </div>
                 </div>
                 
+                <div class="settings-section" data-collapsible class="settings-open">
+                    <div class="settings-section-title" data-toggle>
+                        🧩 猫咪翻牌 <span class="settings-arrow">▼</span>
+                    </div>
+                    <div class="settings-collapsible">
+                    <div class="settings-group">
+                        <label class="settings-label">默认难度</label>
+                        <div class="settings-radio-group">
+                            <label class="settings-radio ${catMemoryPrefs.difficulty === 'easy' ? 'active' : ''}">
+                                <input type="radio" name="memoryDiff" value="easy" ${catMemoryPrefs.difficulty === 'easy' ? 'checked' : ''}>
+                                <span>🟢 简单</span>
+                                <small>3×4</small>
+                            </label>
+                            <label class="settings-radio ${catMemoryPrefs.difficulty === 'medium' ? 'active' : ''}">
+                                <input type="radio" name="memoryDiff" value="medium" ${catMemoryPrefs.difficulty === 'medium' ? 'checked' : ''}>
+                                <span>🟡 中等</span>
+                                <small>4×4</small>
+                            </label>
+                            <label class="settings-radio ${catMemoryPrefs.difficulty === 'hard' ? 'active' : ''}">
+                                <input type="radio" name="memoryDiff" value="hard" ${catMemoryPrefs.difficulty === 'hard' ? 'checked' : ''}>
+                                <span>🔴 困难</span>
+                                <small>5×4</small>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <label class="settings-label">emoji 主题</label>
+                        <div class="settings-radio-group">
+                            <label class="settings-radio ${catMemoryPrefs.theme === 'cat' ? 'active' : ''}">
+                                <input type="radio" name="memoryTheme" value="cat" ${catMemoryPrefs.theme === 'cat' ? 'checked' : ''}>
+                                <span>🐱 猫咪</span>
+                            </label>
+                            <label class="settings-radio ${catMemoryPrefs.theme === 'food' ? 'active' : ''}">
+                                <input type="radio" name="memoryTheme" value="food" ${catMemoryPrefs.theme === 'food' ? 'checked' : ''}>
+                                <span>🍣 食物</span>
+                            </label>
+                            <label class="settings-radio ${catMemoryPrefs.theme === 'nature' ? 'active' : ''}">
+                                <input type="radio" name="memoryTheme" value="nature" ${catMemoryPrefs.theme === 'nature' ? 'checked' : ''}>
+                                <span>🌸 自然</span>
+                            </label>
+                            <label class="settings-radio ${catMemoryPrefs.theme === 'random' ? 'active' : ''}">
+                                <input type="radio" name="memoryTheme" value="random" ${catMemoryPrefs.theme === 'random' ? 'checked' : ''}>
+                                <span>🎲 随机</span>
+                            </label>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section" data-collapsible>
+                    <div class="settings-section-title" data-toggle>
+                        🎯 打地鼠 <span class="settings-arrow">▼</span>
+                    </div>
+                    <div class="settings-collapsible">
+                    <div class="settings-group">
+                        <label class="settings-label">默认难度</label>
+                        <div class="settings-radio-group">
+                            <label class="settings-radio ${whackMousePrefs.difficulty === 'easy' ? 'active' : ''}">
+                                <input type="radio" name="whackDiff" value="easy" ${whackMousePrefs.difficulty === 'easy' ? 'checked' : ''}>
+                                <span>🟢 简单</span>
+                                <small>慢节奏</small>
+                            </label>
+                            <label class="settings-radio ${whackMousePrefs.difficulty === 'medium' ? 'active' : ''}">
+                                <input type="radio" name="whackDiff" value="medium" ${whackMousePrefs.difficulty === 'medium' ? 'checked' : ''}>
+                                <span>🟡 中等</span>
+                                <small>递增难度</small>
+                            </label>
+                            <label class="settings-radio ${whackMousePrefs.difficulty === 'hard' ? 'active' : ''}">
+                                <input type="radio" name="whackDiff" value="hard" ${whackMousePrefs.difficulty === 'hard' ? 'checked' : ''}>
+                                <span>🔴 困难</span>
+                                <small>炸弹出没</small>
+                            </label>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section" data-collapsible>
+                    <div class="settings-section-title" data-toggle>
+                        🎵 喵喵琴 <span class="settings-arrow">▼</span>
+                    </div>
+                    <div class="settings-collapsible">
+                    <div class="settings-group">
+                        <label class="settings-label">音色</label>
+                        <div class="settings-radio-group">
+                            <label class="settings-radio ${meowPianoPrefs.tone === 'soft' ? 'active' : ''}">
+                                <input type="radio" name="pianoTone" value="soft" ${meowPianoPrefs.tone === 'soft' ? 'checked' : ''}>
+                                <span>柔和</span>
+                                <small>猫咪风铃</small>
+                            </label>
+                            <label class="settings-radio ${meowPianoPrefs.tone === 'bright' ? 'active' : ''}">
+                                <input type="radio" name="pianoTone" value="bright" ${meowPianoPrefs.tone === 'bright' ? 'checked' : ''}>
+                                <span>明亮</span>
+                                <small>清脆铃声</small>
+                            </label>
+                            <label class="settings-radio ${meowPianoPrefs.tone === 'electric' ? 'active' : ''}">
+                                <input type="radio" name="pianoTone" value="electric" ${meowPianoPrefs.tone === 'electric' ? 'checked' : ''}>
+                                <span>电子</span>
+                                <small>合成器</small>
+                            </label>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                
                 <div class="settings-section">
                     <button id="settings-save" class="settings-save-btn">💾 保存设置</button>
                 </div>
@@ -515,6 +623,15 @@ function launchSettings() {
         });
     });
 
+    ['memoryDiff', 'memoryTheme', 'whackDiff', 'pianoTone'].forEach(name => {
+        phoneOverlay.querySelectorAll(`input[name="${name}"]`).forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                phoneOverlay.querySelectorAll(`input[name="${name}"]`).forEach(r => r.closest('.settings-radio').classList.remove('active'));
+                e.target.closest('.settings-radio').classList.add('active');
+            });
+        });
+    });
+
     // 保存
     phoneOverlay.querySelector('#settings-save').addEventListener('click', () => {
         const difficulty = phoneOverlay.querySelector('input[name="difficulty"]:checked').value;
@@ -527,6 +644,16 @@ function launchSettings() {
             mode: phoneOverlay.querySelector('input[name="yarnMode"]:checked').value,
             challengeTime: parseInt(phoneOverlay.querySelector('input[name="yarnTime"]:checked').value),
             maxFish: parseInt(phoneOverlay.querySelector('input[name="yarnMaxFish"]:checked').value)
+        };
+        db.settings.game_prefs.cat_memory = {
+            difficulty: phoneOverlay.querySelector('input[name="memoryDiff"]:checked')?.value || 'medium',
+            theme: phoneOverlay.querySelector('input[name="memoryTheme"]:checked')?.value || 'random'
+        };
+        db.settings.game_prefs.whack_mouse = {
+            difficulty: phoneOverlay.querySelector('input[name="whackDiff"]:checked')?.value || 'medium'
+        };
+        db.settings.game_prefs.meow_piano = {
+            tone: phoneOverlay.querySelector('input[name="pianoTone"]:checked')?.value || 'soft'
         };
         setDB(db);
 
@@ -619,7 +746,8 @@ function launchCatFortune() {
     `;
 
     const container = phoneOverlay.querySelector('#cat-fortune-container');
-    const fortuneApp = createCatFortuneApp(container);
+    const prefs = getDB().settings?.game_prefs?.cat_fortune || {};
+    const fortuneApp = createCatFortuneApp(container, prefs);
 
     phoneOverlay.querySelector('#fortune-back').addEventListener('click', () => {
         if (fortuneApp && fortuneApp.destroy) fortuneApp.destroy();
@@ -644,7 +772,8 @@ function launchCatMemory() {
     `;
 
     const container = phoneOverlay.querySelector('#cat-memory-container');
-    const memoryApp = createCatMemoryApp(container);
+    const prefs = getDB().settings?.game_prefs?.cat_memory || {};
+    const memoryApp = createCatMemoryApp(container, prefs);
 
     phoneOverlay.querySelector('#memory-back').addEventListener('click', () => {
         if (memoryApp && memoryApp.destroy) memoryApp.destroy();
@@ -669,7 +798,8 @@ function launchWhackMouse() {
     `;
 
     const container = phoneOverlay.querySelector('#whack-mouse-container');
-    const whackApp = createWhackMouseApp(container);
+    const prefs = getDB().settings?.game_prefs?.whack_mouse || {};
+    const whackApp = createWhackMouseApp(container, prefs);
 
     phoneOverlay.querySelector('#whack-back').addEventListener('click', () => {
         if (whackApp && whackApp.destroy) whackApp.destroy();
@@ -694,7 +824,8 @@ function launchMeowPiano() {
     `;
 
     const container = phoneOverlay.querySelector('#meow-piano-container');
-    const pianoApp = createMeowPianoApp(container);
+    const prefs = getDB().settings?.game_prefs?.meow_piano || {};
+    const pianoApp = createMeowPianoApp(container, prefs);
 
     phoneOverlay.querySelector('#piano-back').addEventListener('click', () => {
         if (pianoApp && pianoApp.destroy) pianoApp.destroy();

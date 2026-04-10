@@ -10,7 +10,7 @@
 const STORAGE_KEY = 'meow_daily_db';
 const CONFIG_KEY = 'meow_daily_config';
 
-export const VERSION = "3.2.5";
+export const VERSION = "3.2.6";
 
 const DEFAULT_DB = {
     cats: [
@@ -45,6 +45,19 @@ const DEFAULT_DB = {
             cat_sweep: {
                 difficulty: "easy",
                 custom: { rows: 8, cols: 8, mice: 10 }
+            },
+            cat_fortune: {
+                style: "cute"
+            },
+            cat_memory: {
+                difficulty: "medium",
+                theme: "random"
+            },
+            whack_mouse: {
+                difficulty: "medium"
+            },
+            meow_piano: {
+                tone: "soft"
             },
             yarn_ball: {
                 mode: "challenge",
