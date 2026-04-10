@@ -56,7 +56,7 @@ export function createMeowPianoApp(container, options = {}) {
     let demoTimeouts = [];
     let activeKeys = new Set();
 
-    const isDesktop = window.matchMedia('(hover: hover)').?.matches;
+    const isDesktop = window.matchMedia?.('(hover: hover)')?.matches ?? false;
 
     function getAudioCtx() {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
