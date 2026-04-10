@@ -444,10 +444,8 @@ function launchSettings() {
                     </div>
                 </div>
                 
-                <div class="settings-section" data-collapsible class="settings-open">
-                    <div class="settings-section-title" data-toggle>
-                        🧩 猫咪翻牌 <span class="settings-arrow">▼</span>
-                    </div>
+                <div class="settings-section" data-collapsible>
+                    <h3 class="settings-section-title" data-toggle>🧩 猫咪翻牌 <span class="settings-arrow">›</span></h3>
                     <div class="settings-collapsible">
                     <div class="settings-group">
                         <label class="settings-label">默认难度</label>
@@ -495,7 +493,7 @@ function launchSettings() {
                 
                 <div class="settings-section" data-collapsible>
                     <div class="settings-section-title" data-toggle>
-                        🎯 打地鼠 <span class="settings-arrow">▼</span>
+                        🎯 打地鼠 <span class="settings-arrow">›</span>
                     </div>
                     <div class="settings-collapsible">
                     <div class="settings-group">
@@ -523,7 +521,7 @@ function launchSettings() {
                 
                 <div class="settings-section" data-collapsible>
                     <div class="settings-section-title" data-toggle>
-                        🎵 喵喵琴 <span class="settings-arrow">▼</span>
+                        🎵 喵喵琴 <span class="settings-arrow">›</span>
                     </div>
                     <div class="settings-collapsible">
                     <div class="settings-group">

@@ -10,7 +10,7 @@
 const STORAGE_KEY = 'meow_daily_db';
 const CONFIG_KEY = 'meow_daily_config';
 
-export const VERSION = "3.2.7";
+export let VERSION = "3.2.8";
 
 const DEFAULT_DB = {
     cats: [
@@ -119,6 +119,7 @@ export async function initStore() {
                     // 更新版本号为最新的
                     if (cloudData.settings && cloudData.settings.version) {
                         dbState.settings.version = cloudData.settings.version;
+                        VERSION = cloudData.settings.version;
                         saveToLocal();
                     }
                 } catch (e) {

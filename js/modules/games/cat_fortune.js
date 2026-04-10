@@ -141,7 +141,7 @@ export function createCatFortuneApp(container, options = {}) {
     actionsEl.className = 'fortune-actions';
 
     const reRollBtn = document.createElement('button');
-    reRollBtn.className = 'fortune-btn-secondary';
+    reRollBtn.className = 'fortune-btn';
     reRollBtn.textContent = '换签文';
 
     const newFortuneBtn = document.createElement('button');

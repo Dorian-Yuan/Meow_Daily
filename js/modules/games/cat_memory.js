@@ -175,38 +175,7 @@ function createCatMemoryApp(container, options = {}) {
 
     function startWithDifficulty(diff) {
         currentDiff = diff;
-        const startScreen = wrapper.querySelector('.memory-start');
-        if (startScreen) startScreen.remove();
         restart();
-    }
-
-    function showStartScreen() {
-        const startScreen = document.createElement('div');
-        startScreen.className = 'memory-start';
-        startScreen.innerHTML = `
-            <div style="font-size:64px;line-height:1;margin-bottom:16px">🧩</div>
-            <div style="font-size:20px;font-weight:bold;color:var(--color-text-title);margin-bottom:8px">猫咪翻牌</div>
-            <div style="font-size:13px;color:var(--color-text-hint);margin-bottom:16px">翻开卡片找到配对！</div>
-            <div class="memory-diff-btns">
-                <button class="memory-diff-btn ${currentDiff === 'easy' ? 'active' : ''}" data-diff="easy">🟢 简单</button>
-                <button class="memory-diff-btn ${currentDiff === 'medium' ? 'active' : ''}" data-diff="medium">🟡 中等</button>
-                <button class="memory-diff-btn ${currentDiff === 'hard' ? 'active' : ''}" data-diff="hard">🔴 困难</button>
-            </div>
-            <button class="memory-btn" id="mem-start-btn">开始游戏</button>
-        `;
-        wrapper.appendChild(startScreen);
-
-        startScreen.querySelectorAll('.memory-diff-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                startScreen.querySelectorAll('.memory-diff-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentDiff = btn.dataset.diff;
-            });
-        });
-
-        startScreen.querySelector('#mem-start-btn').addEventListener('click', () => {
-            startWithDifficulty(currentDiff);
-        });
     }
 
     const wrapper = document.createElement('div');
@@ -236,7 +205,7 @@ function createCatMemoryApp(container, options = {}) {
     wrapper.appendChild(restartBtn);
     container.appendChild(wrapper);
 
-    showStartScreen();
+    restart();
 
     return {
         destroy() {

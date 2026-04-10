@@ -274,37 +274,7 @@ export function createWhackMouseApp(container, options = {}) {
         scheduleSpawn();
     }
 
-    function showStartScreen() {
-        const startScreen = document.createElement('div');
-        startScreen.className = 'whack-start';
-        startScreen.innerHTML = `
-            <div style="font-size:64px;line-height:1;margin-bottom:16px">🎯</div>
-            <div class="whack-start-title">打地鼠</div>
-            <div class="whack-start-desc">尽可能多地点击老鼠！</div>
-            <div class="whack-diff-btns">
-                <button class="whack-diff-btn ${currentDiff === 'easy' ? 'active' : ''}" data-diff="easy">🟢 简单</button>
-                <button class="whack-diff-btn ${currentDiff === 'medium' ? 'active' : ''}" data-diff="medium">🟡 中等</button>
-                <button class="whack-diff-btn ${currentDiff === 'hard' ? 'active' : ''}" data-diff="hard">🔴 困难</button>
-            </div>
-            <button class="whack-btn" id="whack-start-btn">开始游戏</button>
-        `;
-        container.appendChild(startScreen);
-
-        startScreen.querySelectorAll('.whack-diff-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                startScreen.querySelectorAll('.whack-diff-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentDiff = btn.dataset.diff;
-            });
-        });
-
-        startScreen.querySelector('#whack-start-btn').addEventListener('click', () => {
-            startScreen.remove();
-            startGame();
-        });
-    }
-
-    showStartScreen();
+    startGame();
 
     return {
         destroy() {
