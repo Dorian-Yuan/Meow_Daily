@@ -19,6 +19,8 @@ export function createCat2048App(container, options = {}) {
     let bestScore = 0;
     let gameOver = false;
     let touchStartX = 0, touchStartY = 0;
+    let newTilePos = null;
+    let mergedPositions = [];
 
     try { bestScore = parseInt(localStorage.getItem('meow_2048_best') || '0'); } catch {}
 
@@ -26,9 +28,14 @@ export function createCat2048App(container, options = {}) {
         grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(0));
         score = 0;
         gameOver = false;
+        newTilePos = null;
+        mergedPositions = [];
         addRandomTile();
         addRandomTile();
-        render();
+        buildGrid();
+        updateScores();
+        const overlayEl = container.querySelector('.merge-overlay');
+        if (overlayEl) overlayEl.style.display = 'none';
     }
 
     function addRandomTile() {
@@ -37,50 +44,63 @@ export function createCat2048App(container, options = {}) {
             for (let c = 0; c < gridSize; c++)
                 if (grid[r][c] === 0) empty.push({ r, c });
         if (empty.length === 0) return;
-        const { r, c } = empty[Math.floor(Math.random() * empty.length)];
-        grid[r][c] = Math.random() < 0.9 ? 2 : 4;
+        const pos = empty[Math.floor(Math.random() * empty.length)];
+        grid[pos.r][pos.c] = Math.random() < 0.9 ? 2 : 4;
+        newTilePos = pos;
     }
 
     function slide(row) {
         let arr = row.filter(v => v !== 0);
         let merged = [];
+        let mergeIndices = [];
         for (let i = 0; i < arr.length; i++) {
             if (i < arr.length - 1 && arr[i] === arr[i + 1]) {
                 merged.push(arr[i] * 2);
                 score += arr[i] * 2;
+                mergeIndices.push(merged.length - 1);
                 i++;
             } else {
                 merged.push(arr[i]);
             }
         }
         while (merged.length < gridSize) merged.push(0);
-        return merged;
+        return { result: merged, mergeIndices };
     }
 
     function move(direction) {
         if (gameOver) return false;
         let moved = false;
         const old = grid.map(r => [...r]);
+        mergedPositions = [];
 
         if (direction === 'left') {
-            for (let r = 0; r < gridSize; r++)
-                grid[r] = slide(grid[r]);
+            for (let r = 0; r < gridSize; r++) {
+                const { result, mergeIndices } = slide(grid[r]);
+                grid[r] = result;
+                mergeIndices.forEach(c => mergedPositions.push({ r, c }));
+            }
         } else if (direction === 'right') {
-            for (let r = 0; r < gridSize; r++)
-                grid[r] = slide(grid[r].reverse()).reverse();
+            for (let r = 0; r < gridSize; r++) {
+                const { result, mergeIndices } = slide([...grid[r]].reverse());
+                grid[r] = result.reverse();
+                mergeIndices.forEach(ci => mergedPositions.push({ r, c: gridSize - 1 - ci }));
+            }
         } else if (direction === 'up') {
             for (let c = 0; c < gridSize; c++) {
                 let col = [];
                 for (let r = 0; r < gridSize; r++) col.push(grid[r][c]);
-                col = slide(col);
-                for (let r = 0; r < gridSize; r++) grid[r][c] = col[r];
+                const { result, mergeIndices } = slide(col);
+                for (let r = 0; r < gridSize; r++) grid[r][c] = result[r];
+                mergeIndices.forEach(ri => mergedPositions.push({ r: ri, c }));
             }
         } else if (direction === 'down') {
             for (let c = 0; c < gridSize; c++) {
                 let col = [];
                 for (let r = 0; r < gridSize; r++) col.push(grid[r][c]);
-                col = slide(col.reverse()).reverse();
-                for (let r = 0; r < gridSize; r++) grid[r][c] = col[r];
+                const { result, mergeIndices } = slide(col.reverse());
+                const reversed = result.reverse();
+                for (let r = 0; r < gridSize; r++) grid[r][c] = reversed[r];
+                mergeIndices.forEach(ri => mergedPositions.push({ r: gridSize - 1 - ri, c }));
             }
         }
 
@@ -94,7 +114,8 @@ export function createCat2048App(container, options = {}) {
                 bestScore = score;
                 try { localStorage.setItem('meow_2048_best', String(bestScore)); } catch {}
             }
-            render();
+            updateGrid();
+            updateScores();
             checkGameOver();
         }
         return moved;
@@ -108,44 +129,77 @@ export function createCat2048App(container, options = {}) {
                 if (r < gridSize - 1 && grid[r][c] === grid[r + 1][c]) return;
             }
         gameOver = true;
-        render();
+        const overlayEl = container.querySelector('.merge-overlay');
+        if (overlayEl) {
+            overlayEl.style.display = 'flex';
+            overlayEl.querySelector('.merge-overlay-score').textContent = score;
+        }
     }
 
-    function render() {
-        const wrapper = container.querySelector('.merge-wrapper');
-        if (!wrapper) return;
-        const scoreEl = wrapper.querySelector('.merge-score-val');
-        const bestEl = wrapper.querySelector('.merge-best-val');
-        const gridEl = wrapper.querySelector('.merge-grid');
-        const overlayEl = wrapper.querySelector('.merge-overlay');
+    function cellContent(val) {
+        if (val > 0) {
+            const emoji = EMOJI_MAP[val] || '🌟';
+            return `<span class="merge-emoji">${emoji}</span><span class="merge-num">${val}</span>`;
+        }
+        return '';
+    }
 
+    function buildGrid() {
+        const gridEl = container.querySelector('.merge-grid');
+        if (!gridEl) return;
+        gridEl.innerHTML = '';
+        gridEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+        for (let r = 0; r < gridSize; r++) {
+            for (let c = 0; c < gridSize; c++) {
+                const val = grid[r][c];
+                const cell = document.createElement('div');
+                cell.className = 'merge-cell';
+                cell.dataset.row = r;
+                cell.dataset.col = c;
+                cell.style.background = TILE_COLORS[val] || 'var(--color-bg-warm)';
+                cell.innerHTML = cellContent(val);
+                if (newTilePos && newTilePos.r === r && newTilePos.c === c) {
+                    cell.classList.add('merge-new');
+                }
+                gridEl.appendChild(cell);
+            }
+        }
+    }
+
+    function updateGrid() {
+        const gridEl = container.querySelector('.merge-grid');
+        if (!gridEl) return;
+        const cells = gridEl.querySelectorAll('.merge-cell');
+        cells.forEach(cell => {
+            const r = parseInt(cell.dataset.row);
+            const c = parseInt(cell.dataset.col);
+            const val = grid[r][c];
+            const oldVal = cell.dataset.val || '0';
+            const valStr = String(val);
+
+            cell.style.background = TILE_COLORS[val] || 'var(--color-bg-warm)';
+            cell.innerHTML = cellContent(val);
+            cell.dataset.val = valStr;
+
+            cell.classList.remove('merge-new', 'merge-pop');
+
+            if (newTilePos && newTilePos.r === r && newTilePos.c === c && val > 0) {
+                void cell.offsetWidth;
+                cell.classList.add('merge-new');
+            }
+
+            if (mergedPositions.some(p => p.r === r && p.c === c)) {
+                void cell.offsetWidth;
+                cell.classList.add('merge-pop');
+            }
+        });
+    }
+
+    function updateScores() {
+        const scoreEl = container.querySelector('.merge-score-val');
+        const bestEl = container.querySelector('.merge-best-val');
         if (scoreEl) scoreEl.textContent = score;
         if (bestEl) bestEl.textContent = bestScore;
-
-        if (gridEl) {
-            gridEl.innerHTML = '';
-            gridEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-            for (let r = 0; r < gridSize; r++) {
-                for (let c = 0; c < gridSize; c++) {
-                    const val = grid[r][c];
-                    const cell = document.createElement('div');
-                    cell.className = 'merge-cell';
-                    cell.style.background = TILE_COLORS[val] || '#FFD700';
-                    if (val > 0) {
-                        const emoji = EMOJI_MAP[val] || '🌟';
-                        cell.innerHTML = `<span class="merge-emoji">${emoji}</span><span class="merge-num">${val}</span>`;
-                    }
-                    gridEl.appendChild(cell);
-                }
-            }
-        }
-
-        if (overlayEl) {
-            overlayEl.style.display = gameOver ? 'flex' : 'none';
-            if (gameOver) {
-                overlayEl.querySelector('.merge-overlay-score').textContent = score;
-            }
-        }
     }
 
     const wrapper = document.createElement('div');
