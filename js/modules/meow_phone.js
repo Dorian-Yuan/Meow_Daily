@@ -13,6 +13,11 @@ import { createCatMemoryApp } from './games/cat_memory.js';
 import { createWhackMouseApp } from './games/whack_mouse.js';
 import { createMeowPianoApp } from './games/meow_piano.js';
 import { createMeowTimerApp } from './games/meow_timer.js';
+import { createCat2048App } from './games/cat_2048.js';
+import { createCatSimonApp } from './games/cat_simon.js';
+import { createCatReactionApp } from './games/cat_reaction.js';
+import { createCatSlotApp } from './games/cat_slot.js';
+import { createCatFactsApp } from './games/cat_facts.js';
 
 // ---- 游戏注册表 ----
 const APP_REGISTRY = [
@@ -71,6 +76,41 @@ const APP_REGISTRY = [
         icon: '⏰',
         description: '倒计时与秒表',
         launch: launchMeowTimer
+    },
+    {
+        id: 'cat_2048',
+        name: '喵喵合并',
+        icon: '🔢',
+        description: '数字合并挑战',
+        launch: launchCat2048
+    },
+    {
+        id: 'cat_simon',
+        name: '喵喵序列',
+        icon: '🔮',
+        description: '记忆序列挑战',
+        launch: launchCatSimon
+    },
+    {
+        id: 'cat_reaction',
+        name: '猫猫反应力',
+        icon: '⚡',
+        description: '反应速度测试',
+        launch: launchCatReaction
+    },
+    {
+        id: 'cat_slot',
+        name: '猫猫老虎机',
+        icon: '🎰',
+        description: '猫咪运气挑战',
+        launch: launchCatSlot
+    },
+    {
+        id: 'cat_facts',
+        name: '猫咪百科',
+        icon: '🐱',
+        description: '猫咪冷知识',
+        launch: launchCatFacts
     },
     {
         id: 'settings',
@@ -321,6 +361,9 @@ function launchSettings() {
     const catMemoryPrefs = db.settings.game_prefs?.cat_memory || { difficulty: 'medium', theme: 'random' };
     const whackMousePrefs = db.settings.game_prefs?.whack_mouse || { difficulty: 'medium' };
     const meowPianoPrefs = db.settings.game_prefs?.meow_piano || { tone: 'soft' };
+    const cat2048Prefs = db.settings.game_prefs?.cat_2048 || { size: 4 };
+    const catSimonPrefs = db.settings.game_prefs?.cat_simon || { keys: 4 };
+    const catReactionPrefs = db.settings.game_prefs?.cat_reaction || { rounds: 5 };
 
     phoneOverlay.innerHTML = `
         <div class="phone-screen">
@@ -547,12 +590,75 @@ function launchSettings() {
                     </div>
                 </div>
                 
+                <div class="settings-section" data-collapsible>
+                    <h3 class="settings-section-title" data-toggle>🔢 喵喵合并 <span class="settings-arrow">›</span></h3>
+                    <div class="settings-collapsible">
+                    <div class="settings-group">
+                        <label class="settings-label">网格大小</label>
+                        <div class="settings-radio-group">
+                            <label class="settings-radio ${cat2048Prefs.size === 4 ? 'active' : ''}">
+                                <input type="radio" name="mergeSize" value="4" ${cat2048Prefs.size === 4 ? 'checked' : ''}>
+                                <span>4×4</span>
+                                <small>经典</small>
+                            </label>
+                            <label class="settings-radio ${cat2048Prefs.size === 5 ? 'active' : ''}">
+                                <input type="radio" name="mergeSize" value="5" ${cat2048Prefs.size === 5 ? 'checked' : ''}>
+                                <span>5×4</span>
+                                <small>挑战</small>
+                            </label>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section" data-collapsible>
+                    <h3 class="settings-section-title" data-toggle>🔮 喵喵序列 <span class="settings-arrow">›</span></h3>
+                    <div class="settings-collapsible">
+                    <div class="settings-group">
+                        <label class="settings-label">按键数</label>
+                        <div class="settings-radio-group">
+                            <label class="settings-radio ${catSimonPrefs.keys === 4 ? 'active' : ''}">
+                                <input type="radio" name="simonKeys" value="4" ${catSimonPrefs.keys === 4 ? 'checked' : ''}>
+                                <span>4键</span>
+                                <small>普通</small>
+                            </label>
+                            <label class="settings-radio ${catSimonPrefs.keys === 6 ? 'active' : ''}">
+                                <input type="radio" name="simonKeys" value="6" ${catSimonPrefs.keys === 6 ? 'checked' : ''}>
+                                <span>6键</span>
+                                <small>困难</small>
+                            </label>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section" data-collapsible>
+                    <h3 class="settings-section-title" data-toggle>⚡ 猫猫反应力 <span class="settings-arrow">›</span></h3>
+                    <div class="settings-collapsible">
+                    <div class="settings-group">
+                        <label class="settings-label">测试轮数</label>
+                        <div class="settings-radio-group">
+                            <label class="settings-radio ${catReactionPrefs.rounds === 5 ? 'active' : ''}">
+                                <input type="radio" name="reactionRounds" value="5" ${catReactionPrefs.rounds === 5 ? 'checked' : ''}>
+                                <span>5轮</span>
+                                <small>快速</small>
+                            </label>
+                            <label class="settings-radio ${catReactionPrefs.rounds === 10 ? 'active' : ''}">
+                                <input type="radio" name="reactionRounds" value="10" ${catReactionPrefs.rounds === 10 ? 'checked' : ''}>
+                                <span>10轮</span>
+                                <small>完整</small>
+                            </label>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                
                 <div class="settings-section">
                     <button id="settings-save" class="settings-save-btn">💾 保存设置</button>
                 </div>
                 
                 <div class="settings-section">
-                    <p class="settings-about">Meow Phone V${getDB().settings.version || VERSION}<br>一个隐藏的彩蛋系统 🐾<br>8款小应用等你探索 ✨</p>
+                    <p class="settings-about">Meow Phone V${getDB().settings.version || VERSION}<br>一个隐藏的彩蛋系统 🐾<br>13款小应用等你探索 ✨</p>
                 </div>
             </div>
         </div>
@@ -652,6 +758,15 @@ function launchSettings() {
         };
         db.settings.game_prefs.meow_piano = {
             tone: phoneOverlay.querySelector('input[name="pianoTone"]:checked')?.value || 'soft'
+        };
+        db.settings.game_prefs.cat_2048 = {
+            size: parseInt(phoneOverlay.querySelector('input[name="mergeSize"]:checked')?.value || '4')
+        };
+        db.settings.game_prefs.cat_simon = {
+            keys: parseInt(phoneOverlay.querySelector('input[name="simonKeys"]:checked')?.value || '4')
+        };
+        db.settings.game_prefs.cat_reaction = {
+            rounds: parseInt(phoneOverlay.querySelector('input[name="reactionRounds"]:checked')?.value || '5')
         };
         setDB(db);
 
@@ -852,6 +967,134 @@ function launchMeowTimer() {
 
     phoneOverlay.querySelector('#timer-back').addEventListener('click', () => {
         if (timerApp && timerApp.destroy) timerApp.destroy();
+        renderHomeScreen();
+    });
+}
+
+// ---- 喵喵合并启动器 ----
+
+function launchCat2048() {
+    if (!phoneOverlay) return;
+
+    phoneOverlay.innerHTML = `
+        <div class="phone-screen">
+            <div class="phone-status-bar">
+                <span class="phone-back-btn" id="merge-back">← 返回</span>
+                <span></span>
+                <span></span>
+            </div>
+            <div id="cat-2048-container" class="cat-2048-app-container"></div>
+        </div>
+    `;
+
+    const container = phoneOverlay.querySelector('#cat-2048-container');
+    const prefs = getDB().settings?.game_prefs?.cat_2048 || {};
+    const app = createCat2048App(container, prefs);
+
+    phoneOverlay.querySelector('#merge-back').addEventListener('click', () => {
+        if (app && app.destroy) app.destroy();
+        renderHomeScreen();
+    });
+}
+
+// ---- 喵喵序列启动器 ----
+
+function launchCatSimon() {
+    if (!phoneOverlay) return;
+
+    phoneOverlay.innerHTML = `
+        <div class="phone-screen">
+            <div class="phone-status-bar">
+                <span class="phone-back-btn" id="simon-back">← 返回</span>
+                <span></span>
+                <span></span>
+            </div>
+            <div id="cat-simon-container" class="cat-simon-app-container"></div>
+        </div>
+    `;
+
+    const container = phoneOverlay.querySelector('#cat-simon-container');
+    const prefs = getDB().settings?.game_prefs?.cat_simon || {};
+    const app = createCatSimonApp(container, prefs);
+
+    phoneOverlay.querySelector('#simon-back').addEventListener('click', () => {
+        if (app && app.destroy) app.destroy();
+        renderHomeScreen();
+    });
+}
+
+// ---- 猫猫反应力启动器 ----
+
+function launchCatReaction() {
+    if (!phoneOverlay) return;
+
+    phoneOverlay.innerHTML = `
+        <div class="phone-screen">
+            <div class="phone-status-bar">
+                <span class="phone-back-btn" id="reaction-back">← 返回</span>
+                <span></span>
+                <span></span>
+            </div>
+            <div id="cat-reaction-container" class="cat-reaction-app-container"></div>
+        </div>
+    `;
+
+    const container = phoneOverlay.querySelector('#cat-reaction-container');
+    const prefs = getDB().settings?.game_prefs?.cat_reaction || {};
+    const app = createCatReactionApp(container, prefs);
+
+    phoneOverlay.querySelector('#reaction-back').addEventListener('click', () => {
+        if (app && app.destroy) app.destroy();
+        renderHomeScreen();
+    });
+}
+
+// ---- 猫猫老虎机启动器 ----
+
+function launchCatSlot() {
+    if (!phoneOverlay) return;
+
+    phoneOverlay.innerHTML = `
+        <div class="phone-screen">
+            <div class="phone-status-bar">
+                <span class="phone-back-btn" id="slot-back">← 返回</span>
+                <span></span>
+                <span></span>
+            </div>
+            <div id="cat-slot-container" class="cat-slot-app-container"></div>
+        </div>
+    `;
+
+    const container = phoneOverlay.querySelector('#cat-slot-container');
+    const app = createCatSlotApp(container);
+
+    phoneOverlay.querySelector('#slot-back').addEventListener('click', () => {
+        if (app && app.destroy) app.destroy();
+        renderHomeScreen();
+    });
+}
+
+// ---- 猫咪百科启动器 ----
+
+function launchCatFacts() {
+    if (!phoneOverlay) return;
+
+    phoneOverlay.innerHTML = `
+        <div class="phone-screen">
+            <div class="phone-status-bar">
+                <span class="phone-back-btn" id="facts-back">← 返回</span>
+                <span></span>
+                <span></span>
+            </div>
+            <div id="cat-facts-container" class="cat-facts-app-container"></div>
+        </div>
+    `;
+
+    const container = phoneOverlay.querySelector('#cat-facts-container');
+    const app = createCatFactsApp(container);
+
+    phoneOverlay.querySelector('#facts-back').addEventListener('click', () => {
+        if (app && app.destroy) app.destroy();
         renderHomeScreen();
     });
 }

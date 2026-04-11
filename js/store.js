@@ -10,7 +10,7 @@
 const STORAGE_KEY = 'meow_daily_db';
 const CONFIG_KEY = 'meow_daily_config';
 
-export let VERSION = "3.2.8";
+export let VERSION = "3.3.0";
 
 const DEFAULT_DB = {
     cats: [
@@ -63,6 +63,15 @@ const DEFAULT_DB = {
                 mode: "challenge",
                 challengeTime: 30,
                 maxFish: 100
+            },
+            cat_2048: {
+                size: 4
+            },
+            cat_simon: {
+                keys: 4
+            },
+            cat_reaction: {
+                rounds: 5
             }
         },
         version: VERSION

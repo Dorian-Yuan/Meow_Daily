@@ -2397,6 +2397,631 @@ input[type="date"].form-input {
   50% { background: #FEF3C7; }
 }
 
+/* ======== 喵喵合并(2048)样式 ======== */
+.cat-2048-app-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.merge-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  gap: 12px;
+  position: relative;
+}
+
+.merge-info {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--color-card-bg);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text-title);
+}
+
+.merge-grid {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  background: var(--color-bg-warm);
+  border-radius: 12px;
+  max-width: 360px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.merge-cell {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  position: relative;
+  min-height: 56px;
+}
+
+.merge-emoji {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.merge-num {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--color-text-hint);
+  margin-top: 2px;
+}
+
+.merge-btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 20px;
+  background: var(--color-primary);
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: block;
+  margin: 0 auto;
+}
+
+.merge-btn:active { transform: scale(0.95); }
+
+.merge-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.merge-overlay-content {
+  background: var(--color-card-bg);
+  border-radius: 20px;
+  padding: 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.merge-overlay-score {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--color-primary);
+}
+
+/* ======== 喵喵序列(Simon)样式 ======== */
+.cat-simon-app-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.simon-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  gap: 16px;
+  position: relative;
+}
+
+.simon-info {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--color-card-bg);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text-title);
+}
+
+.simon-grid {
+  display: grid;
+  gap: 12px;
+  max-width: 300px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.simon-btn {
+  aspect-ratio: 1;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  opacity: 0.6;
+  min-height: 80px;
+}
+
+.simon-btn.highlight {
+  opacity: 1;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+
+.simon-btn:active {
+  opacity: 1;
+  transform: scale(0.95);
+}
+
+.simon-btn-emoji {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.simon-start-btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 20px;
+  background: var(--color-primary);
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: block;
+  margin: 0 auto;
+}
+
+.simon-start-btn:active { transform: scale(0.95); }
+
+.simon-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.simon-overlay-content {
+  background: var(--color-card-bg);
+  border-radius: 20px;
+  padding: 32px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  font-size: 15px;
+  color: var(--color-text-main);
+}
+
+.simon-overlay-level {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--color-primary);
+}
+
+/* ======== 猫猫反应力样式 ======== */
+.cat-reaction-app-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.reaction-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  gap: 12px;
+  position: relative;
+}
+
+.reaction-info {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--color-card-bg);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text-title);
+}
+
+.reaction-zone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.3s;
+  background: var(--color-bg-warm);
+  user-select: none;
+  min-height: 200px;
+}
+
+.reaction-emoji {
+  font-size: 64px;
+  line-height: 1;
+  transition: transform 0.2s;
+}
+
+.reaction-text {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-text-title);
+}
+
+.reaction-btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 20px;
+  background: var(--color-primary);
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.reaction-btn:active { transform: scale(0.95); }
+
+.reaction-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.reaction-overlay-content {
+  background: var(--color-card-bg);
+  border-radius: 20px;
+  padding: 28px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  font-size: 15px;
+  color: var(--color-text-main);
+}
+
+.reaction-paws {
+  font-size: 28px;
+  margin: 8px 0;
+}
+
+/* ======== 猫猫老虎机样式 ======== */
+.cat-slot-app-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.slot-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  gap: 16px;
+  align-items: center;
+}
+
+.slot-info {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 16px;
+  background: var(--color-card-bg);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text-title);
+}
+
+.slot-coins {
+  color: var(--color-food-fg);
+}
+
+.slot-machine {
+  display: flex;
+  gap: 8px;
+  background: var(--color-bg-warm);
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.slot-reel {
+  width: 72px;
+  height: 210px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--color-card-bg);
+  position: relative;
+}
+
+.slot-reel-strip {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease-out;
+}
+
+.slot-reel-strip.spinning {
+  transition: none;
+  animation: slotSpin 0.1s linear infinite;
+}
+
+.slot-reel-strip.stopping {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes slotSpin {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-70px); }
+}
+
+.slot-symbol {
+  width: 72px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.slot-spin-btn {
+  padding: 14px 40px;
+  border: none;
+  border-radius: 20px;
+  background: var(--color-primary);
+  color: white;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(64, 102, 224, 0.3);
+}
+
+.slot-spin-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(64, 102, 224, 0.2);
+}
+
+.slot-win-effect {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--color-food-fg);
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: var(--color-bg-warm);
+}
+
+.slot-win-effect.win-flash {
+  animation: slotWinFlash 0.5s ease 3;
+}
+
+@keyframes slotWinFlash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; transform: scale(1.05); }
+}
+
+/* ======== 猫咪百科样式 ======== */
+.cat-facts-app-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.facts-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.facts-tabs {
+  display: flex;
+  gap: 8px;
+  background: var(--color-bg-warm);
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.facts-tab {
+  flex: 1;
+  padding: 10px 8px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-hint);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.facts-tab.active {
+  background: var(--color-card-bg);
+  color: var(--color-text-title);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.facts-card {
+  background: var(--color-card-bg);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.facts-emoji {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.facts-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-main);
+  line-height: 1.6;
+}
+
+.facts-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.facts-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--color-divider);
+  border-radius: 12px;
+  background: var(--color-card-bg);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.facts-btn:active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.ascii-card {
+  background: var(--color-card-bg);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.ascii-display {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--color-text-title);
+  font-family: monospace;
+  letter-spacing: 2px;
+}
+
+.ascii-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.ascii-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.ascii-item {
+  padding: 10px;
+  background: var(--color-card-bg);
+  border-radius: 10px;
+  text-align: center;
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--color-divider);
+}
+
+.ascii-item:active {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.ascii-item.copied {
+  background: var(--color-success);
+  color: white;
+  border-color: var(--color-success);
+}
+
+.fav-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fav-empty {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 14px;
+  color: var(--color-text-hint);
+}
+
+.fav-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--color-card-bg);
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--color-text-main);
+  line-height: 1.5;
+}
+
+.fav-remove {
+  border: none;
+  background: none;
+  color: var(--color-text-hint);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  flex-shrink: 0;
+}
+
+.fav-remove:active {
+  color: var(--color-danger);
+}
+
 @media (prefers-color-scheme: dark) {
   @keyframes timer-flash-anim {
     0%, 100% { background: var(--color-bg); }
