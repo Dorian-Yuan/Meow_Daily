@@ -2796,6 +2796,16 @@ input[type="date"].form-input {
   color: var(--color-food-fg);
 }
 
+.slot-paytable {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-hint);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .slot-machine {
   display: flex;
   gap: 8px;
@@ -2817,21 +2827,6 @@ input[type="date"].form-input {
 .slot-reel-strip {
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s ease-out;
-}
-
-.slot-reel-strip.spinning {
-  transition: none;
-  animation: slotSpin 0.1s linear infinite;
-}
-
-.slot-reel-strip.stopping {
-  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-@keyframes slotSpin {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-70px); }
 }
 
 .slot-symbol {
