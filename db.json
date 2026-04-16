@@ -130,7 +130,25 @@
           "record_id": "r_1775533471679",
           "timestamp": "2026-04-05 00:44",
           "note": "加猫砂，不是换",
-          "type": "换猫砂"
+          "type": "加猫砂"
+        },
+        {
+          "record_id": "r_1775837221324",
+          "timestamp": "2026-04-10 20:06",
+          "note": "内外驱虫",
+          "type": "驱虫"
+        },
+        {
+          "record_id": "r_1775838274937",
+          "timestamp": "2026-04-11 00:24",
+          "note": "剪了后爪指甲",
+          "type": "剪指甲"
+        },
+        {
+          "record_id": "r_1776309542192",
+          "timestamp": "2026-04-15 23:18",
+          "note": "前爪",
+          "type": "剪指甲"
         }
       ],
       "food": [
@@ -196,6 +214,15 @@
           "type": "罐罐",
           "price_per_kg": 0,
           "daily_intake_g": 55
+        },
+        {
+          "record_id": "r_1775918324441",
+          "timestamp": "2026-04-10 22:38",
+          "note": "",
+          "brand": "鲜朗",
+          "type": "罐罐",
+          "price_per_kg": 0,
+          "daily_intake_g": 30
         }
       ],
       "weight": [
@@ -267,27 +294,18 @@
         "icon": "✂️"
       },
       {
-        "id": "rm_1772863251066",
+        "id": "rm_1775614497784",
+        "label": "加猫砂",
+        "days": 30,
+        "icon": "🚽"
+      },
+      {
+        "id": "rm_1775614517454",
         "label": "换猫砂",
-        "days": 15,
+        "days": 30,
         "icon": "💩"
       }
     ],
-    "game_prefs": {
-      "cat_sweep": {
-        "difficulty": "hard"
-      },
-      "cat_2048": {
-        "size": 4
-      },
-      "cat_simon": {
-        "keys": 4
-      },
-      "cat_reaction": {
-        "rounds": 5
-      }
-    },
-    "version": "3.3.3",
     "prompts": {
       "parser": "你是一个严格的宠物日记数据提取API。请将用户的自然语言转化为精确的JSON格式。不要生成任何绝对时间戳（时间戳由前端系统自动生成）。\n【重要】如果用户提到了具体日期（如\"26年1月31号\"），请直接在 mentioned_time 中返回 \"YYYY-MM-DD HH:mm\" 格式。\n【示例】用户说 \"26年1月31号去医院\"，你应返回 \"mentioned_time\": \"2026-01-31 00:00\"。\n必须严格遵守以下JSON结构返回，缺失的数据用null表示：\n{\n  \"category\": \"必须是以下枚举值之一：routine(日常护理), food(饮食), weight(体重), medical(医疗)\",\n  \"parsed_data\": {\n    // 若 category=weight，必须包含: \"weight_kg\"(数字), \"note\"(字符串)\n    // 若 category=routine，必须包含: \"type\"(如剪指甲、换猫砂、刷牙、驱虫、洗澡、梳毛等), \"note\"(字符串)\n    // 若 category=food，必须包含: \"brand\"(品牌), \"type\"(类型, 如猫粮、冻干、罐罐、猫条、自制等), \"daily_intake_g\"(数字), \"note\"(字符串)\n    // 若 category=medical，必须包含: \"hospital\"(医院), \"type\"(类型, 如检查、疫苗、生病、绝育、洗牙等), \"symptom\"(症状), \"treatment\"(治疗方案), \"cost\"(数字金额), \"note\"(字符串)\n  },\n  \"mentioned_time\": \"提取用户话语中提及的时间，尽量直接返回 YYYY-MM-DD HH:mm。\"\n}\n严禁输出任何多余的解释性纯文本。",
       "daily": "你是一只叫“岁岁”的可爱小猫。你的哥哥姐姐设置了提醒。请根据提供的任务列表，用简短、傲娇、可爱的语气催促哥哥姐姐去干活。如果今天是你的生日或纪念日，记得要礼物！字数控制在 60 字以内，适当使用 emoji。",
@@ -299,7 +317,8 @@
       "驱虫",
       "洗澡",
       "梳毛",
-      "刷牙"
+      "刷牙",
+      "加猫砂"
     ],
     "anniversaries": [
       {
@@ -320,6 +339,20 @@
         "date": "2026-04-08",
         "isPrimary": false
       }
-    ]
+    ],
+    "version": "3.3.3",
+    "game_prefs": {
+      "cat_sweep": {
+        "difficulty": "hard"
+      },
+      "pixel_art": {
+        "canvasSize": 12
+      },
+      "yarn_ball": {
+        "mode": "challenge",
+        "challengeTime": 30,
+        "maxFish": 50
+      }
+    }
   }
 }
