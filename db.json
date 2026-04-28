@@ -235,6 +235,24 @@
           "type": "罐罐",
           "price_per_kg": 0,
           "daily_intake_g": 30
+        },
+        {
+          "record_id": "r_1777223289298",
+          "timestamp": "2026-04-26 22:07",
+          "note": "",
+          "brand": "百利",
+          "type": "罐罐",
+          "price_per_kg": 0,
+          "daily_intake_g": 80
+        },
+        {
+          "record_id": "r_1777334505442",
+          "timestamp": "2026-04-28 00:03",
+          "note": "",
+          "brand": "百利",
+          "type": "罐罐",
+          "price_per_kg": 0,
+          "daily_intake_g": 76
         }
       ],
       "weight": [
