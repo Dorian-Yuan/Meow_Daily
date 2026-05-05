@@ -289,6 +289,15 @@
           "type": "罐罐",
           "price_per_kg": 0,
           "daily_intake_g": 50
+        },
+        {
+          "record_id": "r_1777969034134",
+          "timestamp": "2026-05-05 16:17",
+          "note": "",
+          "brand": "鲜朗",
+          "type": "罐罐",
+          "price_per_kg": 0,
+          "daily_intake_g": 50
         }
       ],
       "weight": [
