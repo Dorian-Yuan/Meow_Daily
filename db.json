@@ -215,6 +215,12 @@
           "timestamp": "2026-04-18 16:08",
           "note": "世博公园散步",
           "type": "散步"
+        },
+        {
+          "record_id": "r_1779371887848",
+          "timestamp": "2026-05-21 21:58",
+          "note": "",
+          "type": "剪指甲"
         }
       ],
       "food": [
@@ -343,6 +349,15 @@
           "type": "罐罐",
           "price_per_kg": 0,
           "daily_intake_g": 60
+        },
+        {
+          "record_id": "r_1779325259297",
+          "timestamp": "2026-05-20 22:00",
+          "note": "喂了4只赤虾虾仁",
+          "brand": "",
+          "type": "自制",
+          "price_per_kg": 0,
+          "daily_intake_g": 0
         }
       ],
       "weight": [
