@@ -227,6 +227,12 @@
           "timestamp": "2026-05-23 01:30",
           "note": "后爪",
           "type": "剪指甲"
+        },
+        {
+          "record_id": "r_1779582588018",
+          "timestamp": "2026-05-24 00:29",
+          "note": "",
+          "type": "梳毛"
         }
       ],
       "food": [
@@ -364,6 +370,15 @@
           "type": "自制",
           "price_per_kg": 0,
           "daily_intake_g": 0
+        },
+        {
+          "record_id": "r_1779582573063",
+          "timestamp": "2026-05-23 22:29",
+          "note": "",
+          "brand": "",
+          "type": "罐罐",
+          "price_per_kg": 0,
+          "daily_intake_g": 68
         }
       ],
       "weight": [
@@ -406,6 +421,12 @@
         {
           "record_id": "r_1779474651747",
           "timestamp": "2026-05-23 02:30",
+          "note": "",
+          "weight_kg": 3.93
+        },
+        {
+          "record_id": "r_1779582554899",
+          "timestamp": "2026-05-23 23:29",
           "note": "",
           "weight_kg": 3.93
         }
