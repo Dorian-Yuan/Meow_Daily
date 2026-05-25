@@ -379,6 +379,24 @@
           "type": "罐罐",
           "price_per_kg": 0,
           "daily_intake_g": 68
+        },
+        {
+          "record_id": "r_1779636558907",
+          "timestamp": "2026-05-24 23:29",
+          "note": "",
+          "brand": "",
+          "type": "罐罐",
+          "price_per_kg": 0,
+          "daily_intake_g": 36
+        },
+        {
+          "record_id": "r_1779725505990",
+          "timestamp": "2026-05-26 00:11",
+          "note": "",
+          "brand": "",
+          "type": "罐罐",
+          "price_per_kg": 0,
+          "daily_intake_g": 78
         }
       ],
       "weight": [
