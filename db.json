@@ -233,6 +233,24 @@
           "timestamp": "2026-05-24 00:29",
           "note": "",
           "type": "梳毛"
+        },
+        {
+          "record_id": "r_1780405818954",
+          "timestamp": "2026-05-31 21:10",
+          "note": "",
+          "type": "剪指甲"
+        },
+        {
+          "record_id": "r_1780635573163",
+          "timestamp": "2026-06-03 21:59",
+          "note": "",
+          "type": "加猫砂"
+        },
+        {
+          "record_id": "r_1780635585648",
+          "timestamp": "2026-06-05 00:07",
+          "note": "",
+          "type": "梳毛"
         }
       ],
       "food": [
@@ -397,6 +415,15 @@
           "type": "罐罐",
           "price_per_kg": 0,
           "daily_intake_g": 78
+        },
+        {
+          "record_id": "r_1780635610385",
+          "timestamp": "2026-06-05 00:06",
+          "note": "蛋黄",
+          "brand": "",
+          "type": "自制",
+          "price_per_kg": 0,
+          "daily_intake_g": 0
         }
       ],
       "weight": [
