@@ -488,14 +488,20 @@
           "weight_kg": 3.99
         },
         {
-          "record_id": "r_1779474651747",
-          "timestamp": "2026-05-23 02:30",
+          "record_id": "r_1779582554899",
+          "timestamp": "2026-05-23 23:29",
           "note": "",
           "weight_kg": 3.93
         },
         {
-          "record_id": "r_1779582554899",
-          "timestamp": "2026-05-23 23:29",
+          "record_id": "r_1781095048710",
+          "timestamp": "2026-06-10 20:37",
+          "note": "",
+          "weight_kg": 3.86
+        },
+        {
+          "record_id": "r_1779474651747",
+          "timestamp": "2026-05-23 02:30",
           "note": "",
           "weight_kg": 3.93
         }
