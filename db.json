@@ -269,6 +269,12 @@
           "timestamp": "2026-06-11 23:15",
           "note": "",
           "type": "剪指甲"
+        },
+        {
+          "record_id": "r_1782057158624",
+          "timestamp": "2026-06-21 23:52",
+          "note": "",
+          "type": "换猫砂"
         }
       ],
       "food": [
@@ -464,6 +470,15 @@
         {
           "record_id": "r_1781626390871",
           "timestamp": "2026-06-17 00:13",
+          "note": "",
+          "brand": "",
+          "type": "罐罐",
+          "price_per_kg": 0,
+          "daily_intake_g": 0
+        },
+        {
+          "record_id": "r_1782057163758",
+          "timestamp": "2026-06-21 23:52",
           "note": "",
           "brand": "",
           "type": "罐罐",
