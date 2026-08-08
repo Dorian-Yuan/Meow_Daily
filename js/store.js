@@ -10,7 +10,7 @@
 const STORAGE_KEY = 'meow_daily_db';
 const CONFIG_KEY = 'meow_daily_config';
 
-export let VERSION = "3.3.3";
+export let VERSION = "3.3.4";
 
 const DEFAULT_DB = {
     cats: [
@@ -186,7 +186,8 @@ export function getConfig() {
         githubToken: '', 
         githubRepo: '', // 将在设置页自动尝试填充
         aiKey: '',
-        aiModel: 'gpt-3.5-turbo' // 默认值
+        aiBaseUrl: 'https://api.agnes-ai.cn/', // OpenAI 兼容地址，自动补全 /v1
+        aiModel: 'agnes-2.0-flash' // 默认值
     };
 }
 

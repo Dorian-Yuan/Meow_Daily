@@ -1,9 +1,18 @@
 /**
- * ai.js - ChatAnywhere API 封装
+ * ai.js - OpenAI 兼容 API 封装
  * 负责将自然语言解析为结构化 JSON
  * 全局强制 Asia/Shanghai 时区
  */
 import { getConfig } from '../store.js';
+
+/** 归一化 OpenAI 兼容接口地址，自动补全 /v1 */
+function buildChatEndpoint(baseUrl) {
+    let url = (baseUrl || '').trim() || 'https://api.agnes-ai.cn/';
+    url = url.replace(/\/+$/, ''); // 去掉尾部斜杠
+    if (url.endsWith('/chat/completions')) return url; // 已含完整路径，直接使用
+    if (!/\/v\d+$/.test(url)) url += '/v1'; // 自动补全 /v1
+    return url + '/chat/completions';
+}
 
 /** 获取北京时间 Date 对象 */
 function getBJTime() {
@@ -21,7 +30,7 @@ function fmtBJ(d) {
  */
 export async function parseTextWithAI(text) {
     const config = getConfig();
-    const { aiKey, aiModel, prompts } = config;
+    const { aiKey, aiModel, aiBaseUrl, prompts } = config;
 
     if (!aiKey) throw new Error('请先在设置中配置 AI API Key');
 
@@ -46,14 +55,14 @@ export async function parseTextWithAI(text) {
     const nowStr = fmtBJ(getBJTime());
     const enrichedText = text + ` (当前时间: ${nowStr})`;
 
-    const response = await fetch('https://api.chatanywhere.tech/v1/chat/completions', {
+    const response = await fetch(buildChatEndpoint(aiBaseUrl), {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${aiKey}`,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            model: aiModel || 'gpt-3.5-turbo',
+            model: aiModel || 'agnes-2.0-flash',
             response_format: { "type": "json_object" },
             messages: [
                 { role: 'system', content: systemPrompt },

@@ -1106,12 +1106,16 @@ function renderAISettings() {
             
             <div class="card">
                 <div class="form-group">
-                    <label>AI KEY (CHATANYWHERE)</label>
-                    <input type="password" id="ai-key" class="form-input" value="${config.aiKey || ''}">
+                    <label>AI API KEY</label>
+                    <input type="password" id="ai-key" class="form-input" value="${config.aiKey || ''}" placeholder="输入你的 API Key">
+                </div>
+                <div class="form-group">
+                    <label>AI API 地址 (OpenAI 兼容)</label>
+                    <input type="text" id="ai-base" class="form-input" value="${config.aiBaseUrl || 'https://api.agnes-ai.cn/'}" placeholder="https://api.agnes-ai.cn/（会自动补全 /v1）">
                 </div>
                 <div class="form-group">
                     <label>AI MODEL NAME</label>
-                    <input type="text" id="ai-model" class="form-input" value="${config.aiModel || 'gpt-3.5-turbo'}" placeholder="例如: gpt-4o-mini">
+                    <input type="text" id="ai-model" class="form-input" value="${config.aiModel || 'agnes-2.0-flash'}" placeholder="例如: agnes-2.0-flash">
                 </div>
             </div>
 
@@ -1145,6 +1149,7 @@ function renderAISettings() {
         const newCfg = {
             ...currentConfig,
             aiKey: document.getElementById('ai-key').value.trim(),
+            aiBaseUrl: document.getElementById('ai-base').value.trim() || 'https://api.agnes-ai.cn/',
             aiModel: document.getElementById('ai-model').value.trim(),
             prompts: {
                 parser: document.getElementById('p-parser').value.trim(),
