@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 
 const BARK_KEY = process.env.BARK_KEY;
-const AI_KEY = process.env.CHATANYWHERE_API_KEY;
+const AI_KEY = process.env.AI_API_KEY;
 const DB_PATH = path.resolve('./db.json');
 
 async function main() {
@@ -59,14 +59,14 @@ async function main() {
             const defaultPrompt = '你是一只叫“岁岁”的橘猫。请根据提供的本周数据，给主人写一封简短的本周总结。要求：语气治愈、偶尔傲娇，包含本周开销汇总和健康建议（如体重变化）。字数 150 字以内，多用 emoji。';
             const systemPrompt = (db.settings && db.settings.prompts && db.settings.prompts.weekly) ? db.settings.prompts.weekly : defaultPrompt;
 
-            const response = await fetch('https://api.chatanywhere.tech/v1/chat/completions', {
+            const response = await fetch('https://api.agnes-ai.cn/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${AI_KEY}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    model: 'gpt-3.5-turbo',
+                    model: 'agnes-2.0-flash',
                     messages: [
                         { role: 'system', content: systemPrompt },
                         { role: 'user', content: summaryInfo }

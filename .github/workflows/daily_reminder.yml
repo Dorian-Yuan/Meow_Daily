@@ -23,7 +23,7 @@ jobs:
     - name: Run Daily Job Script
       env:
         BARK_KEY: ${{ secrets.BARK_KEY }}
-        CHATANYWHERE_API_KEY: ${{ secrets.CHATANYWHERE_API_KEY }}
+        AI_API_KEY: ${{ secrets.AI_API_KEY }}
       run: |
         npm install
         npm run daily

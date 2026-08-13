@@ -7,7 +7,7 @@ import path from 'path';
 
 // 从环境变量获取密钥 (由 GitHub Actions 注入)
 const BARK_KEY = process.env.BARK_KEY;
-const AI_KEY = process.env.CHATANYWHERE_API_KEY;
+const AI_KEY = process.env.AI_API_KEY;
 
 const DB_PATH = path.resolve('./db.json');
 
@@ -98,14 +98,14 @@ async function main() {
             const defaultPrompt = '你是一只叫“岁岁”的傲娇小猫。你的主人设置了提醒。请根据提供的任务列表，用简短、傲娇、可爱的语气催促主人（铲屎官）去干活。如果今天是你的生日或纪念日，记得要礼物！字数控制在 60 字以内，多用 emoji。';
             const systemPrompt = (db.settings && db.settings.prompts && db.settings.prompts.daily) ? db.settings.prompts.daily : defaultPrompt;
 
-            const response = await fetch('https://api.chatanywhere.tech/v1/chat/completions', {
+            const response = await fetch('https://api.agnes-ai.cn/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${AI_KEY}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    model: 'gpt-3.5-turbo',
+                    model: 'agnes-2.0-flash',
                     messages: [
                         { role: 'system', content: systemPrompt },
                         { role: 'user', content: reminders.join('\n') }

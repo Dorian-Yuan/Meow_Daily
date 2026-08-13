@@ -10,7 +10,7 @@
 const STORAGE_KEY = 'meow_daily_db';
 const CONFIG_KEY = 'meow_daily_config';
 
-export let VERSION = "3.3.5";
+export let VERSION = "3.3.6";
 
 const DEFAULT_DB = {
     cats: [
