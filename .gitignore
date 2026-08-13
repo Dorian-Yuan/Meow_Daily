@@ -8,6 +8,8 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+.trae/
+.gemini/
 
 # Local data (optional, but keep db.json as template)
 # If you want to keep your personal db.json private, 

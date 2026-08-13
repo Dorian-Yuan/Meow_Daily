@@ -3,6 +3,7 @@
  * 
  * 功能：简单的像素画板，支持多种画布尺寸、颜色选择和导出功能
  */
+import { icon, emojiIcon } from '../../icons.js';
 
 // ==================== Command Pattern Classes ====================
 
@@ -248,14 +249,14 @@ class PixelArtApp {
                     </div>
                     
                     <div class="pixel-art-toolbar">
-                        <button class="tool-btn ${this.tool === 'pen' ? 'active' : ''}" data-tool="pen" title="画笔">🖌️</button>
+                        <button class="tool-btn ${this.tool === 'pen' ? 'active' : ''}" data-tool="pen" title="画笔">${icon('paintbrush', '', 18)}</button>
                         <button class="tool-btn ${this.tool === 'eraser' ? 'active' : ''}" data-tool="eraser" title="橡皮擦">🧽</button>
-                        <button class="tool-btn ${this.tool === 'eyedropper' ? 'active' : ''}" data-tool="eyedropper" title="取色器">🎨</button>
+                        <button class="tool-btn ${this.tool === 'eyedropper' ? 'active' : ''}" data-tool="eyedropper" title="取色器">${emojiIcon('🎨', '', 18)}</button>
                         <button class="tool-btn ${this.tool === 'bucket' ? 'active' : ''}" data-tool="bucket" title="油漆桶">🪣</button>
-                        <button class="tool-btn" id="clear-btn" title="清空">🗑️</button>
-                        <button class="tool-btn" id="undo-btn" title="撤回">↩️</button>
-                        <button class="tool-btn" id="redo-btn" title="重做">↪️</button>
-                        <button class="tool-btn" id="export-btn" title="导出">📤</button>
+                        <button class="tool-btn" id="clear-btn" title="清空">${icon('trash-2', '', 18)}</button>
+                        <button class="tool-btn" id="undo-btn" title="撤回">${icon('undo-2', '', 18)}</button>
+                        <button class="tool-btn" id="redo-btn" title="重做">${icon('redo-2', '', 18)}</button>
+                        <button class="tool-btn" id="export-btn" title="导出">${emojiIcon('📤', '', 18)}</button>
                     </div>
                 </div>
                 

@@ -10,7 +10,7 @@
 const STORAGE_KEY = 'meow_daily_db';
 const CONFIG_KEY = 'meow_daily_config';
 
-export let VERSION = "3.3.4";
+export let VERSION = "3.3.5";
 
 const DEFAULT_DB = {
     cats: [
@@ -33,9 +33,9 @@ const DEFAULT_DB = {
     },
     settings: {
         reminders: [
-            { id: "rm_1", label: "剪指甲", days: 14, icon: "✂️" },
-            { id: "rm_2", label: "换猫砂", days: 30, icon: "🧹" },
-            { id: "rm_3", label: "驱虫", days: 90, icon: "💊" }
+            { id: "rm_1", label: "剪指甲", days: 14, icon: "scissors" },
+            { id: "rm_2", label: "换猫砂", days: 30, icon: "broom" },
+            { id: "rm_3", label: "驱虫", days: 90, icon: "pill" }
         ],
         routine_tags: ['剪指甲', '换猫砂', '驱虫', '洗澡', '梳毛', '刷牙'],
         anniversaries: [
@@ -46,32 +46,8 @@ const DEFAULT_DB = {
                 difficulty: "easy",
                 custom: { rows: 8, cols: 8, mice: 10 }
             },
-            cat_fortune: {
-                style: "cute"
-            },
-            cat_memory: {
-                difficulty: "medium",
-                theme: "random"
-            },
-            whack_mouse: {
-                difficulty: "medium"
-            },
             meow_piano: {
                 tone: "soft"
-            },
-            yarn_ball: {
-                mode: "challenge",
-                challengeTime: 30,
-                maxFish: 100
-            },
-            cat_2048: {
-                size: 4
-            },
-            cat_simon: {
-                keys: 4
-            },
-            cat_reaction: {
-                rounds: 5
             }
         },
         version: VERSION
@@ -98,9 +74,9 @@ export async function initStore() {
                     // 兼容性迁移: 升级旧版的 reminder_cycles 到 reminders
                     if (dbState.settings && dbState.settings.reminder_cycles && !dbState.settings.reminders) {
                         dbState.settings.reminders = [
-                            { id: "rm_" + Date.now() + 1, label: "剪指甲", days: dbState.settings.reminder_cycles.nail_clipping || 14, icon: "✂️" },
-                            { id: "rm_" + Date.now() + 2, label: "换猫砂", days: dbState.settings.reminder_cycles.litter_change || 30, icon: "🧹" },
-                            { id: "rm_" + Date.now() + 3, label: "驱虫", days: dbState.settings.reminder_cycles.deworming || 90, icon: "💊" }
+                            { id: "rm_" + Date.now() + 1, label: "剪指甲", days: dbState.settings.reminder_cycles.nail_clipping || 14, icon: "scissors" },
+                            { id: "rm_" + Date.now() + 2, label: "换猫砂", days: dbState.settings.reminder_cycles.litter_change || 30, icon: "broom" },
+                            { id: "rm_" + Date.now() + 3, label: "驱虫", days: dbState.settings.reminder_cycles.deworming || 90, icon: "pill" }
                         ];
                         delete dbState.settings.reminder_cycles;
                         saveToLocal();

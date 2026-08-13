@@ -8,6 +8,7 @@ import {
 } from '../store.js';
 import { parseTextWithAI, processMentionedTime } from '../api/ai.js';
 import { fetchCloudDB, pushCloudDB } from '../api/github.js';
+import { icon, emojiIcon, renderIcon, REMINDER_ICONS } from '../icons.js';
 
 const mainContent = document.getElementById('main-content');
 let currentRecordFilter = 'all'; // 记录页分类筛选状态
@@ -23,10 +24,10 @@ function getBJNow() {
 }
 
 /** Toast 通知 */
-function showToast(msg, type = 'info') {
+function showToast(msg, type = 'info', allowHtml = false) {
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
-    toast.textContent = msg;
+    if (allowHtml) toast.innerHTML = msg; else toast.textContent = msg;
     document.body.appendChild(toast);
     setTimeout(() => {
         toast.style.opacity = '0';
@@ -110,11 +111,11 @@ function renderHome() {
             const daysLeft = rm.days - diffDays;
 
             if (diffDays === 0) {
-                statusHtml = `<div style="font-size:11px; color:var(--color-primary); font-weight:700;">✅ 今天已完成</div>`;
+                statusHtml = `<div style="font-size:11px; color:var(--color-primary); font-weight:700;">${emojiIcon('✅', '', 12)} 今天已完成</div>`;
             } else if (daysLeft > 0) {
                 statusHtml = `<div style="font-size:11px; color:var(--color-text-hint);">⏳ 还有 ${daysLeft} 天</div>`;
             } else {
-                statusHtml = `<div style="font-size:11px; color:#EF4444; font-weight:700;">⚠️ 已逾期 ${Math.abs(daysLeft)} 天</div>`;
+                statusHtml = `<div style="font-size:11px; color:#EF4444; font-weight:700;">${emojiIcon('⚠️', '', 12)} 已逾期 ${Math.abs(daysLeft)} 天</div>`;
                 urgentCount++;
             }
 
@@ -123,7 +124,7 @@ function renderHome() {
                 reminders.push({ label: rm.label, icon: rm.icon || '🐾', statusHtml });
             }
         } else {
-            statusHtml = `<div style="font-size:11px; color:var(--color-text-hint);">❓ 尚未记录过</div>`;
+            statusHtml = `<div style="font-size:11px; color:var(--color-text-hint);">${emojiIcon('❓', '', 12)} 尚未记录过</div>`;
             urgentCount++;
             reminders.push({ label: rm.label, icon: rm.icon || '🐾', statusHtml });
         }
@@ -132,7 +133,7 @@ function renderHome() {
     if (urgentCount > 0) {
         healthTipHtml = `
             <div class="health-tip fade-up delay-3">
-                <span class="tip-icon">💜</span>
+                <span class="tip-icon">${emojiIcon('💜', '', 20)}</span>
                 <span>主子提醒：喵！有 ${urgentCount} 项待办已经过期或需要关注啦，快去看看！</span>
             </div>
         `;
@@ -142,37 +143,37 @@ function renderHome() {
         <div class="content-wrapper">
             <!-- 快速入口置顶 -->
             <section class="quick-actions fade-up delay-1">
-                <div class="action-item" data-type="routine"><div class="action-icon">🧹</div><div class="action-label">日常</div></div>
-                <div class="action-item" data-type="food"><div class="action-icon">🍴</div><div class="action-label">饮食</div></div>
-                <div class="action-item" data-type="weight"><div class="action-icon">⚖️</div><div class="action-label">体重</div></div>
-                <div class="action-item" data-type="medical"><div class="action-icon">🏥</div><div class="action-label">就诊</div></div>
+                <div class="action-item" data-type="routine"><div class="action-icon">${emojiIcon('🧹', '', 22)}</div><div class="action-label">日常</div></div>
+                <div class="action-item" data-type="food"><div class="action-icon">${emojiIcon('🍴', '', 22)}</div><div class="action-label">饮食</div></div>
+                <div class="action-item" data-type="weight"><div class="action-icon">${emojiIcon('⚖️', '', 22)}</div><div class="action-label">体重</div></div>
+                <div class="action-item" data-type="medical"><div class="action-icon">${emojiIcon('🏥', '', 22)}</div><div class="action-label">就诊</div></div>
             </section>
 
             <!-- 2x2 概览仪表盘 - 紧凑型横向布局 -->
             <section class="overview-grid fade-up delay-2">
                 <div class="overview-item" id="nav-anniv-grid" style="cursor:pointer;">
-                    <span class="ov-icon">💖</span>
+                    <span class="ov-icon">${emojiIcon('💖', '', 20)}</span>
                     <div class="ov-text">
                         <span class="ov-value" style="font-size:16px;">${annivPrefix}${annivDaysCount}</span>
                         <span class="ov-label">${activeAnniv.label}</span>
                     </div>
                 </div>
                 <div class="overview-item" id="nav-records-grid" style="cursor:pointer;">
-                    <span class="ov-icon">📝</span>
+                    <span class="ov-icon">${emojiIcon('📝', '', 20)}</span>
                     <div class="ov-text">
                         <span class="ov-value">${totalRecordCount}</span>
                         <span class="ov-label">累计记录</span>
                     </div>
                 </div>
                 <div class="overview-item" id="nav-weight-grid" style="cursor:pointer;">
-                    <span class="ov-icon">⚖️</span>
+                    <span class="ov-icon">${emojiIcon('⚖️', '', 20)}</span>
                     <div class="ov-text">
                         <span class="ov-value">${latestWeight}<small style="font-size:9px; margin-left:1px; opacity:0.6;">kg</small></span>
                         <span class="ov-label">当前体重 <span style="font-size:8px; opacity:0.6; font-weight:500;">(${latestWeightDate})</span></span>
                     </div>
                 </div>
                 <div class="overview-item" onclick="location.reload(true)" style="cursor:pointer;">
-                    <span class="ov-icon">✨</span>
+                    <span class="ov-icon">${emojiIcon('✨', '', 20)}</span>
                     <div class="ov-text">
                         <span class="ov-value">V${db.settings?.version || VERSION}</span>
                         <span class="ov-label">系统版本</span>
@@ -186,15 +187,15 @@ function renderHome() {
                 <h3 style="font-size:15px; font-weight:800; color:var(--color-text-title); margin-bottom:12px;">提醒事项</h3>
                 <div style="display:flex; flex-direction:column; gap:16px;">
                     ${reminders.length === 0 ?
-            `<p style="font-size:14px; color:var(--color-text-main); font-weight:500;">${suiSui.name}今天表现很棒喵，近期没有待办任务！🐾</p>` :
+            `<p style="font-size:14px; color:var(--color-text-main); font-weight:500;">${suiSui.name}今天表现很棒喵，近期没有待办任务！${emojiIcon('🐾', '', 14)}</p>` :
             reminders.map(r => r.special ? `
                             <div style="display:flex; align-items:center; gap:var(--spacing-m); background:rgba(225, 29, 72, 0.05); padding:10px; border-radius:var(--radius-12);">
-                                <span style="font-size:24px;">${r.icon}</span>
+                                <span style="font-size:24px; display:inline-flex;">${renderIcon(r.icon, '', 24)}</span>
                                 <div style="flex:1; font-size:14px; font-weight:800; color:#E11D48;">${r.label}</div>
                             </div>
                         ` : `
                             <div style="display:flex; align-items:center; gap:var(--spacing-m);">
-                                <span style="font-size:18px;">${r.icon}</span>
+                                <span style="font-size:18px; display:inline-flex;">${renderIcon(r.icon, '', 18)}</span>
                                 <div style="flex:1;">
                                     <div style="font-size:14px; font-weight:800; margin-bottom:var(--spacing-xs);">${r.label}</div>
                                     ${r.statusHtml}
@@ -249,7 +250,7 @@ function showWeightChartDrawer(weightRecords) {
         <div class="drawer-panel" style="min-height: 55vh;">
             <div class="drawer-handle"></div>
             <div class="drawer-header">
-                <h2 class="drawer-title">📈 体重变化趋势</h2>
+                <h2 class="drawer-title">${emojiIcon('📈', '', 20)} 体重变化趋势</h2>
                 <span id="close-chart" class="drawer-close">×</span>
             </div>
             <div style="padding: 10px 0;">
@@ -383,7 +384,7 @@ function renderRecords() {
         mainContent.innerHTML = `
             <div class="content-wrapper fade-in delay-1">
                 <div class="card" style="text-align:center; padding:60px 24px;">
-                    <p style="color:var(--color-text-hint); font-size:14px; font-weight:600;">还没有记过${suiSui.name}的生活呢喵~ 🐾</p>
+                    <p style="color:var(--color-text-hint); font-size:14px; font-weight:600;">还没有记过${suiSui.name}的生活呢喵~ ${emojiIcon('🐾', '', 14)}</p>
                 </div>
             </div>
         `;
@@ -403,7 +404,7 @@ function renderRecords() {
         <div class="record-filter-bar">
             ${filterTabs.map(t => `
                 <div class="filter-chip ${currentRecordFilter === t.id ? 'active' : ''}" data-filter="${t.id}">
-                    ${t.icon} ${t.label}
+                    ${emojiIcon(t.icon, '', 14)} ${t.label}
                 </div>
             `).join('')}
         </div>
@@ -420,8 +421,7 @@ function renderRecords() {
         }
 
         const icons = { routine: '🧹', food: '🍴', weight: '⚖️', medical: '🏥' };
-        let title = r.type || (r._c === 'weight' ? '称重记录' : '记录');
-        let iconHtml = `<div style="width:44px; height:44px; background:var(--color-bg); border-radius:var(--radius-12); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0;">${icons[r._c] || '🐾'}</div>`;
+        let iconHtml = `<div style="width:44px; height:44px; background:var(--color-bg); border-radius:var(--radius-12); display:flex; align-items:center; justify-content:center; flex-shrink:0;">${emojiIcon(icons[r._c] || '🐾', '', 22)}</div>`;
 
         let rightContent = '';
         let badgeHtml = '';
@@ -435,15 +435,16 @@ function renderRecords() {
             }
         } else if (r._c === 'medical') {
             rightContent = `<div style="font-size:20px; font-weight:900; color:#EF4444; line-height:1;">￥${r.cost || 0}</div>`;
-            badgeHtml = `<span class="badge badge-info">${r.type || '就诊'}</span>`;
+            badgeHtml = `<span class="badge badge-info">${r.type || '未填写'}</span>`;
         } else if (r._c === 'food') {
             let tags = [];
             if (r.brand) tags.push(r.brand);
-            if (r.type) tags.push(r.type);
+            if (r.type && r.type !== r.brand) tags.push(r.type);
             let tagStr = tags.length > 0 ? tags.join(' · ') : '未填写';
             rightContent = `<div style="font-size:13px; font-weight:800; color:var(--color-text-title); background:var(--color-bg); padding:6px 10px; border-radius:8px;">${tagStr}</div>`;
         } else if (r._c === 'routine') {
-            rightContent = `<div style="font-size:13px; font-weight:800; color:var(--color-primary); background:#EEF2FF; padding:6px 10px; border-radius:8px;">✨ 已完成</div>`;
+            // 只显示类型标签（颜色与 food 完全一致，视觉统一）
+            rightContent = `<div style="font-size:13px; font-weight:800; color:var(--color-text-title); background:var(--color-bg); padding:6px 10px; border-radius:8px; white-space:nowrap;">${r.type || '未填写'}</div>`;
         }
 
         let noteHtml = r.note
@@ -458,7 +459,7 @@ function renderRecords() {
                     <div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">
                         ${iconHtml}
                         <div style="flex:1; min-width:0;">
-                            <div style="font-size:15px; font-weight:800; color:var(--color-text-title); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${r._catLabel} · ${title}</div>
+                            <div style="font-size:15px; font-weight:800; color:var(--color-text-title); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${r._catLabel}</div>
                             <div style="font-size:12px; color:var(--color-text-hint); margin-top:4px; font-weight:600;">${r.timestamp}</div>
                         </div>
                     </div>
@@ -586,7 +587,7 @@ function showEntryDrawer(category, recordId = null, presetSubtype = null, prefil
         <div class="drawer-panel">
             <div class="drawer-handle"></div>
             <div class="drawer-header">
-                <h2 class="drawer-title">${isEditing ? '🐾 修改' : '🐾 记一笔'}${titles[category]}</h2>
+                <h2 class="drawer-title">${emojiIcon('🐾', '', 20)} ${isEditing ? '修改' : '记一笔'}${titles[category]}</h2>
                 <span id="close-drawer" class="drawer-close">×</span>
             </div>
             <div class="form-group">
@@ -661,7 +662,7 @@ function showEntryDrawer(category, recordId = null, presetSubtype = null, prefil
         }
 
         addOrUpdateRecord(suiSui.cat_id, category, record);
-        showToast(isEditing ? '已更新 🐾' : '记录成功 🐾', 'success');
+        showToast(`${isEditing ? '已更新' : '记录成功'} ${emojiIcon('🐾', '', 14)}`, 'success', true);
         close();
         switchTab(document.querySelector('.tab-item.active').dataset.tab);
     };
@@ -670,7 +671,7 @@ function showEntryDrawer(category, recordId = null, presetSubtype = null, prefil
         overlay.querySelector('#btn-del').onclick = () => {
             if (confirm('要删除这条记录吗？')) {
                 deleteRecord(suiSui.cat_id, category, recordId);
-                showToast('已删除 🐾');
+                showToast(`已删除 ${emojiIcon('🐾', '', 14)}`, 'info', true);
                 close();
                 switchTab('records');
             }
@@ -719,7 +720,7 @@ function renderProfile() {
     mainContent.innerHTML = `
         <div class="content-wrapper fade-up delay-1">
             <div class="card" id="profile-card" style="display:flex; flex-direction:row; align-items:center; gap:var(--spacing-l); padding:var(--spacing-l); cursor:pointer;">
-                <div style="width:72px; height:72px; background:var(--color-bg); border-radius:36px; display:flex; align-items:center; justify-content:center; font-size:32px; border:3px solid var(--color-divider); flex-shrink:0;">🐱</div>
+                <div style="width:72px; height:72px; background:var(--color-bg); border-radius:36px; display:flex; align-items:center; justify-content:center; border:3px solid var(--color-divider); flex-shrink:0;">${emojiIcon('🐱', '', 32)}</div>
                 <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:var(--spacing-xs);">
                     <div style="display:flex; align-items:center; gap:var(--spacing-s);">
                         <h2 style="font-size:20px; font-weight:900; color:var(--color-text-title); line-height:1;">${suiSui.name}</h2>
@@ -734,7 +735,7 @@ function renderProfile() {
 
             <div class="card" style="padding:12px 24px;">
                 <div class="milestone-item">
-                    <div class="milestone-icon">🎂</div>
+                    <div class="milestone-icon">${emojiIcon('🎂', '', 22)}</div>
                     <div style="flex:1;">
                         <div style="font-size:14px; font-weight:800;">出生日期</div>
                         <div style="font-size:12px; color:var(--color-text-hint);">${suiSui.birth_date}</div>
@@ -744,7 +745,7 @@ function renderProfile() {
                     </div>
                 </div>
                 <div class="milestone-item">
-                    <div class="milestone-icon">🏠</div>
+                    <div class="milestone-icon">${emojiIcon('🏠', '', 22)}</div>
                     <div style="flex:1;">
                         <div style="font-size:14px; font-weight:800;">来到家里</div>
                         <div style="font-size:12px; color:var(--color-text-hint);">${suiSui.adoption_date}</div>
@@ -754,7 +755,7 @@ function renderProfile() {
                     </div>
                 </div>
                 <div class="milestone-item">
-                    <div class="milestone-icon">💊</div>
+                    <div class="milestone-icon">${emojiIcon('💊', '', 22)}</div>
                     <div style="flex:1;">
                         <div style="font-size:14px; font-weight:800;">绝育时间</div>
                         <div style="font-size:12px; color:var(--color-text-hint);">${suiSui.neutering_date || '尚未填写'}</div>
@@ -765,10 +766,10 @@ function renderProfile() {
 
             <div id="btn-settings" class="card" style="flex-direction:row; justify-content:space-between; align-items:center; padding:20px 24px; cursor:pointer; overflow:visible; transform:translateZ(0);">
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <span style="font-size:18px;">⚙️</span>
+                    <span style="display:inline-flex;">${icon('settings', '', 18)}</span>
                     <span style="font-size:15px; font-weight:700;">系统设置</span>
                 </div>
-                <span style="color:var(--color-text-hint); font-size:12px;">❯</span>
+                <span style="color:var(--color-text-hint); display:inline-flex;">${icon('chevron-right', '', 14)}</span>
             </div>
         </div>
     `;
@@ -790,7 +791,7 @@ function showProfileDrawer() {
         <div class="drawer-panel">
             <div class="drawer-handle"></div>
             <div class="drawer-header">
-                <h2 class="drawer-title">🐱 修改资料</h2>
+                <h2 class="drawer-title">${emojiIcon('🐱', '', 20)} 修改资料</h2>
                 <span id="close-drawer" class="drawer-close">×</span>
             </div>
             <div class="form-group">
@@ -836,7 +837,7 @@ function showProfileDrawer() {
             neutering_date: overlay.querySelector('#p-neutering').value
         };
         updateCatProfile(suiSui.cat_id, updates);
-        showToast('资料已更新 🐾', 'success');
+        showToast(`资料已更新 ${emojiIcon('🐾', '', 14)}`, 'success', true);
         close();
         renderProfile();
     };
@@ -853,16 +854,16 @@ function renderSettings() {
     mainContent.innerHTML = `
         <div class="content-wrapper fade-in delay-1">
             <div class="sticky-nav-header">
-                <span id="btn-back" style="cursor:pointer; font-size:24px;">←</span>
+                <span id="btn-back" style="cursor:pointer; display:inline-flex;">${icon('arrow-left', '', 24)}</span>
                 <h2 style="font-size:18px; font-weight:900;">系统设置</h2>
             </div>
             
             <div class="card">
-                <h3 style="margin-bottom:12px;">⏰ 提醒事项管理</h3>
+                <h3 style="margin-bottom:12px;">${emojiIcon('⏰', '', 16)} 提醒事项管理</h3>
                 <div id="reminder-list" style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
                     ${reminders.map((rm, idx) => `
                         <div style="display:flex; align-items:center; gap:8px; background:var(--color-bg); padding:8px 12px; border-radius:8px;">
-                            <span>${rm.icon}</span>
+                            <span>${renderIcon(rm.icon, '', 16)}</span>
                             <div style="flex:1; font-size:13px; font-weight:700;">${rm.label}</div>
                             <div style="font-size:12px; color:var(--color-text-hint);">${rm.days} 天</div>
                             <button class="btn-del-rm" data-idx="${idx}" style="background:none; border:none; color:#EF4444; font-size:16px; cursor:pointer; padding:0 4px;">×</button>
@@ -873,7 +874,7 @@ function renderSettings() {
             </div>
 
             <div class="card">
-                <h3 style="margin-bottom:12px;">🔗 云端同步配置</h3>
+                <h3 style="margin-bottom:12px;">${emojiIcon('🔗', '', 16)} 云端同步配置</h3>
                 <div class="form-group">
                     <label>GITHUB REPO (USER/REPO)</label>
                     <input type="text" id="i-repo" class="form-input" value="${config.githubRepo || ''}" placeholder="例如: yourname/meow_daily">
@@ -888,10 +889,10 @@ function renderSettings() {
 
             <div id="btn-ai-settings" class="card" style="flex-direction:row; justify-content:space-between; align-items:center; padding:20px 24px; cursor:pointer; overflow:visible; transform:translateZ(0);">
                 <div style="display:flex; align-items:center; gap:12px;">
-                    <span style="font-size:18px;">🤖</span>
+                    <span style="display:inline-flex;">${emojiIcon('🤖', '', 18)}</span>
                     <span style="font-size:15px; font-weight:700;">AI 设置</span>
                 </div>
-                <span style="color:var(--color-text-hint); font-size:12px;">❯</span>
+                <span style="color:var(--color-text-hint); display:inline-flex;">${icon('chevron-right', '', 14)}</span>
             </div>
             
                 <p style="font-size:11px; color:var(--color-text-hint); font-weight:600; text-align:center;">Meow_Daily V${db.settings?.version || VERSION} "SuiSui" PWA Logo Update Build</p>
@@ -922,7 +923,7 @@ function renderSettings() {
             githubToken: document.getElementById('i-token').value.trim()
         };
         saveConfig(newCfg);
-        showToast('配置已生效 🐾', 'success');
+        showToast(`配置已生效 ${emojiIcon('🐾', '', 14)}`, 'success', true);
         switchTab('profile');
     };
 
@@ -952,7 +953,7 @@ function showTagManagerDrawer() {
         <div class="drawer-panel" style="min-height:60vh;">
             <div class="drawer-handle"></div>
             <div class="drawer-header">
-                <h2 class="drawer-title">🏷️ 管理日常标签</h2>
+                <h2 class="drawer-title">${emojiIcon('🏷️', '', 20)} 管理日常标签</h2>
                 <span id="close-tag-drawer" class="drawer-close">×</span>
             </div>
             
@@ -1029,7 +1030,7 @@ function showReminderDrawer() {
         <div class="drawer-panel">
             <div class="drawer-handle"></div>
             <div class="drawer-header">
-                <h2 class="drawer-title">⏰ 新建提醒事项</h2>
+                <h2 class="drawer-title">${emojiIcon('⏰', '', 20)} 新建提醒事项</h2>
                 <span id="close-rm-drawer" class="drawer-close">×</span>
             </div>
             
@@ -1047,8 +1048,15 @@ function showReminderDrawer() {
             </div>
             
             <div class="form-group">
-                <label>个性化图标 / Emoji</label>
-                <input type="text" id="rm-icon" class="form-input" value="🐾" placeholder="如：🛁 / ✂️">
+                <label>选择图标</label>
+                <div class="icon-picker" id="rm-icon-picker">
+                    ${REMINDER_ICONS.map(name => `
+                        <button type="button" class="icon-picker-item ${name === 'paw-print' ? 'active' : ''}" data-icon="${name}" title="${name}">
+                            ${icon(name, '', 20)}
+                        </button>
+                    `).join('')}
+                </div>
+                <p style="font-size:11px; color:var(--color-text-hint); margin-top:6px;">图标：从内置图标库选择</p>
             </div>
             
             <button id="btn-save-rm" class="btn-drawer-save" style="margin-top:20px;">保存提醒</button>
@@ -1065,11 +1073,21 @@ function showReminderDrawer() {
 
     overlay.querySelector('#close-rm-drawer').onclick = close;
     overlay.onclick = (e) => { if (e.target === overlay) close(); };
+
+    // 图标选择器：点击切换选中态
+    let selectedIcon = 'paw-print';
+    overlay.querySelectorAll('.icon-picker-item').forEach(btn => {
+        btn.onclick = () => {
+            overlay.querySelectorAll('.icon-picker-item').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedIcon = btn.dataset.icon;
+        };
+    });
     
     overlay.querySelector('#btn-save-rm').onclick = () => {
         const label = overlay.querySelector('#rm-label').value;
         const days = parseInt(overlay.querySelector('#rm-days').value);
-        const icon = overlay.querySelector('#rm-icon').value.trim() || '🐾';
+        const icon = selectedIcon;
         
         if (!label) return showToast('必须选择一个标签', 'error');
         if (isNaN(days) || days <= 0) return showToast('请输入有效的周期天数', 'error');
@@ -1077,7 +1095,7 @@ function showReminderDrawer() {
         db.settings.reminders = db.settings.reminders || [];
         db.settings.reminders.push({ id: 'rm_' + Date.now(), label, days, icon });
         setDB(db);
-        showToast('已添加新提醒 🐾', 'success');
+        showToast(`已添加新提醒 ${emojiIcon('🐾', '', 14)}`, 'success', true);
         close();
         renderSettings();
     };
@@ -1100,7 +1118,7 @@ function renderAISettings() {
     mainContent.innerHTML = `
         <div class="content-wrapper fade-in delay-1">
             <div class="sticky-nav-header">
-                <span id="btn-back-ai" style="cursor:pointer; font-size:24px;">←</span>
+                <span id="btn-back-ai" style="cursor:pointer; display:inline-flex;">${icon('arrow-left', '', 24)}</span>
                 <h2 style="font-size:18px; font-weight:900;">AI 设置</h2>
             </div>
             
@@ -1120,7 +1138,7 @@ function renderAISettings() {
             </div>
 
             <div class="card">
-                <h3 style="margin-bottom:12px;">💬 Prompt 自定义</h3>
+                <h3 style="margin-bottom:12px;">${emojiIcon('💬', '', 16)} Prompt 自定义</h3>
                 
                 <div class="form-group">
                     <label>智能记事 (前端提取数据)</label>
@@ -1165,7 +1183,7 @@ function renderAISettings() {
         currentDB.settings.prompts = newCfg.prompts;
         setDB(currentDB);
 
-        showToast('AI 设置已保存并暂存至本地 🐾', 'success');
+        showToast(`AI 设置已保存并暂存至本地 ${emojiIcon('🐾', '', 14)}`, 'success', true);
         renderSettings();
     };
 }
@@ -1183,18 +1201,18 @@ export function initAIEntry() {
             <div class="drawer-panel" style="min-height:50vh;">
                 <div class="drawer-handle"></div>
                 <div class="drawer-header">
-                    <h2 class="drawer-title">🐾 AI 智能记事</h2>
+                    <h2 class="drawer-title">${emojiIcon('🐾', '', 20)} AI 智能记事</h2>
                     <span id="close-ai" class="drawer-close">×</span>
                 </div>
                 <div class="form-group">
                     <textarea id="ai-input" class="form-input" rows="5" placeholder="可以说：岁岁昨晚8点剪了指甲，表现超级棒！"></textarea>
                 </div>
                 <button id="ai-parse" class="btn-drawer-save" style="background:var(--color-yellow); color:#78350F; box-shadow:var(--shadow-soft);">
-                    ✨ 让 AI 帮我记
+                    ${emojiIcon('✨', '', 16)} 让 AI 帮我记
                 </button>
                 <div id="ai-status" style="display:none; text-align:center; margin-top:20px; font-size:14px; font-weight:700; color:var(--color-primary);">
                     <div class="syncing" style="display:inline-block; margin-right:8px;"><span class="dot"></span></div>
-                    喵喵正在思考中... 🧠
+                    喵喵正在思考中... ${emojiIcon('🧠', '', 14)}
                 </div>
             </div>
         `;
@@ -1332,7 +1350,7 @@ export function showHeatmapDrawer(catRecs) {
         <div class="drawer-panel" style="min-height:35vh;">
             <div class="drawer-handle"></div>
             <div class="drawer-header">
-                <h2 class="drawer-title">🔥 活跃度热力图</h2>
+                <h2 class="drawer-title">${emojiIcon('🔥', '', 20)} 活跃度热力图</h2>
                 <span id="close-heatmap" class="drawer-close">×</span>
             </div>
             
@@ -1402,7 +1420,7 @@ export function showAnniversaryDrawer() {
         <div class="drawer-panel" style="min-height:55vh;">
             <div class="drawer-handle"></div>
             <div class="drawer-header">
-                <h2 class="drawer-title">💖 纪念日/里程碑追踪</h2>
+                <h2 class="drawer-title">${emojiIcon('💖', '', 20)} 纪念日/里程碑追踪</h2>
                 <span id="close-av-drawer" class="drawer-close">×</span>
             </div>
             
@@ -1413,7 +1431,7 @@ export function showAnniversaryDrawer() {
             </div>
             
             <div style="background: rgba(var(--color-primary-rgb), 0.05); padding: 16px; border-radius: 12px; border:1px dashed var(--color-primary);">
-                <h3 style="font-size:13px; margin-bottom:12px; color:var(--color-primary);">➕ 新增纪念事件</h3>
+                <h3 style="font-size:13px; margin-bottom:12px; color:var(--color-primary);">${emojiIcon('➕', '', 14)} 新增纪念事件</h3>
                 <div class="form-group" style="margin-bottom:12px;">
                     <input type="text" id="new-av-label" class="form-input" placeholder="如：第一次抓老鼠、开始换牙">
                 </div>
@@ -1537,7 +1555,7 @@ export function initSyncButton() {
             // 4. 更新本地状态 (Update)
             setDB(mergedDB);
 
-            showToast('云端同步成功 🐾', 'success');
+            showToast(`云端同步成功 ${emojiIcon('🐾', '', 14)}`, 'success', true);
 
             // 刷新当前 Tab 视图
             const activeTab = document.querySelector('.tab-item.active');

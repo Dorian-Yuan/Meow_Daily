@@ -79,6 +79,43 @@ export async function parseTextWithAI(text) {
 }
 
 /**
+ * 翻译文本为简体中文（用于猫咪百科等英文内容场景）
+ * 未配置 aiKey 或任何请求/解析失败时返回 null（不抛错）
+ */
+export async function translateText(text) {
+    const config = getConfig();
+    const { aiKey, aiBaseUrl, aiModel } = config;
+
+    if (!aiKey) return null;
+
+    try {
+        const response = await fetch(buildChatEndpoint(aiBaseUrl), {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${aiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: aiModel || 'agnes-2.0-flash',
+                messages: [
+                    { role: 'system', content: '你是翻译助手。把用户文本翻译成简体中文，只输出译文，不要任何解释。' },
+                    { role: 'user', content: text }
+                ]
+            }),
+            signal: AbortSignal.timeout(15000)
+        });
+
+        if (!response.ok) return null;
+
+        const data = await response.json();
+        const content = data.choices?.[0]?.message?.content;
+        return (typeof content === 'string' && content.trim()) ? content.trim() : null;
+    } catch {
+        return null;
+    }
+}
+
+/**
  * 处理提及的时间状语，返回 YYYY-MM-DD HH:mm (北京时间)
  */
 export function processMentionedTime(mentionedTime) {

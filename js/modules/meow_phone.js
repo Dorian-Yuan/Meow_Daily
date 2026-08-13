@@ -7,17 +7,8 @@
 import { getDB, setDB, VERSION } from '../store.js';
 import { createCatSweepGame } from './games/cat_sweep.js';
 import { createPixelArtApp } from './games/pixel_art.js';
-import { createYarnBallApp } from './games/yarn_ball.js';
-import { createCatFortuneApp } from './games/cat_fortune.js';
-import { createCatMemoryApp } from './games/cat_memory.js';
-import { createWhackMouseApp } from './games/whack_mouse.js';
 import { createMeowPianoApp } from './games/meow_piano.js';
-import { createMeowTimerApp } from './games/meow_timer.js';
-import { createCat2048App } from './games/cat_2048.js';
-import { createCatSimonApp } from './games/cat_simon.js';
-import { createCatReactionApp } from './games/cat_reaction.js';
-import { createCatSlotApp } from './games/cat_slot.js';
-import { createCatFactsApp } from './games/cat_facts.js';
+import { icon, emojiIcon } from '../icons.js';
 
 // ---- 游戏注册表 ----
 const APP_REGISTRY = [
@@ -36,81 +27,11 @@ const APP_REGISTRY = [
         launch: launchPixelArt
     },
     {
-        id: 'yarn_ball',
-        name: '毛线球',
-        icon: '🧶',
-        description: '解压弹跳玩具',
-        launch: launchYarnBall
-    },
-    {
-        id: 'cat_fortune',
-        name: '猫咪占卜',
-        icon: '🎲',
-        description: '今日猫咪运势',
-        launch: launchCatFortune
-    },
-    {
-        id: 'cat_memory',
-        name: '猫咪翻牌',
-        icon: '🧩',
-        description: '记忆配对游戏',
-        launch: launchCatMemory
-    },
-    {
-        id: 'whack_mouse',
-        name: '打地鼠',
-        icon: '🎯',
-        description: '反应力挑战',
-        launch: launchWhackMouse
-    },
-    {
         id: 'meow_piano',
         name: '喵喵琴',
         icon: '🎵',
         description: '猫咪音乐盒',
         launch: launchMeowPiano
-    },
-    {
-        id: 'meow_timer',
-        name: '喵喵计时',
-        icon: '⏰',
-        description: '倒计时与秒表',
-        launch: launchMeowTimer
-    },
-    {
-        id: 'cat_2048',
-        name: '喵喵合并',
-        icon: '🔢',
-        description: '数字合并挑战',
-        launch: launchCat2048
-    },
-    {
-        id: 'cat_simon',
-        name: '喵喵序列',
-        icon: '🔮',
-        description: '记忆序列挑战',
-        launch: launchCatSimon
-    },
-    {
-        id: 'cat_reaction',
-        name: '猫猫反应力',
-        icon: '⚡',
-        description: '反应速度测试',
-        launch: launchCatReaction
-    },
-    {
-        id: 'cat_slot',
-        name: '猫猫老虎机',
-        icon: '🎰',
-        description: '猫咪运气挑战',
-        launch: launchCatSlot
-    },
-    {
-        id: 'cat_facts',
-        name: '猫咪百科',
-        icon: '🐱',
-        description: '猫咪冷知识',
-        launch: launchCatFacts
     },
     {
         id: 'settings',
@@ -190,7 +111,7 @@ function renderHomeScreen() {
         <div class="phone-screen">
             <div class="phone-status-bar">
                 <span class="phone-time">${hours}:${minutes}</span>
-                <span class="phone-battery">🔋</span>
+                <span class="phone-battery">${emojiIcon('🔋', '', 16)}</span>
             </div>
             <div class="phone-wallpaper-text">
                 <span class="phone-clock">${hours}:${minutes}</span>
@@ -199,17 +120,17 @@ function renderHomeScreen() {
             <div class="phone-app-grid">
                 ${APP_REGISTRY.filter(a => a.id !== 'settings').map(app => `
                     <div class="phone-app-icon" data-app="${app.id}">
-                        <div class="app-icon-inner">${app.icon}</div>
+                        <div class="app-icon-inner">${emojiIcon(app.icon, '', 28)}</div>
                         <span class="app-icon-label">${app.name}</span>
                     </div>
                 `).join('')}
             </div>
             <div class="phone-dock">
                 <div class="dock-btn dock-home" id="phone-home-btn" title="返回主页">
-                    <span>🏠</span>
+                    <span>${emojiIcon('🏠', '', 24)}</span>
                 </div>
                 <div class="dock-btn dock-settings" data-app="settings" title="设置">
-                    <span>⚙️</span>
+                    <span>${emojiIcon('⚙️', '', 24)}</span>
                 </div>
             </div>
         </div>
@@ -241,30 +162,30 @@ function launchCatSweep() {
     phoneOverlay.innerHTML = `
         <div class="phone-screen">
             <div class="phone-status-bar">
-                <span class="phone-back-btn" id="sweep-back">← 返回</span>
+                <span class="phone-back-btn" id="sweep-back">${icon('arrow-left', '', 14)} 返回</span>
                 <span></span>
                 <span></span>
             </div>
             <div class="sweep-info-bar">
                 <div class="sweep-stat">
-                    <span class="sweep-stat-icon">🚩</span>
+                    <span class="sweep-stat-icon">${emojiIcon('🚩', '', 16)}</span>
                     <span id="sweep-flags">0/${prefs.difficulty === 'easy' ? 10 : (prefs.difficulty === 'medium' ? 25 : (prefs.difficulty === 'hard' ? 40 : (prefs.custom?.mice || 10)))}</span>
                 </div>
                 <div class="sweep-stat">
-                    <span class="sweep-stat-icon">⏱️</span>
+                    <span class="sweep-stat-icon">${icon('timer', '', 16)}</span>
                     <span id="sweep-timer">00:00</span>
                 </div>
                 <div class="sweep-stat">
-                    <span class="sweep-stat-icon">📐</span>
+                    <span class="sweep-stat-icon">${emojiIcon('📐', '', 16)}</span>
                     <span id="sweep-difficulty">${prefs.difficulty === 'easy' ? '简单' : (prefs.difficulty === 'medium' ? '中等' : (prefs.difficulty === 'hard' ? '困难' : '自定义'))}</span>
                 </div>
             </div>
             <div class="sweep-hint">
-                <span>💡 单击插旗 · 双击翻开</span>
+                <span>${emojiIcon('💡', '', 13)} 单击插旗 · 双击翻开</span>
             </div>
             <div id="sweep-board" class="sweep-board-container"></div>
             <div id="sweep-result" class="sweep-result" style="display:none;"></div>
-            <button id="sweep-restart" class="sweep-restart-btn">🔄 重新开始</button>
+            <button id="sweep-restart" class="sweep-restart-btn">${emojiIcon('🔄', '', 16)} 重新开始</button>
         </div>
     `;
 
@@ -289,7 +210,7 @@ function launchCatSweep() {
             resultEl.style.display = 'flex';
             resultEl.innerHTML = `
                 <div class="sweep-result-content win">
-                    <span class="result-emoji">🎉</span>
+                    <span class="result-emoji">${emojiIcon('🎉', '', 64)}</span>
                     <h3>猫咪大获全胜！</h3>
                     <p>所有老鼠都被找到了喵~</p>
                     <p>用时：${formatTime(time)}</p>
@@ -301,7 +222,7 @@ function launchCatSweep() {
             resultEl.style.display = 'flex';
             resultEl.innerHTML = `
                 <div class="sweep-result-content lose">
-                    <span class="result-emoji">🐭</span>
+                    <span class="result-emoji">${emojiIcon('🐭', '', 64)}</span>
                     <h3>老鼠溜走了！</h3>
                     <p>下次要更小心喵...</p>
                 </div>
@@ -313,7 +234,7 @@ function launchCatSweep() {
         onMultipleSolutions: () => {
             // 当检测到多解法情况时，更新重新开始按钮的文本
             const restartBtn = phoneOverlay.querySelector('#sweep-restart');
-            restartBtn.textContent = '🔄 重新开始：已通过';
+            restartBtn.innerHTML = `${emojiIcon('🔄', '', 16)} 重新开始：已通过`;
         }
     });
 
@@ -340,7 +261,7 @@ function launchCatSweep() {
         resultEl.style.display = 'none';
         game.reset();
         timerEl.textContent = '00:00';
-        phoneOverlay.querySelector('#sweep-restart').textContent = '🔄 重新开始';
+        phoneOverlay.querySelector('#sweep-restart').innerHTML = `${emojiIcon('🔄', '', 16)} 重新开始`;
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
             const time = game.getElapsedTime();
@@ -357,24 +278,18 @@ function launchSettings() {
     const db = getDB();
     const catSweepPrefs = db.settings.game_prefs?.cat_sweep || { difficulty: 'easy', custom: { rows: 8, cols: 8, mice: 10 } };
     const pixelArtPrefs = db.settings.game_prefs?.pixel_art || { canvasSize: 10 };
-    const yarnBallPrefs = db.settings.game_prefs?.yarn_ball || { mode: 'challenge', challengeTime: 30, maxFish: 100 };
-    const catMemoryPrefs = db.settings.game_prefs?.cat_memory || { difficulty: 'medium', theme: 'random' };
-    const whackMousePrefs = db.settings.game_prefs?.whack_mouse || { difficulty: 'medium' };
     const meowPianoPrefs = db.settings.game_prefs?.meow_piano || { tone: 'soft' };
-    const cat2048Prefs = db.settings.game_prefs?.cat_2048 || { size: 4 };
-    const catSimonPrefs = db.settings.game_prefs?.cat_simon || { keys: 4 };
-    const catReactionPrefs = db.settings.game_prefs?.cat_reaction || { rounds: 5 };
 
     phoneOverlay.innerHTML = `
         <div class="phone-screen">
             <div class="phone-status-bar">
-                <span class="phone-back-btn" id="settings-back">← 返回</span>
-                <span class="phone-app-title">⚙️ 设置</span>
+                <span class="phone-back-btn" id="settings-back">${icon('arrow-left', '', 14)} 返回</span>
+                <span class="phone-app-title">${emojiIcon('⚙️', '', 16)} 设置</span>
                 <span></span>
             </div>
             <div class="phone-settings-content">
                 <div class="settings-section" data-collapsible>
-                    <h3 class="settings-section-title" data-toggle>🐭 猫抓老鼠 <span class="settings-arrow">›</span></h3>
+                    <h3 class="settings-section-title" data-toggle>${emojiIcon('🐭', '', 16)} 猫抓老鼠 <span class="settings-arrow">${icon('chevron-right', '', 16)}</span></h3>
                     
                     <div class="settings-collapsible">
                     <div class="settings-group">
@@ -382,17 +297,17 @@ function launchSettings() {
                         <div class="settings-radio-group">
                             <label class="settings-radio ${catSweepPrefs.difficulty === 'easy' ? 'active' : ''}">
                                 <input type="radio" name="difficulty" value="easy" ${catSweepPrefs.difficulty === 'easy' ? 'checked' : ''}>
-                                <span>🟢 简单</span>
+                                <span>${icon('circle', 'diff-green', 12)} 简单</span>
                                 <small>8×8 · 10只鼠</small>
                             </label>
                             <label class="settings-radio ${catSweepPrefs.difficulty === 'medium' ? 'active' : ''}">
                                 <input type="radio" name="difficulty" value="medium" ${catSweepPrefs.difficulty === 'medium' ? 'checked' : ''}>
-                                <span>🟡 中等</span>
+                                <span>${icon('circle', 'diff-yellow', 12)} 中等</span>
                                 <small>12×12 · 25只鼠</small>
                             </label>
                             <label class="settings-radio ${catSweepPrefs.difficulty === 'hard' ? 'active' : ''}">
                                 <input type="radio" name="difficulty" value="hard" ${catSweepPrefs.difficulty === 'hard' ? 'checked' : ''}>
-                                <span>🔴 困难</span>
+                                <span>${icon('circle', 'diff-red', 12)} 困难</span>
                                 <small>16×12 · 40只鼠</small>
                             </label>
                         </div>
@@ -401,7 +316,7 @@ function launchSettings() {
                 </div>
                 
                 <div class="settings-section" data-collapsible>
-                    <h3 class="settings-section-title" data-toggle>🎨 像素画板 <span class="settings-arrow">›</span></h3>
+                    <h3 class="settings-section-title" data-toggle>${emojiIcon('🎨', '', 16)} 像素画板 <span class="settings-arrow">${icon('chevron-right', '', 16)}</span></h3>
                     
                     <div class="settings-collapsible">
                     <div class="settings-group">
@@ -429,142 +344,8 @@ function launchSettings() {
                 </div>
                 
                 <div class="settings-section" data-collapsible>
-                    <h3 class="settings-section-title" data-toggle>🧶 毛线球 <span class="settings-arrow">›</span></h3>
-                    
-                    <div class="settings-collapsible">
-                    <div class="settings-group">
-                        <label class="settings-label">默认模式</label>
-                        <div class="settings-radio-group">
-                            <label class="settings-radio ${yarnBallPrefs.mode === 'free' ? 'active' : ''}">
-                                <input type="radio" name="yarnMode" value="free" ${yarnBallPrefs.mode === 'free' ? 'checked' : ''}>
-                                <span>🧶 自由模式</span>
-                                <small>纯解压弹跳</small>
-                            </label>
-                            <label class="settings-radio ${yarnBallPrefs.mode === 'challenge' ? 'active' : ''}">
-                                <input type="radio" name="yarnMode" value="challenge" ${yarnBallPrefs.mode === 'challenge' ? 'checked' : ''}>
-                                <span>🐟 挑战模式</span>
-                                <small>收集小鱼干</small>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-group">
-                        <label class="settings-label">挑战时长</label>
-                        <div class="settings-radio-group">
-                            <label class="settings-radio ${yarnBallPrefs.challengeTime === 30 ? 'active' : ''}">
-                                <input type="radio" name="yarnTime" value="30" ${yarnBallPrefs.challengeTime === 30 ? 'checked' : ''}>
-                                <span>30 秒</span>
-                                <small>快速挑战</small>
-                            </label>
-                            <label class="settings-radio ${yarnBallPrefs.challengeTime === 60 ? 'active' : ''}">
-                                <input type="radio" name="yarnTime" value="60" ${yarnBallPrefs.challengeTime === 60 ? 'checked' : ''}>
-                                <span>60 秒</span>
-                                <small>持久战</small>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="settings-group">
-                        <label class="settings-label">最大鱼数</label>
-                        <div class="settings-radio-group">
-                            <label class="settings-radio ${yarnBallPrefs.maxFish === 50 ? 'active' : ''}">
-                                <input type="radio" name="yarnMaxFish" value="50" ${yarnBallPrefs.maxFish === 50 ? 'checked' : ''}>
-                                <span>50</span>
-                                <small>低性能设备</small>
-                            </label>
-                            <label class="settings-radio ${yarnBallPrefs.maxFish === 100 ? 'active' : ''}">
-                                <input type="radio" name="yarnMaxFish" value="100" ${yarnBallPrefs.maxFish === 100 ? 'checked' : ''}>
-                                <span>100</span>
-                                <small>默认</small>
-                            </label>
-                            <label class="settings-radio ${yarnBallPrefs.maxFish === 200 ? 'active' : ''}">
-                                <input type="radio" name="yarnMaxFish" value="200" ${yarnBallPrefs.maxFish === 200 ? 'checked' : ''}>
-                                <span>200</span>
-                                <small>鱼群风暴</small>
-                            </label>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                
-                <div class="settings-section" data-collapsible>
-                    <h3 class="settings-section-title" data-toggle>🧩 猫咪翻牌 <span class="settings-arrow">›</span></h3>
-                    <div class="settings-collapsible">
-                    <div class="settings-group">
-                        <label class="settings-label">默认难度</label>
-                        <div class="settings-radio-group">
-                            <label class="settings-radio ${catMemoryPrefs.difficulty === 'easy' ? 'active' : ''}">
-                                <input type="radio" name="memoryDiff" value="easy" ${catMemoryPrefs.difficulty === 'easy' ? 'checked' : ''}>
-                                <span>🟢 简单</span>
-                                <small>3×4</small>
-                            </label>
-                            <label class="settings-radio ${catMemoryPrefs.difficulty === 'medium' ? 'active' : ''}">
-                                <input type="radio" name="memoryDiff" value="medium" ${catMemoryPrefs.difficulty === 'medium' ? 'checked' : ''}>
-                                <span>🟡 中等</span>
-                                <small>4×4</small>
-                            </label>
-                            <label class="settings-radio ${catMemoryPrefs.difficulty === 'hard' ? 'active' : ''}">
-                                <input type="radio" name="memoryDiff" value="hard" ${catMemoryPrefs.difficulty === 'hard' ? 'checked' : ''}>
-                                <span>🔴 困难</span>
-                                <small>5×4</small>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="settings-group">
-                        <label class="settings-label">emoji 主题</label>
-                        <div class="settings-radio-group">
-                            <label class="settings-radio ${catMemoryPrefs.theme === 'cat' ? 'active' : ''}">
-                                <input type="radio" name="memoryTheme" value="cat" ${catMemoryPrefs.theme === 'cat' ? 'checked' : ''}>
-                                <span>🐱 猫咪</span>
-                            </label>
-                            <label class="settings-radio ${catMemoryPrefs.theme === 'food' ? 'active' : ''}">
-                                <input type="radio" name="memoryTheme" value="food" ${catMemoryPrefs.theme === 'food' ? 'checked' : ''}>
-                                <span>🍣 食物</span>
-                            </label>
-                            <label class="settings-radio ${catMemoryPrefs.theme === 'nature' ? 'active' : ''}">
-                                <input type="radio" name="memoryTheme" value="nature" ${catMemoryPrefs.theme === 'nature' ? 'checked' : ''}>
-                                <span>🌸 自然</span>
-                            </label>
-                            <label class="settings-radio ${catMemoryPrefs.theme === 'random' ? 'active' : ''}">
-                                <input type="radio" name="memoryTheme" value="random" ${catMemoryPrefs.theme === 'random' ? 'checked' : ''}>
-                                <span>🎲 随机</span>
-                            </label>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                
-                <div class="settings-section" data-collapsible>
                     <div class="settings-section-title" data-toggle>
-                        🎯 打地鼠 <span class="settings-arrow">›</span>
-                    </div>
-                    <div class="settings-collapsible">
-                    <div class="settings-group">
-                        <label class="settings-label">默认难度</label>
-                        <div class="settings-radio-group">
-                            <label class="settings-radio ${whackMousePrefs.difficulty === 'easy' ? 'active' : ''}">
-                                <input type="radio" name="whackDiff" value="easy" ${whackMousePrefs.difficulty === 'easy' ? 'checked' : ''}>
-                                <span>🟢 简单</span>
-                                <small>慢节奏</small>
-                            </label>
-                            <label class="settings-radio ${whackMousePrefs.difficulty === 'medium' ? 'active' : ''}">
-                                <input type="radio" name="whackDiff" value="medium" ${whackMousePrefs.difficulty === 'medium' ? 'checked' : ''}>
-                                <span>🟡 中等</span>
-                                <small>递增难度</small>
-                            </label>
-                            <label class="settings-radio ${whackMousePrefs.difficulty === 'hard' ? 'active' : ''}">
-                                <input type="radio" name="whackDiff" value="hard" ${whackMousePrefs.difficulty === 'hard' ? 'checked' : ''}>
-                                <span>🔴 困难</span>
-                                <small>炸弹出没</small>
-                            </label>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                
-                <div class="settings-section" data-collapsible>
-                    <div class="settings-section-title" data-toggle>
-                        🎵 喵喵琴 <span class="settings-arrow">›</span>
+                        ${emojiIcon('🎵', '', 16)} 喵喵琴 <span class="settings-arrow">${icon('chevron-right', '', 16)}</span>
                     </div>
                     <div class="settings-collapsible">
                     <div class="settings-group">
@@ -590,75 +371,12 @@ function launchSettings() {
                     </div>
                 </div>
                 
-                <div class="settings-section" data-collapsible>
-                    <h3 class="settings-section-title" data-toggle>🔢 喵喵合并 <span class="settings-arrow">›</span></h3>
-                    <div class="settings-collapsible">
-                    <div class="settings-group">
-                        <label class="settings-label">网格大小</label>
-                        <div class="settings-radio-group">
-                            <label class="settings-radio ${cat2048Prefs.size === 4 ? 'active' : ''}">
-                                <input type="radio" name="mergeSize" value="4" ${cat2048Prefs.size === 4 ? 'checked' : ''}>
-                                <span>4×4</span>
-                                <small>经典</small>
-                            </label>
-                            <label class="settings-radio ${cat2048Prefs.size === 5 ? 'active' : ''}">
-                                <input type="radio" name="mergeSize" value="5" ${cat2048Prefs.size === 5 ? 'checked' : ''}>
-                                <span>5×4</span>
-                                <small>挑战</small>
-                            </label>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                
-                <div class="settings-section" data-collapsible>
-                    <h3 class="settings-section-title" data-toggle>🔮 喵喵序列 <span class="settings-arrow">›</span></h3>
-                    <div class="settings-collapsible">
-                    <div class="settings-group">
-                        <label class="settings-label">按键数</label>
-                        <div class="settings-radio-group">
-                            <label class="settings-radio ${catSimonPrefs.keys === 4 ? 'active' : ''}">
-                                <input type="radio" name="simonKeys" value="4" ${catSimonPrefs.keys === 4 ? 'checked' : ''}>
-                                <span>4键</span>
-                                <small>普通</small>
-                            </label>
-                            <label class="settings-radio ${catSimonPrefs.keys === 6 ? 'active' : ''}">
-                                <input type="radio" name="simonKeys" value="6" ${catSimonPrefs.keys === 6 ? 'checked' : ''}>
-                                <span>6键</span>
-                                <small>困难</small>
-                            </label>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                
-                <div class="settings-section" data-collapsible>
-                    <h3 class="settings-section-title" data-toggle>⚡ 猫猫反应力 <span class="settings-arrow">›</span></h3>
-                    <div class="settings-collapsible">
-                    <div class="settings-group">
-                        <label class="settings-label">测试轮数</label>
-                        <div class="settings-radio-group">
-                            <label class="settings-radio ${catReactionPrefs.rounds === 5 ? 'active' : ''}">
-                                <input type="radio" name="reactionRounds" value="5" ${catReactionPrefs.rounds === 5 ? 'checked' : ''}>
-                                <span>5轮</span>
-                                <small>快速</small>
-                            </label>
-                            <label class="settings-radio ${catReactionPrefs.rounds === 10 ? 'active' : ''}">
-                                <input type="radio" name="reactionRounds" value="10" ${catReactionPrefs.rounds === 10 ? 'checked' : ''}>
-                                <span>10轮</span>
-                                <small>完整</small>
-                            </label>
-                        </div>
-                    </div>
-                    </div>
+                <div class="settings-section">
+                    <button id="settings-save" class="settings-save-btn">${emojiIcon('💾', '', 16)} 保存设置</button>
                 </div>
                 
                 <div class="settings-section">
-                    <button id="settings-save" class="settings-save-btn">💾 保存设置</button>
-                </div>
-                
-                <div class="settings-section">
-                    <p class="settings-about">Meow Phone V${getDB().settings.version || VERSION}<br>一个隐藏的彩蛋系统 🐾<br>13款小应用等你探索 ✨</p>
+                    <p class="settings-about">Meow Phone V${getDB().settings.version || VERSION}<br>一个隐藏的彩蛋系统 ${emojiIcon('🐾', '', 13)}<br>3款小应用等你探索 ${emojiIcon('✨', '', 13)}</p>
                 </div>
             </div>
         </div>
@@ -703,36 +421,11 @@ function launchSettings() {
         });
     });
 
-    // 毛线球模式 radio 切换
-    phoneOverlay.querySelectorAll('input[name="yarnMode"]').forEach(radio => {
+    // 音色 radio 切换
+    phoneOverlay.querySelectorAll('input[name="pianoTone"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
-            phoneOverlay.querySelectorAll('input[name="yarnMode"]').forEach(r => r.closest('.settings-radio').classList.remove('active'));
+            phoneOverlay.querySelectorAll('input[name="pianoTone"]').forEach(r => r.closest('.settings-radio').classList.remove('active'));
             e.target.closest('.settings-radio').classList.add('active');
-        });
-    });
-
-    // 毛线球时长 radio 切换
-    phoneOverlay.querySelectorAll('input[name="yarnTime"]').forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            phoneOverlay.querySelectorAll('input[name="yarnTime"]').forEach(r => r.closest('.settings-radio').classList.remove('active'));
-            e.target.closest('.settings-radio').classList.add('active');
-        });
-    });
-
-    // 毛线球最大鱼数 radio 切换
-    phoneOverlay.querySelectorAll('input[name="yarnMaxFish"]').forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            phoneOverlay.querySelectorAll('input[name="yarnMaxFish"]').forEach(r => r.closest('.settings-radio').classList.remove('active'));
-            e.target.closest('.settings-radio').classList.add('active');
-        });
-    });
-
-    ['memoryDiff', 'memoryTheme', 'whackDiff', 'pianoTone'].forEach(name => {
-        phoneOverlay.querySelectorAll(`input[name="${name}"]`).forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                phoneOverlay.querySelectorAll(`input[name="${name}"]`).forEach(r => r.closest('.settings-radio').classList.remove('active'));
-                e.target.closest('.settings-radio').classList.add('active');
-            });
         });
     });
 
@@ -744,38 +437,20 @@ function launchSettings() {
         db.settings.game_prefs = db.settings.game_prefs || {};
         db.settings.game_prefs.cat_sweep = { difficulty };
         db.settings.game_prefs.pixel_art = { canvasSize };
-        db.settings.game_prefs.yarn_ball = {
-            mode: phoneOverlay.querySelector('input[name="yarnMode"]:checked').value,
-            challengeTime: parseInt(phoneOverlay.querySelector('input[name="yarnTime"]:checked').value),
-            maxFish: parseInt(phoneOverlay.querySelector('input[name="yarnMaxFish"]:checked').value)
-        };
-        db.settings.game_prefs.cat_memory = {
-            difficulty: phoneOverlay.querySelector('input[name="memoryDiff"]:checked')?.value || 'medium',
-            theme: phoneOverlay.querySelector('input[name="memoryTheme"]:checked')?.value || 'random'
-        };
-        db.settings.game_prefs.whack_mouse = {
-            difficulty: phoneOverlay.querySelector('input[name="whackDiff"]:checked')?.value || 'medium'
-        };
         db.settings.game_prefs.meow_piano = {
             tone: phoneOverlay.querySelector('input[name="pianoTone"]:checked')?.value || 'soft'
         };
-        db.settings.game_prefs.cat_2048 = {
-            size: parseInt(phoneOverlay.querySelector('input[name="mergeSize"]:checked')?.value || '4')
-        };
-        db.settings.game_prefs.cat_simon = {
-            keys: parseInt(phoneOverlay.querySelector('input[name="simonKeys"]:checked')?.value || '4')
-        };
-        db.settings.game_prefs.cat_reaction = {
-            rounds: parseInt(phoneOverlay.querySelector('input[name="reactionRounds"]:checked')?.value || '5')
-        };
+        // 清理已下架游戏的残留配置
+        ['yarn_ball', 'cat_fortune', 'cat_memory', 'whack_mouse', 'meow_timer', 'cat_2048', 'cat_simon', 'cat_reaction', 'cat_facts']
+            .forEach(k => delete db.settings.game_prefs[k]);
         setDB(db);
 
         // 显示保存成功反馈
         const saveBtn = phoneOverlay.querySelector('#settings-save');
-        saveBtn.textContent = '✅ 已保存';
+        saveBtn.innerHTML = `${emojiIcon('✅', '', 16)} 已保存`;
         saveBtn.style.background = '#10B981';
         setTimeout(() => {
-            saveBtn.textContent = '💾 保存设置';
+            saveBtn.innerHTML = `${emojiIcon('💾', '', 16)} 保存设置`;
             saveBtn.style.background = '';
         }, 1500);
     });
@@ -792,7 +467,7 @@ function launchPixelArt() {
     phoneOverlay.innerHTML = `
         <div class="phone-screen">
             <div class="phone-status-bar">
-                <span class="phone-back-btn" id="pixel-back">← 返回</span>
+                <span class="phone-back-btn" id="pixel-back">${icon('arrow-left', '', 14)} 返回</span>
                 <span></span>
                 <span></span>
             </div>
@@ -814,112 +489,6 @@ function launchPixelArt() {
     phoneOverlay.querySelector('#pixel-back').addEventListener('click', renderHomeScreen);
 }
 
-// ---- 毛线球启动器 ----
-
-function launchYarnBall() {
-    if (!phoneOverlay) return;
-
-    const db = getDB();
-    const yarnBallPrefs = db.settings.game_prefs?.yarn_ball || { mode: 'challenge', challengeTime: 30 };
-
-    phoneOverlay.innerHTML = `
-        <div class="phone-screen">
-            <div class="phone-status-bar">
-                <span class="phone-back-btn" id="yarn-back">← 返回</span>
-                <span></span>
-                <span></span>
-            </div>
-            <div id="yarn-ball-container" class="yarn-ball-app-container"></div>
-        </div>
-    `;
-
-    const container = phoneOverlay.querySelector('#yarn-ball-container');
-    const yarnApp = createYarnBallApp(container, yarnBallPrefs);
-
-    phoneOverlay.querySelector('#yarn-back').addEventListener('click', () => {
-        if (yarnApp && yarnApp.destroy) yarnApp.destroy();
-        renderHomeScreen();
-    });
-}
-
-// ---- 猫咪占卜启动器 ----
-
-function launchCatFortune() {
-    if (!phoneOverlay) return;
-
-    phoneOverlay.innerHTML = `
-        <div class="phone-screen">
-            <div class="phone-status-bar">
-                <span class="phone-back-btn" id="fortune-back">← 返回</span>
-                <span></span>
-                <span></span>
-            </div>
-            <div id="cat-fortune-container" class="cat-fortune-app-container"></div>
-        </div>
-    `;
-
-    const container = phoneOverlay.querySelector('#cat-fortune-container');
-    const prefs = getDB().settings?.game_prefs?.cat_fortune || {};
-    const fortuneApp = createCatFortuneApp(container, prefs);
-
-    phoneOverlay.querySelector('#fortune-back').addEventListener('click', () => {
-        if (fortuneApp && fortuneApp.destroy) fortuneApp.destroy();
-        renderHomeScreen();
-    });
-}
-
-// ---- 猫咪翻牌启动器 ----
-
-function launchCatMemory() {
-    if (!phoneOverlay) return;
-
-    phoneOverlay.innerHTML = `
-        <div class="phone-screen">
-            <div class="phone-status-bar">
-                <span class="phone-back-btn" id="memory-back">← 返回</span>
-                <span></span>
-                <span></span>
-            </div>
-            <div id="cat-memory-container" class="cat-memory-app-container"></div>
-        </div>
-    `;
-
-    const container = phoneOverlay.querySelector('#cat-memory-container');
-    const prefs = getDB().settings?.game_prefs?.cat_memory || {};
-    const memoryApp = createCatMemoryApp(container, prefs);
-
-    phoneOverlay.querySelector('#memory-back').addEventListener('click', () => {
-        if (memoryApp && memoryApp.destroy) memoryApp.destroy();
-        renderHomeScreen();
-    });
-}
-
-// ---- 打地鼠启动器 ----
-
-function launchWhackMouse() {
-    if (!phoneOverlay) return;
-
-    phoneOverlay.innerHTML = `
-        <div class="phone-screen">
-            <div class="phone-status-bar">
-                <span class="phone-back-btn" id="whack-back">← 返回</span>
-                <span></span>
-                <span></span>
-            </div>
-            <div id="whack-mouse-container" class="whack-mouse-app-container"></div>
-        </div>
-    `;
-
-    const container = phoneOverlay.querySelector('#whack-mouse-container');
-    const prefs = getDB().settings?.game_prefs?.whack_mouse || {};
-    const whackApp = createWhackMouseApp(container, prefs);
-
-    phoneOverlay.querySelector('#whack-back').addEventListener('click', () => {
-        if (whackApp && whackApp.destroy) whackApp.destroy();
-        renderHomeScreen();
-    });
-}
-
 // ---- 喵喵琴启动器 ----
 
 function launchMeowPiano() {
@@ -928,7 +497,7 @@ function launchMeowPiano() {
     phoneOverlay.innerHTML = `
         <div class="phone-screen">
             <div class="phone-status-bar">
-                <span class="phone-back-btn" id="piano-back">← 返回</span>
+                <span class="phone-back-btn" id="piano-back">${icon('arrow-left', '', 14)} 返回</span>
                 <span></span>
                 <span></span>
             </div>
@@ -946,155 +515,3 @@ function launchMeowPiano() {
     });
 }
 
-// ---- 喵喵计时器启动器 ----
-
-function launchMeowTimer() {
-    if (!phoneOverlay) return;
-
-    phoneOverlay.innerHTML = `
-        <div class="phone-screen">
-            <div class="phone-status-bar">
-                <span class="phone-back-btn" id="timer-back">← 返回</span>
-                <span></span>
-                <span></span>
-            </div>
-            <div id="meow-timer-container" class="meow-timer-app-container"></div>
-        </div>
-    `;
-
-    const container = phoneOverlay.querySelector('#meow-timer-container');
-    const timerApp = createMeowTimerApp(container);
-
-    phoneOverlay.querySelector('#timer-back').addEventListener('click', () => {
-        if (timerApp && timerApp.destroy) timerApp.destroy();
-        renderHomeScreen();
-    });
-}
-
-// ---- 喵喵合并启动器 ----
-
-function launchCat2048() {
-    if (!phoneOverlay) return;
-
-    phoneOverlay.innerHTML = `
-        <div class="phone-screen">
-            <div class="phone-status-bar">
-                <span class="phone-back-btn" id="merge-back">← 返回</span>
-                <span></span>
-                <span></span>
-            </div>
-            <div id="cat-2048-container" class="cat-2048-app-container"></div>
-        </div>
-    `;
-
-    const container = phoneOverlay.querySelector('#cat-2048-container');
-    const prefs = getDB().settings?.game_prefs?.cat_2048 || {};
-    const app = createCat2048App(container, prefs);
-
-    phoneOverlay.querySelector('#merge-back').addEventListener('click', () => {
-        if (app && app.destroy) app.destroy();
-        renderHomeScreen();
-    });
-}
-
-// ---- 喵喵序列启动器 ----
-
-function launchCatSimon() {
-    if (!phoneOverlay) return;
-
-    phoneOverlay.innerHTML = `
-        <div class="phone-screen">
-            <div class="phone-status-bar">
-                <span class="phone-back-btn" id="simon-back">← 返回</span>
-                <span></span>
-                <span></span>
-            </div>
-            <div id="cat-simon-container" class="cat-simon-app-container"></div>
-        </div>
-    `;
-
-    const container = phoneOverlay.querySelector('#cat-simon-container');
-    const prefs = getDB().settings?.game_prefs?.cat_simon || {};
-    const app = createCatSimonApp(container, prefs);
-
-    phoneOverlay.querySelector('#simon-back').addEventListener('click', () => {
-        if (app && app.destroy) app.destroy();
-        renderHomeScreen();
-    });
-}
-
-// ---- 猫猫反应力启动器 ----
-
-function launchCatReaction() {
-    if (!phoneOverlay) return;
-
-    phoneOverlay.innerHTML = `
-        <div class="phone-screen">
-            <div class="phone-status-bar">
-                <span class="phone-back-btn" id="reaction-back">← 返回</span>
-                <span></span>
-                <span></span>
-            </div>
-            <div id="cat-reaction-container" class="cat-reaction-app-container"></div>
-        </div>
-    `;
-
-    const container = phoneOverlay.querySelector('#cat-reaction-container');
-    const prefs = getDB().settings?.game_prefs?.cat_reaction || {};
-    const app = createCatReactionApp(container, prefs);
-
-    phoneOverlay.querySelector('#reaction-back').addEventListener('click', () => {
-        if (app && app.destroy) app.destroy();
-        renderHomeScreen();
-    });
-}
-
-// ---- 猫猫老虎机启动器 ----
-
-function launchCatSlot() {
-    if (!phoneOverlay) return;
-
-    phoneOverlay.innerHTML = `
-        <div class="phone-screen">
-            <div class="phone-status-bar">
-                <span class="phone-back-btn" id="slot-back">← 返回</span>
-                <span></span>
-                <span></span>
-            </div>
-            <div id="cat-slot-container" class="cat-slot-app-container"></div>
-        </div>
-    `;
-
-    const container = phoneOverlay.querySelector('#cat-slot-container');
-    const app = createCatSlotApp(container);
-
-    phoneOverlay.querySelector('#slot-back').addEventListener('click', () => {
-        if (app && app.destroy) app.destroy();
-        renderHomeScreen();
-    });
-}
-
-// ---- 猫咪百科启动器 ----
-
-function launchCatFacts() {
-    if (!phoneOverlay) return;
-
-    phoneOverlay.innerHTML = `
-        <div class="phone-screen">
-            <div class="phone-status-bar">
-                <span class="phone-back-btn" id="facts-back">← 返回</span>
-                <span></span>
-                <span></span>
-            </div>
-            <div id="cat-facts-container" class="cat-facts-app-container"></div>
-        </div>
-    `;
-
-    const container = phoneOverlay.querySelector('#cat-facts-container');
-    const app = createCatFactsApp(container);
-
-    phoneOverlay.querySelector('#facts-back').addEventListener('click', () => {
-        if (app && app.destroy) app.destroy();
-        renderHomeScreen();
-    });
-}
