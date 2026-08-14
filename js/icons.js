@@ -171,13 +171,12 @@ export const EMOJI_ICON = {
     '🔴': 'circle'
 };
 
-/** 提醒场景图标包（剪指甲/换猫砂/驱虫/洗澡等） */
+/** 提醒场景图标包（剪指甲/换猫砂/驱虫/洗澡等），28 个 = 每行 7 × 4 行 */
 export const REMINDER_ICONS = [
-    'scissors', 'broom', 'pill', 'droplets', 'trash-2',
-    'heart', 'paw-print', 'cat', 'fish', 'cake',
-    'calendar-days', 'star', 'sparkles', 'lightbulb', 'timer',
-    'leaf', 'sun', 'moon', 'zap', 'music',
-    'bell', 'bone', 'gift'
+    'scissors', 'broom', 'pill', 'droplets', 'trash-2', 'heart', 'paw-print',
+    'cat', 'fish', 'cake', 'calendar-days', 'star', 'sparkles', 'lightbulb',
+    'timer', 'leaf', 'sun', 'moon', 'zap', 'music', 'bell',
+    'bone', 'gift', 'clipboard-list', 'circle-check-big', 'rotate-cw', 'stethoscope', 'save'
 ];
 
 /**

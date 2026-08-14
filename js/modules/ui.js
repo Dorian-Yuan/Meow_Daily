@@ -421,7 +421,15 @@ function renderRecords() {
         }
 
         const icons = { routine: '🧹', food: '🍴', weight: '⚖️', medical: '🏥' };
-        let iconHtml = `<div style="width:44px; height:44px; background:var(--color-bg); border-radius:var(--radius-12); display:flex; align-items:center; justify-content:center; flex-shrink:0;">${emojiIcon(icons[r._c] || '🐾', '', 22)}</div>`;
+        // 分类色（与首页快速入口一致，亮/暗主题自动适配）
+        const colorVars = {
+            routine: { bg: 'var(--color-routine-bg)', fg: 'var(--color-routine-fg)' },
+            food: { bg: 'var(--color-food-bg)', fg: 'var(--color-food-fg)' },
+            weight: { bg: 'var(--color-weight-bg)', fg: 'var(--color-weight-fg)' },
+            medical: { bg: 'var(--color-medical-bg)', fg: 'var(--color-medical-fg)' }
+        };
+        const cv = colorVars[r._c] || { bg: 'var(--color-bg)', fg: 'inherit' };
+        let iconHtml = `<div style="width:44px; height:44px; background:${cv.bg}; color:${cv.fg}; border-radius:var(--radius-12); display:flex; align-items:center; justify-content:center; flex-shrink:0;">${emojiIcon(icons[r._c] || '🐾', '', 22)}</div>`;
 
         let rightContent = '';
         let badgeHtml = '';
@@ -1035,7 +1043,7 @@ function showReminderDrawer() {
             </div>
             
             <div class="form-group">
-                <label>绑定日常标签（强制）</label>
+                <label>绑定日常标签<span style="color:#EF4444; font-weight:800; margin-left:2px;">*</span></label>
                 <select id="rm-label" class="form-input">
                     ${tags.map(t => `<option value="${t}">${t}</option>`).join('')}
                 </select>
@@ -1056,7 +1064,6 @@ function showReminderDrawer() {
                         </button>
                     `).join('')}
                 </div>
-                <p style="font-size:11px; color:var(--color-text-hint); margin-top:6px;">图标：从内置图标库选择</p>
             </div>
             
             <button id="btn-save-rm" class="btn-drawer-save" style="margin-top:20px;">保存提醒</button>
