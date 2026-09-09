@@ -10,7 +10,7 @@
 const STORAGE_KEY = 'meow_daily_db';
 const CONFIG_KEY = 'meow_daily_config';
 
-export let VERSION = "3.3.6";
+export let VERSION = "3.3.7";
 
 const DEFAULT_DB = {
     cats: [
@@ -248,4 +248,32 @@ export function mergeDB(localDB, remoteDB) {
         }
     }
     return merged;
+}
+
+/**
+ * 删除提醒项 (可按 id 或 label 删除)
+ * @param {string} identifier - reminder id 或 label
+ */
+export function deleteReminder(identifier) {
+    if (!dbState || !dbState.settings || !Array.isArray(dbState.settings.reminders)) return;
+    dbState.settings.reminders = dbState.settings.reminders.filter(
+        r => r.id !== identifier && r.label !== identifier
+    );
+    saveToLocal();
+}
+
+/**
+ * 删除日常标签，并联动删除同名提醒项
+ * @param {string} tag
+ */
+export function deleteRoutineTag(tag) {
+    if (!dbState || !dbState.settings) return;
+    if (Array.isArray(dbState.settings.routine_tags)) {
+        dbState.settings.routine_tags = dbState.settings.routine_tags.filter(t => t !== tag);
+    }
+    // 联动清理同名提醒项
+    if (Array.isArray(dbState.settings.reminders)) {
+        dbState.settings.reminders = dbState.settings.reminders.filter(r => r.label !== tag);
+    }
+    saveToLocal();
 }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'meow-daily-v15'; // 升级到 V15 以强制清除旧缓存
+const CACHE_NAME = 'meow-daily-v17'; // 升级到 V17 以强制清除旧缓存
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -7,6 +7,7 @@ const ASSETS_TO_CACHE = [
   './css/main.css',
   './js/app.js',
   './js/store.js',
+  './js/icons.js',
   './js/modules/ui.js',
   './js/api/ai.js',
   './js/api/github.js',

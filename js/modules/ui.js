@@ -4,7 +4,7 @@
  */
 import {
     getDB, getConfig, saveConfig, addOrUpdateRecord, deleteRecord,
-    updateCatProfile, mergeDB, setDB, VERSION
+    updateCatProfile, mergeDB, setDB, deleteReminder, deleteRoutineTag, VERSION
 } from '../store.js';
 import { parseTextWithAI, processMentionedTime } from '../api/ai.js';
 import { fetchCloudDB, pushCloudDB } from '../api/github.js';
@@ -121,12 +121,12 @@ function renderHome() {
 
             // 只显示 5 天内需要做的事情 (或者已逾期)
             if (daysLeft <= 5) {
-                reminders.push({ label: rm.label, icon: rm.icon || '🐾', statusHtml });
+                reminders.push({ id: rm.id, label: rm.label, icon: rm.icon || '🐾', statusHtml });
             }
         } else {
             statusHtml = `<div style="font-size:11px; color:var(--color-text-hint);">${emojiIcon('❓', '', 12)} 尚未记录过</div>`;
             urgentCount++;
-            reminders.push({ label: rm.label, icon: rm.icon || '🐾', statusHtml });
+            reminders.push({ id: rm.id, label: rm.label, icon: rm.icon || '🐾', statusHtml });
         }
     });
 
@@ -200,7 +200,10 @@ function renderHome() {
                                     <div style="font-size:14px; font-weight:800; margin-bottom:var(--spacing-xs);">${r.label}</div>
                                     ${r.statusHtml}
                                 </div>
-                                <button class="btn profile-edit-btn" style="padding:6px 12px; margin:0; font-size:11px;" onclick="window.meow_quick_record('${r.label}')">去记录</button>
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <button class="btn profile-edit-btn" style="padding:6px 12px; margin:0; font-size:11px;" onclick="window.meow_quick_record('${r.label}')">去记录</button>
+                                    <button class="btn-del-home-rm" data-id="${r.id || ''}" data-label="${r.label}" title="删除此提醒" style="background:none; border:none; color:var(--color-text-hint); font-size:16px; cursor:pointer; padding:4px 6px; border-radius:6px; line-height:1;">×</button>
+                                </div>
                             </div>
                         `).join('')
         }
@@ -211,6 +214,19 @@ function renderHome() {
 
     document.querySelectorAll('.action-item').forEach(el => {
         el.onclick = () => showEntryDrawer(el.dataset.type);
+    });
+
+    document.querySelectorAll('.btn-del-home-rm').forEach(btn => {
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            const label = btn.dataset.label;
+            const id = btn.dataset.id;
+            if (confirm(`确定删除提醒「${label}」吗？删除后首页将不再显示此待办。`)) {
+                deleteReminder(id || label);
+                showToast(`已删除提醒「${label}」 ${emojiIcon('🐾', '', 14)}`, 'success', true);
+                renderHome();
+            }
+        };
     });
 
     window.meow_quick_record = (label) => showEntryDrawer('routine', null, label);
@@ -869,12 +885,12 @@ function renderSettings() {
             <div class="card">
                 <h3 style="margin-bottom:12px;">${emojiIcon('⏰', '', 16)} 提醒事项管理</h3>
                 <div id="reminder-list" style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
-                    ${reminders.map((rm, idx) => `
+                    ${reminders.map(rm => `
                         <div style="display:flex; align-items:center; gap:8px; background:var(--color-bg); padding:8px 12px; border-radius:8px;">
                             <span>${renderIcon(rm.icon, '', 16)}</span>
                             <div style="flex:1; font-size:13px; font-weight:700;">${rm.label}</div>
                             <div style="font-size:12px; color:var(--color-text-hint);">${rm.days} 天</div>
-                            <button class="btn-del-rm" data-idx="${idx}" style="background:none; border:none; color:#EF4444; font-size:16px; cursor:pointer; padding:0 4px;">×</button>
+                            <button class="btn-del-rm" data-id="${rm.id || ''}" data-label="${rm.label}" style="background:none; border:none; color:#EF4444; font-size:16px; cursor:pointer; padding:0 4px;">×</button>
                         </div>
                     `).join('')}
                 </div>
@@ -911,9 +927,11 @@ function renderSettings() {
 
     document.querySelectorAll('.btn-del-rm').forEach(btn => {
         btn.onclick = () => {
-            if (confirm('确定删除该提醒吗？')) {
-                db.settings.reminders.splice(btn.dataset.idx, 1);
-                setDB(db);
+            const label = btn.dataset.label;
+            const id = btn.dataset.id;
+            if (confirm(`确定删除提醒「${label}」吗？`)) {
+                deleteReminder(id || label);
+                showToast(`已删除提醒「${label}」 ${emojiIcon('🐾', '', 14)}`, 'success', true);
                 renderSettings();
             }
         };
@@ -942,17 +960,17 @@ function renderSettings() {
  * 管理 routine tags 的抽屉
  */
 function showTagManagerDrawer() {
-    const db = getDB();
-    const tags = db.settings.routine_tags || [];
+    let db = getDB();
+    let tags = db.settings.routine_tags || [];
     
     const overlay = document.createElement('div');
     overlay.className = 'drawer-overlay';
     
     const renderTags = () => {
-        return tags.map((t, i) => `
+        return tags.map(t => `
             <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:var(--color-bg); border-radius:12px; margin-bottom:8px;">
                 <span style="font-size:14px; font-weight:800; color:var(--color-text-title);">${t}</span>
-                <span class="btn-del-tag" data-idx="${i}" style="color:#EF4444; font-size:16px; cursor:pointer; font-weight:900;">×</span>
+                <span class="btn-del-tag" data-tag="${t}" style="color:#EF4444; font-size:16px; cursor:pointer; font-weight:900;">×</span>
             </div>
         `).join('');
     };
@@ -994,12 +1012,14 @@ function showTagManagerDrawer() {
     const attachEvents = () => {
         overlay.querySelectorAll('.btn-del-tag').forEach(btn => {
             btn.onclick = () => {
-                if(confirm('删除此标签不会删除已有的历史记录，但后续无法再选择此提醒标签，确定删除吗？')) {
-                    tags.splice(btn.dataset.idx, 1);
-                    db.settings.routine_tags = tags;
-                    setDB(db);
+                const targetTag = btn.dataset.tag;
+                if(confirm(`确定删除标签「${targetTag}」吗？已有的历史记录不会受影响，但对应的提醒事项将被联动删除。`)) {
+                    deleteRoutineTag(targetTag);
+                    db = getDB();
+                    tags = db.settings.routine_tags || [];
                     overlay.querySelector('#tags-container').innerHTML = renderTags();
                     attachEvents();
+                    showToast(`已删除标签「${targetTag}」 ${emojiIcon('🐾', '', 14)}`, 'success', true);
                 }
             };
         });
@@ -1100,6 +1120,10 @@ function showReminderDrawer() {
         if (isNaN(days) || days <= 0) return showToast('请输入有效的周期天数', 'error');
         
         db.settings.reminders = db.settings.reminders || [];
+        const exists = db.settings.reminders.some(r => r.label === label);
+        if (exists) {
+            return showToast(`已存在「${label}」的提醒事项，请勿重复添加`, 'error');
+        }
         db.settings.reminders.push({ id: 'rm_' + Date.now(), label, days, icon });
         setDB(db);
         showToast(`已添加新提醒 ${emojiIcon('🐾', '', 14)}`, 'success', true);
